@@ -545,8 +545,18 @@ export function createApp(deps: Deps) {
   // ---- Static web app ----------------------------------------------------
 
   if (existsSync(config.webDist)) {
-    app.use(express.static(config.webDist, { index: false, maxAge: "1h" }));
-    app.get(/^\/(?!api\/).*/, (_req, res) => { res.sendFile(path.join(config.webDist, "index.html")); });
+    // Vite's /assets/* files are content-hashed (a new build never reuses a
+    // filename), so they can be cached hard and forever. Everything else —
+    // index.html, manifest, icons — is NOT hashed, so a long cache there
+    // means a phone can keep serving a stale app indefinitely even after
+    // force-quitting it: no-cache forces a revalidation on every load, which
+    // is nearly free (a 304) when nothing actually changed.
+    app.use("/assets", express.static(path.join(config.webDist, "assets"), { maxAge: "1y", immutable: true }));
+    app.use(express.static(config.webDist, { index: false, setHeaders: (res) => res.setHeader("Cache-Control", "no-cache") }));
+    app.get(/^\/(?!api\/).*/, (_req, res) => {
+      res.setHeader("Cache-Control", "no-cache");
+      res.sendFile(path.join(config.webDist, "index.html"));
+    });
   }
 
   app.use("/api", (_req, res) => { res.status(404).json({ error: "not_found", message: "Route inconnue." }); });
