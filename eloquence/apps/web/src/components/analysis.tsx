@@ -240,7 +240,21 @@ export function AudioPlayer({ session }: { session: Session }) {
         url = URL.createObjectURL(blob);
         setSrc(url);
       });
-    } else setSrc(session.audioUrl);
+    } else {
+      // Fetch the whole file into a Blob instead of pointing <audio> at the
+      // server URL directly: Safari negotiates HTTP Range requests against
+      // the recorded MP4's fragmented container unreliably (plays through
+      // instantly with no sound). A fully-downloaded Blob URL has no range
+      // negotiation to get wrong — the browser just seeks in memory.
+      void fetch(session.audioUrl)
+        .then((r) => (r.ok ? r.blob() : Promise.reject(new Error("audio fetch failed"))))
+        .then((blob) => {
+          if (!alive) return;
+          url = URL.createObjectURL(blob);
+          setSrc(url);
+        })
+        .catch(() => { if (alive) setMissing(true); });
+    }
     return () => { alive = false; if (url) URL.revokeObjectURL(url); };
   }, [session.audioUrl]);
   if (missing) return null;
