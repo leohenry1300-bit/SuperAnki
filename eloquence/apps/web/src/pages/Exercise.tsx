@@ -102,8 +102,9 @@ export function Exercise() {
         // memory…): fall back to whatever the browser's own speech
         // recognition already captured — never block the session — but say
         // so, so it's never a silent, invisible fallback.
-        console.error("[local whisper]", (e as Error).message);
-        toast("Transcription locale indisponible sur cet appareil : on utilise celle du navigateur.", "error");
+        const detail = (e as Error).message || String(e);
+        console.error("[local whisper]", detail);
+        toast(`Transcription locale indisponible : ${detail.slice(0, 140)}`, "error");
       }
     }
     const heard = result.capture.transcript.trim().length > 0;
