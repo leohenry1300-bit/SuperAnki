@@ -30,6 +30,7 @@ interface Ctx {
   retryBoot(): void;
   startGuest(profile: OnboardingProfile): void;
   provisionAccount(profile: OnboardingProfile): Promise<void>;
+  login(email: string, password: string): Promise<void>;
   startDemo(): void;
   logout(): Promise<void>;
   deleteAccount(): Promise<void>;
@@ -255,6 +256,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   }, [server, startGuest]);
 
+  const login = useCallback(async (email: string, password: string) => {
+    const r = await http<{ token: string; state: AccountState }>("POST", "/api/auth/login", { email, password });
+    enterAccount(r.token, r.state);
+  }, []);
+
   const logout = useCallback(async () => {
     setToken(null);
     writeLocal(null, null);
@@ -290,7 +296,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     status, bootError, mode, account, server, toasts,
     summary: account ? summarize(account.sessions, account.badges) : null,
     retryBoot: () => void boot(),
-    startGuest, provisionAccount, startDemo, logout, deleteAccount,
+    startGuest, provisionAccount, login, startDemo, logout, deleteAccount,
     submitSession: (input) => withAccount(async (b, s) => {
       const r = await b.submitSession(s, input);
       apply(r.state);

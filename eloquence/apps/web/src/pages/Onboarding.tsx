@@ -46,6 +46,7 @@ export function Onboarding() {
           <button className="btn btn-outline btn-block" onClick={() => { startDemo(); nav("/"); }}>
             <Sparkles size={17} />Explorer la démo
           </button>
+          <button className="btn btn-ghost btn-block" onClick={() => nav("/connexion")}>J'ai déjà un compte</button>
         </div>
       </div>
     );

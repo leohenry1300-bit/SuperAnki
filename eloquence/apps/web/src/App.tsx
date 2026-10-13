@@ -6,6 +6,7 @@ import { StoreProvider, useStore } from "./lib/store";
 import { AppShell } from "./components/shell";
 import { FullScreenLoader, Toasts, Wordmark } from "./components/ui";
 import { Onboarding } from "./pages/Onboarding";
+import { Login } from "./pages/Login";
 import { Home } from "./pages/Home";
 import { Train } from "./pages/Train";
 import { Games } from "./pages/Games";
@@ -85,6 +86,7 @@ function Root() {
       <ScrollTop />
       <Routes>
         <Route path="/bienvenue" element={<OnboardingRoute />} />
+        <Route path="/connexion" element={<Login />} />
         <Route element={<RequireProfile />}>
           <Route element={<AppShell />}>
             <Route index element={<Home />} />
