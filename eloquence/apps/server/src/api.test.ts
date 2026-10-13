@@ -101,7 +101,14 @@ describe("API", () => {
     expect(first.body.session.audioUrl).toMatch(/^\/api\/audio\//);
     const audio = await fetch(base + first.body.session.audioUrl);
     expect(audio.status).toBe(200);
+    expect(audio.headers.get("accept-ranges")).toBe("bytes");
     expect((await fetch(base + first.body.session.audioUrl.replace(/sig=[^&]+/, "sig=bad"))).status).toBe(403);
+
+    // Safari requires a working Range response to play <audio> at all.
+    const ranged = await fetch(base + first.body.session.audioUrl, { headers: { Range: "bytes=1-3" } });
+    expect(ranged.status).toBe(206);
+    expect(ranged.headers.get("content-range")).toMatch(/^bytes 1-3\/\d+$/);
+    expect((await ranged.arrayBuffer()).byteLength).toBe(3);
 
     const retry = await api("POST", "/api/sessions", sessionForm("entretien-presentation", CLEAN));
     expect(retry.status).toBe(201);

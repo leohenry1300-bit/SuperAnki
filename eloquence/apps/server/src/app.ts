@@ -403,6 +403,27 @@ export function createApp(deps: Deps) {
     if (!file) throw new HttpError(404, "not_found", "Enregistrement introuvable.");
     res.setHeader("Content-Type", file.mime);
     res.setHeader("Cache-Control", "private, max-age=3600");
+    res.setHeader("Accept-Ranges", "bytes");
+    // Safari (and most mobile browsers) issue a Range request before playing
+    // <audio>, especially for MP4 — without a 206 response here, playback
+    // fails outright even though the file itself is intact and downloads fine.
+    const range = req.headers.range;
+    const total = file.data.length;
+    if (range) {
+      const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+      const start = match?.[1] ? Number(match[1]) : 0;
+      const end = match?.[2] ? Number(match[2]) : total - 1;
+      if (Number.isNaN(start) || Number.isNaN(end) || start > end || end >= total) {
+        res.status(416).setHeader("Content-Range", `bytes */${total}`).end();
+        return;
+      }
+      res.status(206);
+      res.setHeader("Content-Range", `bytes ${start}-${end}/${total}`);
+      res.setHeader("Content-Length", end - start + 1);
+      res.send(file.data.subarray(start, end + 1));
+      return;
+    }
+    res.setHeader("Content-Length", total);
     res.send(file.data);
   }));
 
