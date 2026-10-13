@@ -161,7 +161,11 @@ export function SessionResult() {
       )}
 
       <section className="card" aria-labelledby="tr-title">
-        <h2 id="tr-title" style={{ fontSize: 18, marginBottom: 14 }}>Ta réponse</h2>
+        <div className="row-between" style={{ marginBottom: 14 }}>
+          <h2 id="tr-title" style={{ fontSize: 18 }}>Ta réponse</h2>
+          {a.metrics.transcriptionSource === "local-whisper" && <span className="pill">Transcrit localement (IA)</span>}
+          {a.metrics.transcriptionSource === "server-stt" && <span className="pill">Transcrit par Whisper (serveur)</span>}
+        </div>
         <Transcript analysis={a} />
         {topIssues.length > 0 && (
           <div className="card soft tight" style={{ marginTop: 18 }}>

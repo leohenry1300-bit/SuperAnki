@@ -108,8 +108,9 @@ export interface SpeechCapture {
   silences?: Silence[];
   /** 0..1 loudness samples, roughly every 100 ms. */
   volume?: number[];
-  /** "speech" when captured with a real mic, "text" for typed fallback. */
-  source: "speech" | "text" | "server-stt";
+  /** "speech" when captured with a real mic, "text" for typed fallback,
+   * "local-whisper" when the free in-browser model re-transcribed it. */
+  source: "speech" | "text" | "server-stt" | "local-whisper";
 }
 
 export type IssueKind =
@@ -186,6 +187,9 @@ export interface Metrics {
   volumeStability: number | null;
   /** True when the answer was typed: pace and pauses aren't measured. */
   typed?: boolean;
+  /** Which engine produced the transcript being analysed — shown in the UI
+   * so "did local transcription actually run?" is never a guessing game. */
+  transcriptionSource: SpeechCapture["source"];
 }
 
 /** A short excerpt from the actual transcript, used to ground feedback. */

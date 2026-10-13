@@ -34,7 +34,7 @@ export function Exercise() {
   const exercise = navState.activity ?? getExercise(id);
   const source: ActivitySource = navState.source ?? (navState.activity ? "libre" : "catalogue");
   const onboarding = !!navState.onboarding;
-  const { account, server, mode, submitSession } = useAccount();
+  const { account, server, mode, submitSession, toast } = useAccount();
   const nav = useNavigate();
 
   const [phase, setPhase] = useState<Phase>("prep");
@@ -93,13 +93,17 @@ export function Exercise() {
       try {
         const local = await transcribeLocally(result.audio, account.user.settings.language, (p) => setTranscribeProgress(p.percent));
         if (local.transcript.trim()) {
-          Object.assign(result.capture, { transcript: local.transcript, segments: local.segments, source: "speech" });
+          Object.assign(result.capture, { transcript: local.transcript, segments: local.segments, source: "local-whisper" });
+        } else {
+          toast("La transcription locale n'a rien capté, on garde celle du navigateur.", "info");
         }
       } catch (e) {
         // Local model failed to load or run (unsupported device, out of
-        // memory…): fall back silently to whatever the browser's own
-        // speech recognition already captured — never block the session.
+        // memory…): fall back to whatever the browser's own speech
+        // recognition already captured — never block the session — but say
+        // so, so it's never a silent, invisible fallback.
         console.error("[local whisper]", (e as Error).message);
+        toast("Transcription locale indisponible sur cet appareil : on utilise celle du navigateur.", "error");
       }
     }
     const heard = result.capture.transcript.trim().length > 0;

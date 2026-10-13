@@ -80,7 +80,7 @@ const Capture = z.object({
   segments: z.array(z.object({ text: z.string().max(5000), start: z.number(), end: z.number() })).max(2000).optional(),
   silences: z.array(z.object({ start: z.number(), end: z.number() })).max(2000).optional(),
   volume: z.array(z.number()).max(12_000).optional(),
-  source: z.enum(["speech", "text", "server-stt"]),
+  source: z.enum(["speech", "text", "server-stt", "local-whisper"]),
 });
 
 // The full exercise object travels with the submission: games, generated

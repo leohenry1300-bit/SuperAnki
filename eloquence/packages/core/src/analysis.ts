@@ -461,6 +461,7 @@ export function analyzeSpeech(capture: SpeechCapture, opts: AnalyzeOptions = {})
     slowdowns,
     volumeStability: stability,
     typed: isText,
+    transcriptionSource: capture.source,
   };
 
   // ---- Scores ------------------------------------------------------------
