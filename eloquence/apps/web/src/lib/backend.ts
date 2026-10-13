@@ -42,6 +42,8 @@ export interface Backend {
   markLibraryRead(state: AccountState, lessonId: string): Promise<AccountState>;
   completeChallenge(state: AccountState, challengeId: string, date: string): Promise<AccountState>;
   uncompleteChallenge(state: AccountState, challengeId: string, date: string): Promise<AccountState>;
+  /** Merges a previously exported backup file into this account. */
+  importBackup(state: AccountState, raw: unknown): Promise<AccountState>;
   rewrite(sessionId: string, transcript: string): Promise<RewriteResult>;
   modelAnswer(session: AccountState["sessions"][number]): Promise<string | null>;
   weeklyGoals(state: AccountState): Promise<WeeklyGoals>;
@@ -118,6 +120,10 @@ export class RemoteBackend implements Backend {
   async uncompleteChallenge(state: AccountState, challengeId: string, date: string) {
     await http("DELETE", `/api/challenges/${challengeId}/done?date=${encodeURIComponent(date)}`);
     return { ...state, completedChallenges: state.completedChallenges.filter((c) => !(c.challengeId === challengeId && c.date === date)) };
+  }
+
+  async importBackup(_state: AccountState, raw: unknown) {
+    return http<AccountState>("POST", "/api/me/import", raw);
   }
 
   async rewrite(sessionId: string) {
@@ -233,6 +239,24 @@ export class LocalBackend implements Backend {
 
   async uncompleteChallenge(state: AccountState, challengeId: string, date: string) {
     return this.save({ ...state, completedChallenges: state.completedChallenges.filter((c) => !(c.challengeId === challengeId && c.date === date)) });
+  }
+
+  async importBackup(state: AccountState, raw: unknown) {
+    const data = raw as Partial<AccountState>;
+    const suffix = `_${state.user.id.slice(-6)}`;
+    const sessions = (data.sessions ?? []).map((s) => ({ ...s, id: `${s.id}${suffix}`, userId: state.user.id, audioUrl: null }));
+    const coach = (data.coach ?? []).map((m) => ({ ...m, id: `${m.id}${suffix}` }));
+    const existingBadges = new Set(state.badges.map((b) => b.id));
+    const badges = (data.badges ?? []).filter((b) => !existingBadges.has(b.id));
+    return this.save({
+      ...state,
+      sessions: [...sessions, ...state.sessions].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+      coach: [...state.coach, ...coach],
+      badges: [...state.badges, ...badges],
+      completedChallenges: [...state.completedChallenges, ...(data.completedChallenges ?? [])],
+      program: state.program ?? data.program ?? null,
+      diagnostic: state.diagnostic ?? data.diagnostic ?? null,
+    });
   }
 
   async rewrite(_sessionId: string, transcript: string) {

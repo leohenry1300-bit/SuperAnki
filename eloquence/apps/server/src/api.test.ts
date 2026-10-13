@@ -141,6 +141,30 @@ describe("API", () => {
     expect((await api("POST", "/api/challenges/not-a-real-id/done", { date: today })).status).toBe(404);
   });
 
+  it("exports then re-imports a backup into another account", async () => {
+    const exported = await api("GET", "/api/me/export");
+    expect(exported.status).toBe(200);
+    expect(exported.body.sessions.length).toBeGreaterThan(0);
+
+    const other = await api("POST", "/api/auth/anonymous", { firstName: "Robin" }, false);
+    const savedToken = token;
+    token = other.body.token;
+    try {
+      const before = await api("GET", "/api/state");
+      expect(before.body.sessions).toHaveLength(0);
+
+      const imported = await api("POST", "/api/me/import", exported.body);
+      expect(imported.status).toBe(201);
+      expect(imported.body.sessions.length).toBe(exported.body.sessions.length);
+      expect(imported.body.completedChallenges.length).toBe(exported.body.completedChallenges.length);
+
+      // Importing into the same account a second time collides on session ids.
+      expect((await api("POST", "/api/me/import", exported.body)).status).toBe(500);
+    } finally {
+      token = savedToken;
+    }
+  });
+
   it("rejects empty transcripts but never blocks on volume or a locked exercise", async () => {
     expect((await api("POST", "/api/sessions", sessionForm("impro-passion", "  "))).status).toBe(422);
     expect((await api("POST", "/api/sessions", sessionForm("entretien-difficulte", CLEAN))).status).toBe(201);

@@ -305,6 +305,17 @@ export function createApp(deps: Deps) {
     res.json(await stateFor(req.userId!));
   }));
 
+  // Re-imports a previously exported file into the CURRENT account — the
+  // way back for anyone who lost their device/local token before the
+  // email+password login existed, and a generally useful safety net.
+  // Importing the same file twice into the same account will fail on the
+  // second attempt (session ids collide) rather than duplicate anything.
+  app.post("/api/me/import", auth, wrap(async (req, res) => {
+    const body = ImportState.parse(req.body);
+    if (body) await store.importState(req.userId!, body as Partial<AccountState>);
+    res.status(201).json(await stateFor(req.userId!));
+  }));
+
   app.delete("/api/me", auth, wrap(async (req, res) => {
     for (const s of await store.sessions(req.userId!)) if (s.audioKey) await storage.delete(s.audioKey);
     await store.deleteUser(req.userId!);

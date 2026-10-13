@@ -128,10 +128,10 @@ export class SqliteStore implements Store {
     this.db.close();
   }
 
-  private tx<T>(fn: () => T): T {
+  private async tx<T>(fn: () => Promise<T> | T): Promise<T> {
     this.db.exec("BEGIN");
     try {
-      const out = fn();
+      const out = await fn();
       this.db.exec("COMMIT");
       return out;
     } catch (e) {
@@ -401,14 +401,14 @@ export class SqliteStore implements Store {
   // ---- Bulk import (guest → account) ------------------------------------
 
   async importState(userId: string, state: Partial<Pick<AccountState, "sessions" | "coach" | "program" | "badges" | "diagnostic" | "completedChallenges">>) {
-    this.tx(() => {
+    await this.tx(async () => {
       for (const s of state.sessions ?? []) {
-        void this.insertSession({ ...s, id: `${s.id}_${userId.slice(-6)}`, userId, audioUrl: null }, null);
+        await this.insertSession({ ...s, id: `${s.id}_${userId.slice(-6)}`, userId, audioUrl: null }, null);
       }
-      for (const m of state.coach ?? []) void this.addCoach(userId, { ...m, id: `${m.id}_${userId.slice(-6)}` });
-      if (state.program) void this.saveProgram(userId, state.program);
-      if (state.badges) void this.addBadges(userId, state.badges);
-      for (const c of state.completedChallenges ?? []) void this.completeChallenge(userId, c.challengeId, c.date);
+      for (const m of state.coach ?? []) await this.addCoach(userId, { ...m, id: `${m.id}_${userId.slice(-6)}` });
+      if (state.program) await this.saveProgram(userId, state.program);
+      if (state.badges) await this.addBadges(userId, state.badges);
+      for (const c of state.completedChallenges ?? []) await this.completeChallenge(userId, c.challengeId, c.date);
     });
     if (state.diagnostic) { await this.saveDiagnostic(userId, state.diagnostic); await this.updateUser(userId, { diagnosticDone: true }); }
     await this.refreshProgress(userId);

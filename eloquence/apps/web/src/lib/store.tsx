@@ -46,6 +46,7 @@ interface Ctx {
   markLibraryRead(lessonId: string): Promise<void>;
   completeChallenge(challengeId: string, date: string): Promise<void>;
   uncompleteChallenge(challengeId: string, date: string): Promise<void>;
+  importBackup(raw: unknown): Promise<void>;
   rewrite(sessionId: string, transcript: string): Promise<RewriteResult>;
   modelAnswer(session: AccountState["sessions"][number]): Promise<string | null>;
   weeklyGoals(): Promise<WeeklyGoals>;
@@ -322,6 +323,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     markLibraryRead: (lessonId) => withAccount(async (b, s) => apply(await b.markLibraryRead(s, lessonId))),
     completeChallenge: (challengeId, date) => withAccount(async (b, s) => apply(await b.completeChallenge(s, challengeId, date))),
     uncompleteChallenge: (challengeId, date) => withAccount(async (b, s) => apply(await b.uncompleteChallenge(s, challengeId, date))),
+    importBackup: (raw) => withAccount(async (b, s) => apply(await b.importBackup(s, raw))),
     rewrite: (sessionId, transcript) => withAccount((b) => b.rewrite(sessionId, transcript)),
     modelAnswer: (session) => withAccount((b) => b.modelAnswer(session)),
     weeklyGoals: () => withAccount((b, s) => b.weeklyGoals(s)),

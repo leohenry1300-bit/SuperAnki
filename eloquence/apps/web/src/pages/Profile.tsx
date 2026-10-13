@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Bell, Camera, ChevronRight, Clock, ClipboardCheck, CloudUpload, Download, Globe, LogOut, Mic, Moon,
-  Pencil, ShieldCheck, Target, Trash2, Trophy,
+  Pencil, ShieldCheck, Target, Trash2, Trophy, Upload,
 } from "lucide-react";
 import { GOAL_GROUPS, GOAL_LABELS, LEVEL_LABELS, levelFor, type Goal, type Level, type UserSettings } from "@eloquence/core";
 import { useAccount } from "../lib/store";
@@ -30,10 +30,11 @@ async function resizeImage(file: File, size = 256): Promise<string> {
 }
 
 export function Profile() {
-  const { account, summary, mode, updateMe, logout, deleteAccount, toast } = useAccount();
+  const { account, summary, mode, updateMe, logout, deleteAccount, importBackup, toast } = useAccount();
   const { user } = account;
   const nav = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
+  const importRef = useRef<HTMLInputElement>(null);
   const [editing, setEditing] = useState(false);
   const level = levelFor(summary.xp);
 
@@ -69,6 +70,19 @@ export function Profile() {
       URL.revokeObjectURL(a.href);
     } catch (e) {
       toast((e as Error).message, "error");
+    }
+  };
+
+  const importData = async (file?: File) => {
+    if (!file) return;
+    try {
+      const raw = JSON.parse(await file.text());
+      await importBackup(raw);
+      toast("Données importées.", "success");
+    } catch (e) {
+      toast(e instanceof SyntaxError ? "Ce fichier n'est pas un export valide." : (e as Error).message, "error");
+    } finally {
+      if (importRef.current) importRef.current.value = "";
     }
   };
 
@@ -223,6 +237,12 @@ export function Profile() {
             <span className="grow li-title">Exporter mes données</span>
             <ChevronRight size={18} className="li-end" />
           </button>
+          <button className="list-item" onClick={() => importRef.current?.click()}>
+            <span className="li-icon"><Upload size={18} /></span>
+            <span className="grow"><span className="li-title">Importer mes données</span><br /><span className="li-sub">Depuis un fichier exporté précédemment — s'ajoute à ce compte.</span></span>
+            <ChevronRight size={18} className="li-end" />
+          </button>
+          <input ref={importRef} type="file" accept="application/json" hidden onChange={(e) => void importData(e.target.files?.[0])} />
           <button className="list-item" onClick={async () => {
             if (!window.confirm(mode === "account" ? "Supprimer définitivement ton compte, tes sessions et tes enregistrements ?" : "Effacer toutes les données de cet appareil ?")) return;
             try { await deleteAccount(); nav("/bienvenue", { replace: true }); } catch (e) { toast((e as Error).message, "error"); }
