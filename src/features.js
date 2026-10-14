@@ -718,7 +718,7 @@ Object.assign(SuperAnki.prototype, {
         const g = PACK_GROUPS[pack.group], now = Date.now(), have = new Set(this.data.cards.map(c => c.id));
         const ensureDeck = (id, name, emoji, parent, description = '') => {
             let d = this.deck(id);
-            if (!d) { d = { id, name, emoji, description, created: now, parent, opts: null, mod: 0, preset: null, limits: null }; this.data.decks.push(d); }
+            if (!d) { d = { id, name, emoji, description, created: now, parent, opts: null, mod: 0, preset: id === 'pk_g_anglais' && this.data.presets.some(x => x.id === TOEIC_PRESET_ID) ? TOEIC_PRESET_ID : null, limits: null }; this.data.decks.push(d); }
             return d.id;
         };
         let added = 0, n = 0;

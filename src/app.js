@@ -463,6 +463,7 @@ function seedState() {
    Local storage layer: IndexedDB (large quota, images ok)
    with localStorage fallback
    ============================================================ */
+const TOEIC_PRESET_ID = 'p_toeic_fsrs';
 const LEGACY_KEY = 'superanki_pro_state_v3';
 const LS_KEY = 'superanki_pro_v4';
 const Storage = {
@@ -687,6 +688,16 @@ class SuperAnki {
         this.save();
     }
 
+    /* One-time: English / TOEIC decks use FSRS at 90 % retention (cards already reviewed with SM-2 are converted on the fly). */
+    migrateTunedPreset() {
+        const st = this.data.settings;
+        if (st.presetToeicV1) return;
+        st.presetToeicV1 = true;
+        if (!this.data.presets.some(x => x.id === TOEIC_PRESET_ID)) this.data.presets.push({ id: TOEIC_PRESET_ID, name: 'TOEIC et anglais · FSRS 90 %', opts: { scheduler: 'fsrs', retention: 0.9 }, mod: 0 });
+        ['pk_g_anglais', 'toeic_err'].forEach(id => { const d = this.deck(id); if (d && !d.preset) d.preset = TOEIC_PRESET_ID; });
+        this.save();
+    }
+
     /* ---------- boot ---------- */
     async init() {
         injectSprite();
@@ -707,6 +718,7 @@ class SuperAnki {
         this.applySettings();
         this.initSigs();
         this.migrateButTc();
+        this.migrateTunedPreset();
         this.checkStreak();
         this.writeNow();
         this.autoBackup(source);

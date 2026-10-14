@@ -1067,7 +1067,7 @@ Object.assign(SuperAnki.prototype, {
         const deckId = 'toeic_err', have = new Set(this.data.cards.filter(c => c.deckId === deckId).map(c => c.front));
         let added = 0;
         this.change('cartes TOEIC', [], () => {
-            if (!this.deck(deckId)) this.data.decks.push({ id: deckId, name: 'TOEIC : mes erreurs', emoji: '🎯', description: 'Questions du simulateur TOEIC ratées', created: Date.now(), parent: null, opts: null, mod: 0, preset: null, limits: null });
+            if (!this.deck(deckId)) this.data.decks.push({ id: deckId, name: 'TOEIC : mes erreurs', emoji: '🎯', description: 'Questions du simulateur TOEIC ratées', created: Date.now(), parent: null, opts: null, mod: 0, preset: this.data.presets.some(x => x.id === TOEIC_PRESET_ID) ? TOEIC_PRESET_ID : null, limits: null });
             const made = [];
             cards.forEach(c => {
                 const key = c.type === 'cloze' ? c.front : c.front;

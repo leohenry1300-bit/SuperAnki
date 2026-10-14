@@ -1996,6 +1996,7 @@ function seedState() {
    Local storage layer: IndexedDB (large quota, images ok)
    with localStorage fallback
    ============================================================ */
+const TOEIC_PRESET_ID = 'p_toeic_fsrs';
 const LEGACY_KEY = 'superanki_pro_state_v3';
 const LS_KEY = 'superanki_pro_v4';
 const Storage = {
@@ -2220,6 +2221,16 @@ class SuperAnki {
         this.save();
     }
 
+    /* One-time: English / TOEIC decks use FSRS at 90 % retention (cards already reviewed with SM-2 are converted on the fly). */
+    migrateTunedPreset() {
+        const st = this.data.settings;
+        if (st.presetToeicV1) return;
+        st.presetToeicV1 = true;
+        if (!this.data.presets.some(x => x.id === TOEIC_PRESET_ID)) this.data.presets.push({ id: TOEIC_PRESET_ID, name: 'TOEIC et anglais · FSRS 90 %', opts: { scheduler: 'fsrs', retention: 0.9 }, mod: 0 });
+        ['pk_g_anglais', 'toeic_err'].forEach(id => { const d = this.deck(id); if (d && !d.preset) d.preset = TOEIC_PRESET_ID; });
+        this.save();
+    }
+
     /* ---------- boot ---------- */
     async init() {
         injectSprite();
@@ -2240,6 +2251,7 @@ class SuperAnki {
         this.applySettings();
         this.initSigs();
         this.migrateButTc();
+        this.migrateTunedPreset();
         this.checkStreak();
         this.writeNow();
         this.autoBackup(source);
@@ -6040,7 +6052,7 @@ Object.assign(SuperAnki.prototype, {
         const g = PACK_GROUPS[pack.group], now = Date.now(), have = new Set(this.data.cards.map(c => c.id));
         const ensureDeck = (id, name, emoji, parent, description = '') => {
             let d = this.deck(id);
-            if (!d) { d = { id, name, emoji, description, created: now, parent, opts: null, mod: 0, preset: null, limits: null }; this.data.decks.push(d); }
+            if (!d) { d = { id, name, emoji, description, created: now, parent, opts: null, mod: 0, preset: id === 'pk_g_anglais' && this.data.presets.some(x => x.id === TOEIC_PRESET_ID) ? TOEIC_PRESET_ID : null, limits: null }; this.data.decks.push(d); }
             return d.id;
         };
         let added = 0, n = 0;
@@ -7771,7 +7783,7 @@ Object.assign(SuperAnki.prototype, {
         const deckId = 'toeic_err', have = new Set(this.data.cards.filter(c => c.deckId === deckId).map(c => c.front));
         let added = 0;
         this.change('cartes TOEIC', [], () => {
-            if (!this.deck(deckId)) this.data.decks.push({ id: deckId, name: 'TOEIC : mes erreurs', emoji: '🎯', description: 'Questions du simulateur TOEIC ratées', created: Date.now(), parent: null, opts: null, mod: 0, preset: null, limits: null });
+            if (!this.deck(deckId)) this.data.decks.push({ id: deckId, name: 'TOEIC : mes erreurs', emoji: '🎯', description: 'Questions du simulateur TOEIC ratées', created: Date.now(), parent: null, opts: null, mod: 0, preset: this.data.presets.some(x => x.id === TOEIC_PRESET_ID) ? TOEIC_PRESET_ID : null, limits: null });
             const made = [];
             cards.forEach(c => {
                 const key = c.type === 'cloze' ? c.front : c.front;
