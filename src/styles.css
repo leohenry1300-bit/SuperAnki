@@ -1422,3 +1422,5 @@ button.tq-opt:hover:not(:disabled) { border-color: var(--primary); background: v
 @media (max-width: 600px) { .te-prev { grid-template-columns: 1fr; } }
 .te-face { padding: 12px 14px; border-radius: var(--radius-sm); background: var(--surface-2); min-width: 0; }
 .te-face small { display: block; color: var(--text-faint); font-weight: 700; text-transform: uppercase; font-size: .68rem; margin-bottom: 4px; }
+
+.section-head { flex-wrap: wrap; }

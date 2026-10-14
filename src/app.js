@@ -1140,7 +1140,7 @@ class SuperAnki {
             </div>
 
             <div>
-                <div class="section-head"><h3 class="section-title">Modes d'entraînement</h3><span style="display:flex;gap:14px"><button class="link" data-action="filter-edit" data-id="">${ic('filter')}Paquet filtré</button><button class="link" data-action="custom-study">${ic('sliders')}Révisions personnalisées</button></span></div>
+                <div class="section-head"><h3 class="section-title">Modes d'entraînement</h3><span style="display:flex;gap:6px 14px;flex-wrap:wrap;justify-content:flex-end"><button class="link" data-action="filter-edit" data-id="">${ic('filter')}Paquet filtré</button><button class="link" data-action="custom-study">${ic('sliders')}Révisions personnalisées</button></span></div>
                 <div class="mode-grid">
                     <button class="panel mode-tile" style="--c:#0ea5e9" data-action="mode" data-mode="write">
                         <span class="mode-ico">${ic('keyboard')}</span>
