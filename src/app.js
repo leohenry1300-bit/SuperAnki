@@ -269,7 +269,7 @@ const OPT_DEFAULTS = {
 };
 const DEFAULT_SETTINGS = {
     theme: 'auto', cardSize: 'm', showIntervals: true,
-    autoSpeak: false, autoAudio: false, answerMode: 'flip', learnAhead: 20, cloudSync: true,
+    autoSpeak: false, autoAudio: false, fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
     quizCount: 20, writeCount: 20, chronoDuration: 60,
     rolloverHour: 4, syncKey: '', settingsMod: 0, autoBackup: true, libSeen: false, goalName: '', goalDate: '', deckSort: 'recent',
     ...OPT_DEFAULTS
@@ -809,6 +809,7 @@ class SuperAnki {
     applySettings() {
         const s = this.data.settings;
         setRollover(s.rolloverHour);
+        fsrsApplyParams(s.fsrsW);
         const resolved = s.theme === 'auto' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'nuit' : 'clair') : s.theme;
         document.documentElement.dataset.theme = resolved;
         document.documentElement.style.setProperty('--card-size', CARD_SIZES[s.cardSize] || CARD_SIZES.m);
@@ -1661,6 +1662,8 @@ class SuperAnki {
                     <button class="btn btn-danger-soft btn-sm" data-action="reset-all">${ic('trash')}Tout réinitialiser</button>
                 </div>
             </div>
+
+            ${this.fsrsPanelHtml()}
 
             <div class="panel panel-pad set-section">
                 <h3>${ic('keyboard')} Raccourcis clavier</h3>
@@ -3152,6 +3155,8 @@ class SuperAnki {
             case 'go-stats': this.go('stats'); break;
             case 'go-settings': this.go('settings'); break;
             case 'quiz-next': this.nextQuestion(); break;
+            case 'fsrs-optimize': this.fsrsOptimizeModal(); break;
+            case 'fsrs-reset': this.fsrsReset(); break;
             default: if (action.startsWith('tq-')) this.toeicAction(action, el); break;
         }
     }

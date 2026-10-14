@@ -1430,6 +1430,10 @@ button.tq-opt:hover:not(:disabled) { border-color: var(--primary); background: v
 .rec-box { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 2rem; padding: 18px 0; }
 .rec-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--due); animation: pulse 1s infinite; }
 .katex-display { overflow-x: auto; overflow-y: hidden; }
+.fo-cmp { display: flex; gap: 12px; margin-top: 8px; }
+.fo-cmp > div { flex: 1; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--surface-2); display: grid; }
+.fo-cmp span { font-size: .75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+.fo-cmp b { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
 
 </style>
 </head>
@@ -1493,28 +1497,30 @@ const TOEIC_BANK = {"p1":[{"id":"p1-001","e":["👩‍💻","💻","☕"],"bg":"
    Memory state per card: s = stability (days to drop to 90% recall),
    d = difficulty (1..10). Same maths as the Anki implementation.
    ============================================================ */
-const FSRS_W = [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621];
+const FSRS_W0 = [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621];
+const FSRS_W = FSRS_W0.slice();   // active parameters (replaced in place when the user optimizes)
+const fsrsApplyParams = arr => { const w = Array.isArray(arr) && arr.length === FSRS_W0.length && arr.every(Number.isFinite) ? arr : FSRS_W0; w.forEach((v, i) => { FSRS_W[i] = v; }); };
 const FSRS_DECAY = -0.5, FSRS_FACTOR = 19 / 81;
 const fsrsR = (t, s) => Math.pow(1 + FSRS_FACTOR * Math.max(0, t) / Math.max(0.01, s), FSRS_DECAY);
 const fsrsIvl = (s, r) => s / FSRS_FACTOR * (Math.pow(r, 1 / FSRS_DECAY) - 1);
-const fsrsInitS = g => Math.max(0.1, FSRS_W[g - 1]);
+const fsrsInitS = (g, w = FSRS_W) => Math.max(0.1, w[g - 1]);
 const fsrsClampD = d => clamp(d, 1, 10);
-const fsrsInitD = g => fsrsClampD(FSRS_W[4] - Math.exp(FSRS_W[5] * (g - 1)) + 1);
-function fsrsNextD(d, g) {
-    const delta = -FSRS_W[6] * (g - 3);
+const fsrsInitD = (g, w = FSRS_W) => fsrsClampD(w[4] - Math.exp(w[5] * (g - 1)) + 1);
+function fsrsNextD(d, g, w = FSRS_W) {
+    const delta = -w[6] * (g - 3);
     const lin = d + delta * (10 - d) / 9;
-    return fsrsClampD(FSRS_W[7] * fsrsInitD(4) + (1 - FSRS_W[7]) * lin);
+    return fsrsClampD(w[7] * fsrsInitD(4, w) + (1 - w[7]) * lin);
 }
-function fsrsRecallS(s, d, r, g) {
-    const hard = g === 2 ? FSRS_W[15] : 1, easy = g === 4 ? FSRS_W[16] : 1;
-    return s * (1 + Math.exp(FSRS_W[8]) * (11 - d) * Math.pow(s, -FSRS_W[9]) * (Math.exp((1 - r) * FSRS_W[10]) - 1) * hard * easy);
+function fsrsRecallS(s, d, r, g, w = FSRS_W) {
+    const hard = g === 2 ? w[15] : 1, easy = g === 4 ? w[16] : 1;
+    return s * (1 + Math.exp(w[8]) * (11 - d) * Math.pow(s, -w[9]) * (Math.exp((1 - r) * w[10]) - 1) * hard * easy);
 }
-function fsrsForgetS(s, d, r) {
-    const n = FSRS_W[11] * Math.pow(d, -FSRS_W[12]) * (Math.pow(s + 1, FSRS_W[13]) - 1) * Math.exp((1 - r) * FSRS_W[14]);
+function fsrsForgetS(s, d, r, w = FSRS_W) {
+    const n = w[11] * Math.pow(d, -w[12]) * (Math.pow(s + 1, w[13]) - 1) * Math.exp((1 - r) * w[14]);
     return Math.max(0.1, Math.min(s, n));
 }
-function fsrsShortS(s, g) {
-    const n = s * Math.exp(FSRS_W[17] * (g - 3 + FSRS_W[18]));
+function fsrsShortS(s, g, w = FSRS_W) {
+    const n = s * Math.exp(w[17] * (g - 3 + w[18]));
     return Math.max(0.1, g >= 3 ? Math.max(n, s) : n);
 }
 /* Memory state for a card that was reviewed with SM-2 (or has none yet). */
@@ -1802,7 +1808,7 @@ const OPT_DEFAULTS = {
 };
 const DEFAULT_SETTINGS = {
     theme: 'auto', cardSize: 'm', showIntervals: true,
-    autoSpeak: false, autoAudio: false, answerMode: 'flip', learnAhead: 20, cloudSync: true,
+    autoSpeak: false, autoAudio: false, fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
     quizCount: 20, writeCount: 20, chronoDuration: 60,
     rolloverHour: 4, syncKey: '', settingsMod: 0, autoBackup: true, libSeen: false, goalName: '', goalDate: '', deckSort: 'recent',
     ...OPT_DEFAULTS
@@ -2342,6 +2348,7 @@ class SuperAnki {
     applySettings() {
         const s = this.data.settings;
         setRollover(s.rolloverHour);
+        fsrsApplyParams(s.fsrsW);
         const resolved = s.theme === 'auto' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'nuit' : 'clair') : s.theme;
         document.documentElement.dataset.theme = resolved;
         document.documentElement.style.setProperty('--card-size', CARD_SIZES[s.cardSize] || CARD_SIZES.m);
@@ -3194,6 +3201,8 @@ class SuperAnki {
                     <button class="btn btn-danger-soft btn-sm" data-action="reset-all">${ic('trash')}Tout réinitialiser</button>
                 </div>
             </div>
+
+            ${this.fsrsPanelHtml()}
 
             <div class="panel panel-pad set-section">
                 <h3>${ic('keyboard')} Raccourcis clavier</h3>
@@ -4685,6 +4694,8 @@ class SuperAnki {
             case 'go-stats': this.go('stats'); break;
             case 'go-settings': this.go('settings'); break;
             case 'quiz-next': this.nextQuestion(); break;
+            case 'fsrs-optimize': this.fsrsOptimizeModal(); break;
+            case 'fsrs-reset': this.fsrsReset(); break;
             default: if (action.startsWith('tq-')) this.toeicAction(action, el); break;
         }
     }
@@ -6711,6 +6722,114 @@ Object.assign(SuperAnki.prototype, {
             this.closeModal(busy);
             this.toast(e.message || 'Import impossible', 'error');
         }
+    }
+});
+
+/* ============================================================
+   FSRS parameter optimizer: fits the 19 parameters to the user's own review history
+   (minimizes the log-loss of the predicted recall, Adam + numerical gradient, with a mild pull
+   towards the default values and a held-out check so a worse result is never applied).
+   ============================================================ */
+const FSRS_BOUNDS = [[0.001, 100], [0.001, 100], [0.001, 100], [0.001, 100], [1, 10], [0.001, 4], [0.001, 4], [0.001, 0.75], [0, 4.5], [0, 0.8], [0.001, 3.5], [0.001, 5], [0.001, 0.25], [0.001, 0.9], [0, 4], [0, 1], [1, 6], [0, 2], [0, 2]];
+const FSRS_MIN_REVIEWS = 150, FSRS_GOOD_REVIEWS = 1000;
+
+/* review log -> one sequence per card: times and grades of learning / review / relearning answers */
+function fsrsSequences(revlog) {
+    const by = new Map();
+    revlog.forEach(r => {
+        if (!(r[3] <= 2) || !(r[2] >= 1 && r[2] <= 4)) return;
+        (by.get(r[1]) || by.set(r[1], []).get(r[1])).push([r[0], r[2]]);
+    });
+    return [...by.entries()].map(([id, list]) => ({ id, rows: list.sort((a, b) => a[0] - b[0]) })).filter(s => s.rows.length >= 2);
+}
+/* mean log-loss over the reviews that happened at least one day after the previous one */
+function fsrsLoss(seqs, w) {
+    let sum = 0, n = 0;
+    for (const { rows } of seqs) {
+        let g = rows[0][1], s = fsrsInitS(g, w), d = fsrsInitD(g, w);
+        for (let i = 1; i < rows.length; i++) {
+            g = rows[i][1];
+            const dt = (rows[i][0] - rows[i - 1][0]) / DAY;
+            if (dt < 1) { s = fsrsShortS(s, g, w); d = fsrsNextD(d, g, w); continue; }
+            const r = clamp(fsrsR(dt, s), 0.0001, 0.9999);
+            sum -= g > 1 ? Math.log(r) : Math.log(1 - r);
+            n++;
+            s = g === 1 ? fsrsForgetS(s, d, r, w) : fsrsRecallS(s, d, r, g, w);
+            d = fsrsNextD(d, g, w);
+        }
+    }
+    return { sum, n };
+}
+const fsrsScored = seqs => fsrsLoss(seqs, FSRS_W0).n;
+
+async function fsrsTrain(seqs, onProgress) {
+    const split = seqs.filter(s => toeicHash(String(s.id)) % 5 !== 0), test = seqs.filter(s => toeicHash(String(s.id)) % 5 === 0);
+    const val = fsrsScored(test) >= 60 ? test : split;
+    const N = Math.max(1, fsrsScored(split));
+    const w0 = FSRS_W0.slice(), eff = FSRS_BOUNDS.map(([lo, hi]) => Math.min(hi - lo, 5));
+    const total = w => { const l = fsrsLoss(split, w); let reg = 0; w.forEach((v, i) => { const z = (v - w0[i]) / eff[i]; reg += z * z; }); return l.sum / Math.max(1, l.n) + (5 / N) * reg; };
+    const clampW = w => w.map((v, i) => clamp(v, FSRS_BOUNDS[i][0], FSRS_BOUNDS[i][1]));
+    let w = w0.slice(), m = new Array(19).fill(0), v = new Array(19).fill(0);
+    const EPOCHS = 120, lr = 0.03, b1 = 0.9, b2 = 0.999;
+    for (let e = 1; e <= EPOCHS; e++) {
+        const grad = w.map((_, i) => {
+            const h = 0.01 * eff[i], a = w.slice(), b = w.slice();
+            a[i] = Math.min(FSRS_BOUNDS[i][1], w[i] + h); b[i] = Math.max(FSRS_BOUNDS[i][0], w[i] - h);
+            return (total(a) - total(b)) / Math.max(1e-9, a[i] - b[i]);
+        });
+        w = clampW(w.map((x, i) => {
+            m[i] = b1 * m[i] + (1 - b1) * grad[i]; v[i] = b2 * v[i] + (1 - b2) * grad[i] * grad[i];
+            return x - lr * eff[i] * (m[i] / (1 - Math.pow(b1, e))) / (Math.sqrt(v[i] / (1 - Math.pow(b2, e))) + 1e-8);
+        }));
+        if (e % 4 === 0) { if (onProgress) onProgress(e / EPOCHS); await new Promise(r => setTimeout(r, 0)); }
+    }
+    const L0 = fsrsLoss(val, FSRS_W0), L1 = fsrsLoss(val, w);
+    return { w: w.map(x => Math.round(x * 10000) / 10000), before: L0.sum / Math.max(1, L0.n), after: L1.sum / Math.max(1, L1.n), nVal: L0.n, nTrain: N };
+}
+
+Object.assign(SuperAnki.prototype, {
+    fsrsPanelHtml() {
+        const s = this.data.settings, seqs = fsrsSequences(this.data.revlog), n = fsrsScored(seqs), meta = s.fsrsMeta;
+        const state = Array.isArray(s.fsrsW) ? `Paramètres optimisés le ${new Date(meta ? meta.at : Date.now()).toLocaleDateString('fr-FR')}${meta ? ` sur ${plural(meta.n, 'révision')}` : ''}.` : 'Paramètres standards (non personnalisés).';
+        const hint = n < FSRS_MIN_REVIEWS ? `Pas encore assez de données : ${n} révisions utilisables, il en faut au moins ${FSRS_MIN_REVIEWS} (idéalement ${FSRS_GOOD_REVIEWS}).` : n < FSRS_GOOD_REVIEWS ? `${plural(n, 'révision utilisable')}. Possible, mais ${FSRS_GOOD_REVIEWS} donneraient un résultat plus fiable.` : `${plural(n, 'révision utilisable')} : assez pour un bon résultat.`;
+        return `<div class="panel panel-pad set-section" id="fsrs-panel">
+            <h3>${ic('brain')} Mémoire (FSRS)</h3>
+            <div class="set-row"><div class="txt"><b>Optimiser les paramètres sur mon historique</b><span>${esc(hint)} ${esc(state)}</span></div>
+                <button class="btn btn-primary btn-sm" data-action="fsrs-optimize" ${n < FSRS_MIN_REVIEWS ? 'disabled' : ''}>${ic('sparkle')}Optimiser</button></div>
+            ${Array.isArray(s.fsrsW) ? `<div class="set-row"><div class="txt"><b>Revenir aux paramètres standards</b><span>Annule l'optimisation. Tes cartes ne sont pas modifiées.</span></div><button class="btn btn-soft btn-sm" data-action="fsrs-reset">${ic('reset')}Réinitialiser</button></div>` : ''}
+            <p class="tiny faint">Ne concerne que les paquets en FSRS. Les modes Quiz, Écrire et Chrono ne comptent pas dans cet historique.</p>
+        </div>`;
+    },
+    fsrsOptimizeModal() {
+        const seqs = fsrsSequences(this.data.revlog), n = fsrsScored(seqs);
+        if (n < FSRS_MIN_REVIEWS) { this.toast(`Il faut au moins ${FSRS_MIN_REVIEWS} révisions (tu en as ${n}).`, 'warning'); return; }
+        const m = this.openModal({ title: 'Optimisation FSRS', size: 'narrow', body: `<p class="muted" id="fo-msg">Calcul en cours sur ${plural(n, 'révision')}...</p><div class="progress"><i id="fo-bar" style="width:3%;background:var(--primary)"></i></div><div id="fo-res"></div>`, foot: `<button class="btn btn-soft" data-close>Fermer</button>` });
+        let closed = false;
+        m._onClose = () => { closed = true; };
+        fsrsTrain(seqs, p => { const b = $('#fo-bar', m); if (b) b.style.width = `${Math.round(p * 100)}%`; }).then(r => {
+            if (closed) return;
+            const gain = (r.before - r.after) / r.before * 100, better = r.after < r.before - 0.0005;
+            $('#fo-msg', m).textContent = '';
+            $('#fo-bar', m).style.width = '100%';
+            $('#fo-res', m).innerHTML = `<p style="margin-top:12px">Erreur de prédiction (plus bas = mieux), mesurée sur ${plural(r.nVal, 'révision')} mises de côté :</p>
+                <div class="fo-cmp"><div><span>Standard</span><b>${r.before.toFixed(3)}</b></div><div><span>Optimisé</span><b>${r.after.toFixed(3)}</b></div></div>
+                <p class="${better ? '' : 'muted'}" style="margin-top:10px">${better ? `Amélioration d'environ <b>${gain.toFixed(1)} %</b>. Les nouveaux paramètres prédisent mieux quand tu oublies.` : 'Pas d\'amélioration nette : je te conseille de garder les paramètres standards (réessaie avec plus de révisions).'}</p>`;
+            const foot = m.querySelector('.modal-foot');
+            if (better) {
+                foot.insertAdjacentHTML('beforeend', `<button class="btn btn-primary" id="fo-apply">${ic('check')}Appliquer</button>`);
+                $('#fo-apply', m).addEventListener('click', () => {
+                    this.data.settings.fsrsW = r.w; this.data.settings.fsrsMeta = { at: Date.now(), n, before: r.before, after: r.after };
+                    this.data.settings.settingsMod = Date.now();
+                    fsrsApplyParams(r.w); this.cfgCache.clear(); this.save();
+                    this.closeModal(m); this.renderSettings(); this.toast('Paramètres FSRS personnalisés appliqués', 'success', ic('brain'));
+                });
+            }
+        }).catch(e => { console.error(e); if (!closed) $('#fo-msg', m).textContent = 'L\'optimisation a échoué.'; });
+    },
+    fsrsReset() {
+        this.data.settings.fsrsW = null; this.data.settings.fsrsMeta = null; this.data.settings.settingsMod = Date.now();
+        fsrsApplyParams(null); this.cfgCache.clear(); this.save(); this.renderSettings();
+        this.toast('Paramètres standards rétablis', 'success');
     }
 });
 

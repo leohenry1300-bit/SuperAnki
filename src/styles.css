@@ -1411,3 +1411,7 @@ button.tq-opt:hover:not(:disabled) { border-color: var(--primary); background: v
 .rec-box { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 2rem; padding: 18px 0; }
 .rec-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--due); animation: pulse 1s infinite; }
 .katex-display { overflow-x: auto; overflow-y: hidden; }
+.fo-cmp { display: flex; gap: 12px; margin-top: 8px; }
+.fo-cmp > div { flex: 1; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--surface-2); display: grid; }
+.fo-cmp span { font-size: .75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+.fo-cmp b { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
