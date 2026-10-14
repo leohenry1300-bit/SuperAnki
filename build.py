@@ -33,7 +33,7 @@ PACK_ORDER = [
 GROUPS = {
     "anglais": {"name": "Anglais & TOEIC", "emoji": "🇬🇧", "desc": "Du niveau débutant jusqu'aux pièges du TOEIC."},
     "banque": {"name": "Banque, assurance & finance", "emoji": "🏦", "desc": "Produits bancaires, assurance, marchés, crédit, fiscalité."},
-    "buttc": {"name": "BUT TC", "emoji": "🎓", "desc": "Marketing, vente, gestion, droit, économie : les bases du BUT Techniques de commercialisation."},
+    "buttc": {"name": "BUT TC · Fiches génériques", "emoji": "📚", "desc": "Fiches de base fournies avec l'app (pas tes cours) : marketing, vente, gestion, droit, économie."},
 }
 
 

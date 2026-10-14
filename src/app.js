@@ -671,6 +671,22 @@ class SuperAnki {
         this.statsUi = { deck: 'all', fcRange: 31, fcCumul: true, rvRange: 30, rvTime: false, ivRange: '1m', hrRange: 30, btRange: 30, adRange: 30, calYear: new Date().getFullYear(), hidden: {} };
     }
 
+    /* One-time split: the library's BUT TC cards are renamed "Fiches génériques" (same ids, so progress is kept),
+       and an empty "Mes cours BUT TC" deck with S1-S6 is created for the user's own courses. */
+    migrateButTc() {
+        const st = this.data.settings;
+        if (st.butTcSplit) return;
+        st.butTcSplit = true;
+        const old = this.deck('pk_g_buttc');
+        if (old && old.name === 'BUT TC') { old.name = 'BUT TC · Fiches génériques'; if (old.emoji === '🎓') old.emoji = '📚'; old.description = PACK_GROUPS.buttc.desc; }
+        if (!this.deck('mes_but_tc')) {
+            const now = Date.now(), mk = (id, name, emoji, parent, description = '') => this.data.decks.push({ id, name, emoji, description, created: now, parent, opts: null, mod: 0, preset: null, limits: null });
+            mk('mes_but_tc', 'Mes cours BUT TC', '🎓', null, 'Tes propres cours, semestre par semestre.');
+            for (let i = 1; i <= 6; i++) mk(`mes_but_tc_s${i}`, `Semestre ${i}`, '📘', 'mes_but_tc');
+        }
+        this.save();
+    }
+
     /* ---------- boot ---------- */
     async init() {
         injectSprite();
@@ -690,6 +706,7 @@ class SuperAnki {
         this.gcMedia(data);
         this.applySettings();
         this.initSigs();
+        this.migrateButTc();
         this.checkStreak();
         this.writeNow();
         this.autoBackup(source);
