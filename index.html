@@ -1808,7 +1808,7 @@ const OPT_DEFAULTS = {
 };
 const DEFAULT_SETTINGS = {
     theme: 'auto', cardSize: 'm', showIntervals: true,
-    autoSpeak: false, autoAudio: false, fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
+    autoSpeak: false, autoAudio: false, loadBalance: true, fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
     quizCount: 20, writeCount: 20, chronoDuration: 60,
     rolloverHour: 4, syncKey: '', settingsMod: 0, autoBackup: true, libSeen: false, goalName: '', goalDate: '', deckSort: 'recent',
     ...OPT_DEFAULTS
@@ -1845,7 +1845,8 @@ function buildCfg(o) {
         autoQSecs: clamp(num(g('autoQSecs', 0), 0), 0, 300), autoASecs: clamp(num(g('autoASecs', 0), 0), 0, 300),
         autoAAction: ['none', 'bury', 'again', 'hard', 'good', 'easy'].includes(g('autoAAction', 'none')) ? g('autoAAction', 'none') : 'none',
         easyDays: /^[012]{7}$/.test(String(g('easyDays', '0000000'))) ? String(g('easyDays', '0000000')) : '0000000',
-        newPerDay: clamp(Math.round(num(g('newPerDay', 20), 20)), 0, 9999), maxReviews: clamp(Math.round(num(g('maxReviews', 9999), 9999)), 0, 9999)
+        newPerDay: clamp(Math.round(num(g('newPerDay', 20), 20)), 0, 9999), maxReviews: clamp(Math.round(num(g('maxReviews', 9999), 9999)), 0, 9999),
+        fsrsW: Array.isArray(o.fsrsW) && o.fsrsW.length === 19 && o.fsrsW.every(Number.isFinite) ? o.fsrsW : null
     };
 }
 const DEFAULT_STATS = () => ({
@@ -2065,13 +2066,17 @@ const Storage = {
    Spaced repetition (SM-2 as in Anki, with learning steps)
    ============================================================ */
 /* "Easy days": among the days a card could land on, prefer weekdays you marked as normal over reduced / minimum ones */
+let SCHED_LOAD = null;   // Map(start of day -> review cards already due that day), set while answering when load balancing is on
 function pickEasyDay(ivl, base, now, easyDays) {
-    if (!easyDays || easyDays === '0000000' || base < 3) return ivl;
+    const easy = easyDays && easyDays !== '0000000';
+    if ((!easy && !SCHED_LOAD) || base < 3) return ivl;
     const spread = Math.max(1, Math.round(base * 0.05));
-    let best = ivl, bestW = -1;
+    let best = ivl, bestW = -1, bestL = Infinity;
     for (let d = Math.max(1, ivl - spread); d <= ivl + spread; d++) {
-        const wd = new Date(addDays(now, d)).getDay(), w = [2, 1, 0][Number(easyDays[wd])] ?? 2;
-        if (w > bestW || (w === bestW && Math.abs(d - base) < Math.abs(best - base))) { best = d; bestW = w; }
+        const day = addDays(now, d), wd = new Date(day).getDay(), w = easy ? ([2, 1, 0][Number(easyDays[wd])] ?? 2) : 0;
+        const load = SCHED_LOAD ? (SCHED_LOAD.get(startOfDay(day)) || 0) : 0;
+        const better = w > bestW || (w === bestW && (load < bestL || (load === bestL && Math.abs(d - base) < Math.abs(best - base))));
+        if (better) { best = d; bestW = w; bestL = load; }
     }
     return best;
 }
@@ -2083,6 +2088,7 @@ function fuzzIvl(ivl) {
 /* Returns the new scheduling fields for `card` after answering `grade` (1 = raté .. 4 = facile). */
 function schedule(card, grade, now = Date.now(), useFuzz = false, cfg = buildCfg(OPT_DEFAULTS)) {
     const fsr = cfg.scheduler === 'fsrs';
+    cfg = cfg.fsrsW ? { ...cfg, w: cfg.fsrsW } : cfg;
     const r = { state: card.state, step: card.step || 0, interval: card.interval || 0, ease: card.ease || 2.5, lapses: card.lapses || 0, due: card.due, fs: card.fs || null };
     const inMin = m => now + Math.round(m * MIN);
     let fs = fsr ? fsrsFromCard(card) : null;
@@ -2096,8 +2102,8 @@ function schedule(card, grade, now = Date.now(), useFuzz = false, cfg = buildCfg
         if (r.state === 'new') r.ease = cfg.startEase;
         const cur = steps[Math.min(r.step, steps.length - 1)];
         if (fsr) {
-            if (!fs || r.state === 'new') fs = { s: fsrsInitS(grade), d: fsrsInitD(grade), t: now };
-            else { fs.s = fsrsShortS(fs.s, grade); fs.d = fsrsNextD(fs.d, grade); }
+            if (!fs || r.state === 'new') fs = { s: fsrsInitS(grade, cfg.w), d: fsrsInitD(grade, cfg.w), t: now };
+            else { fs.s = fsrsShortS(fs.s, grade, cfg.w); fs.d = fsrsNextD(fs.d, grade, cfg.w); }
             keepFs();
         }
         const grad = g => finish(fsr ? Math.max(g === 4 ? cfg.easyIvl : 1, fsrsIvl(fs.s, cfg.retention)) : (g === 4 ? cfg.easyIvl : cfg.gradIvl));
@@ -2109,7 +2115,7 @@ function schedule(card, grade, now = Date.now(), useFuzz = false, cfg = buildCfg
         } else grad(4);
     } else if (r.state === 'relearning') {
         const steps = cfg.relearnSteps;
-        if (fsr && fs) { fs.s = fsrsShortS(fs.s, grade); fs.d = fsrsNextD(fs.d, grade); keepFs(); }
+        if (fsr && fs) { fs.s = fsrsShortS(fs.s, grade, cfg.w); fs.d = fsrsNextD(fs.d, grade, cfg.w); keepFs(); }
         const back = bonus => finish(fsr && fs ? Math.max(1, fsrsIvl(fs.s, cfg.retention)) : Math.max(1, r.interval) + bonus);
         if (grade === 1) { r.step = 0; r.due = inMin(steps[0]); }
         else if (grade === 2) { r.due = inMin(steps[Math.min(r.step, steps.length - 1)]); }
@@ -2126,16 +2132,16 @@ function schedule(card, grade, now = Date.now(), useFuzz = false, cfg = buildCfg
             const rr = fsrsR(card.lastReview ? elapsed : ivl, fs.s);
             if (grade === 1) {
                 r.lapses++;
-                fs = { s: fsrsForgetS(fs.s, fs.d, rr), d: fsrsNextD(fs.d, 1), t: now };
+                fs = { s: fsrsForgetS(fs.s, fs.d, rr, cfg.w), d: fsrsNextD(fs.d, 1, cfg.w), t: now };
                 r.interval = clamp(Math.round(fsrsIvl(fs.s, cfg.retention)), cfg.minIvl, cfg.maxIvl);
                 r.state = 'relearning'; r.step = 0; r.due = inMin(cfg.relearnSteps[0]);
                 keepFs();
             } else {
-                const raw = g => Math.round(clamp(fsrsIvl(fsrsRecallS(fs.s, fs.d, rr, g), cfg.retention) * cfg.ivlMult, 1, cfg.maxIvl));
+                const raw = g => Math.round(clamp(fsrsIvl(fsrsRecallS(fs.s, fs.d, rr, g, cfg.w), cfg.retention) * cfg.ivlMult, 1, cfg.maxIvl));
                 let hard = raw(2), good = raw(3), easy = raw(4);
                 hard = Math.min(hard, good); good = Math.max(good, hard + 1); easy = Math.max(easy, good + 1);
                 const ivlFor = { 2: hard, 3: good, 4: easy }[grade];
-                fs = { s: fsrsRecallS(fs.s, fs.d, rr, grade), d: fsrsNextD(fs.d, grade), t: now };
+                fs = { s: fsrsRecallS(fs.s, fs.d, rr, grade, cfg.w), d: fsrsNextD(fs.d, grade, cfg.w), t: now };
                 keepFs();
                 finish(Math.min(ivlFor, cfg.maxIvl));
             }
@@ -2487,7 +2493,7 @@ class SuperAnki {
         return '';
     }
     defaultOpts() { const o = {}; Object.keys(OPT_DEFAULTS).forEach(k => { o[k] = this.data.settings[k]; }); return o; }
-    optsOfPreset(id) { const p = id && this.data.presets.find(x => x.id === id); return { ...this.defaultOpts(), ...(p ? p.opts : {}) }; }
+    optsOfPreset(id) { const p = id && this.data.presets.find(x => x.id === id); return { ...this.defaultOpts(), fsrsW: this.data.settings.fsrsW, ...(p ? p.opts : {}) }; }
     deckCfg(deckId) {
         let cfg = this.cfgCache.get(deckId);
         if (cfg) return cfg;
@@ -3193,6 +3199,10 @@ class SuperAnki {
                     <div style="display:flex;gap:10px;align-items:center">${sw('autoBackup', 'Sauvegardes automatiques')}<button class="btn btn-soft btn-sm" data-action="backup-now">${ic('plus')}Maintenant</button></div>
                 </div>
                 <div class="set-row">
+                    <div class="txt"><b>Équilibrer la charge de révision</b><span>Quand plusieurs dates sont possibles pour une carte, choisit le jour le moins chargé : moins de jours à pic.</span></div>
+                    ${sw('loadBalance', 'Équilibrer la charge')}
+                </div>
+                <div class="set-row">
                     <div class="txt"><b>Remettre la progression à zéro</b><span>Toutes les cartes redeviennent nouvelles. Les cartes sont conservées.</span></div>
                     <button class="btn btn-danger-soft btn-sm" data-action="reset-progress">${ic('reset')}Remettre à zéro</button>
                 </div>
@@ -3482,7 +3492,9 @@ class SuperAnki {
         const card = this.card(s.current), now = Date.now(), cfg = this.cfgFor(card);
         this.snapshot();
         const prev = card.state, prevIvl = card.interval, secs = this.elapsedSec();
+        SCHED_LOAD = this.data.settings.loadBalance !== false ? this.loadMap(card.id) : null;
         Object.assign(card, schedule(card, g, now, true, cfg));
+        SCHED_LOAD = null;
         card.reps++; card.lastReview = now;
         if (g === 1 && prev !== 'new' && prev !== 'learning') { card.errors++; card.wrong++; }
         else if (g >= 3 && prev === 'review') { card.errors = Math.max(0, card.errors - 1); card.right++; }
@@ -3570,6 +3582,12 @@ class SuperAnki {
     optionHtml(card) {
         const ans = this.cardAnswer(card), t = stripHtml(ans);
         return t ? esc(truncate(t, 170)) : `<span class="rich">${ans}</span>`;
+    }
+    /* review cards due per day (used to spread the load when picking a new interval) */
+    loadMap(exceptId) {
+        const m = new Map();
+        this.data.cards.forEach(c => { if (c.state === 'review' && !c.suspended && c.id !== exceptId) { const k = startOfDay(c.due); m.set(k, (m.get(k) || 0) + 1); } });
+        return m;
     }
     cardAnswer(c) { return c.kind === 'cloze' ? clozeAnswerHtml(c) : c.back; }
     buildOptions(card) {
@@ -4694,8 +4712,8 @@ class SuperAnki {
             case 'go-stats': this.go('stats'); break;
             case 'go-settings': this.go('settings'); break;
             case 'quiz-next': this.nextQuestion(); break;
-            case 'fsrs-optimize': this.fsrsOptimizeModal(); break;
-            case 'fsrs-reset': this.fsrsReset(); break;
+            case 'fsrs-optimize': this.fsrsOptimizeModal(ds.id || ''); break;
+            case 'fsrs-reset': this.fsrsReset(ds.id || ''); break;
             default: if (action.startsWith('tq-')) this.toeicAction(action, el); break;
         }
     }
@@ -6761,6 +6779,20 @@ function fsrsLoss(seqs, w) {
     return { sum, n };
 }
 const fsrsScored = seqs => fsrsLoss(seqs, FSRS_W0).n;
+/* replays one card's history with parameters w: final stability / difficulty */
+function fsrsReplay(rows, w) {
+    if (!rows || !rows.length) return null;
+    let g = rows[0][1], s = fsrsInitS(g, w), d = fsrsInitD(g, w);
+    for (let i = 1; i < rows.length; i++) {
+        g = rows[i][1];
+        const dt = (rows[i][0] - rows[i - 1][0]) / DAY;
+        if (dt < 1) { s = fsrsShortS(s, g, w); d = fsrsNextD(d, g, w); continue; }
+        const r = clamp(fsrsR(dt, s), 0.0001, 0.9999);
+        s = g === 1 ? fsrsForgetS(s, d, r, w) : fsrsRecallS(s, d, r, g, w);
+        d = fsrsNextD(d, g, w);
+    }
+    return { s, d };
+}
 
 async function fsrsTrain(seqs, onProgress) {
     const split = seqs.filter(s => toeicHash(String(s.id)) % 5 !== 0), test = seqs.filter(s => toeicHash(String(s.id)) % 5 === 0);
@@ -6788,47 +6820,89 @@ async function fsrsTrain(seqs, onProgress) {
 }
 
 Object.assign(SuperAnki.prototype, {
+    /* one entry per preset in use ("default" included): its cards, review history, current parameters */
+    fsrsTargets() {
+        const all = fsrsSequences(this.data.revlog), names = [{ id: '', name: 'Préréglage par défaut' }, ...this.data.presets];
+        return names.map(t => {
+            const ids = new Set(this.data.cards.filter(c => this.presetIdFor(c.deckId) === t.id).map(c => c.id));
+            const p = t.id ? this.data.presets.find(x => x.id === t.id) : null, seqs = all.filter(x => ids.has(x.id));
+            return { ...t, ids, seqs, n: fsrsScored(seqs), w: p ? p.opts.fsrsW : this.data.settings.fsrsW, meta: p ? p.opts.fsrsMeta : this.data.settings.fsrsMeta };
+        }).filter((t, i) => i === 0 || t.ids.size > 0);
+    },
     fsrsPanelHtml() {
-        const s = this.data.settings, seqs = fsrsSequences(this.data.revlog), n = fsrsScored(seqs), meta = s.fsrsMeta;
-        const state = Array.isArray(s.fsrsW) ? `Paramètres optimisés le ${new Date(meta ? meta.at : Date.now()).toLocaleDateString('fr-FR')}${meta ? ` sur ${plural(meta.n, 'révision')}` : ''}.` : 'Paramètres standards (non personnalisés).';
-        const hint = n < FSRS_MIN_REVIEWS ? `Pas encore assez de données : ${n} révisions utilisables, il en faut au moins ${FSRS_MIN_REVIEWS} (idéalement ${FSRS_GOOD_REVIEWS}).` : n < FSRS_GOOD_REVIEWS ? `${plural(n, 'révision utilisable')}. Possible, mais ${FSRS_GOOD_REVIEWS} donneraient un résultat plus fiable.` : `${plural(n, 'révision utilisable')} : assez pour un bon résultat.`;
+        const rows = this.fsrsTargets().map(t => {
+            const own = Array.isArray(t.w);
+            const hint = t.n < FSRS_MIN_REVIEWS ? `${t.n} révisions utilisables (il en faut ${FSRS_MIN_REVIEWS} au moins, idéalement ${FSRS_GOOD_REVIEWS}).` : t.n < FSRS_GOOD_REVIEWS ? `${plural(t.n, 'révision utilisable')} : possible, mais plus fiable avec ${FSRS_GOOD_REVIEWS}.` : `${plural(t.n, 'révision utilisable')} : assez pour un bon résultat.`;
+            const state = own ? `Optimisé le ${new Date(t.meta ? t.meta.at : Date.now()).toLocaleDateString('fr-FR')}${t.meta ? ` sur ${plural(t.meta.n, 'révision')}` : ''}.` : 'Paramètres standards.';
+            return `<div class="set-row"><div class="txt"><b>${esc(t.name)}</b><span>${esc(hint)} ${esc(state)}</span></div><div class="row-gap">
+                <button class="btn btn-primary btn-sm" data-action="fsrs-optimize" data-id="${esc(t.id)}" ${t.n < FSRS_MIN_REVIEWS ? 'disabled' : ''}>${ic('sparkle')}Optimiser</button>
+                ${own ? `<button class="btn btn-soft btn-sm" data-action="fsrs-reset" data-id="${esc(t.id)}" title="Revenir aux paramètres standards">${ic('reset')}</button>` : ''}</div></div>`;
+        }).join('');
         return `<div class="panel panel-pad set-section" id="fsrs-panel">
             <h3>${ic('brain')} Mémoire (FSRS)</h3>
-            <div class="set-row"><div class="txt"><b>Optimiser les paramètres sur mon historique</b><span>${esc(hint)} ${esc(state)}</span></div>
-                <button class="btn btn-primary btn-sm" data-action="fsrs-optimize" ${n < FSRS_MIN_REVIEWS ? 'disabled' : ''}>${ic('sparkle')}Optimiser</button></div>
-            ${Array.isArray(s.fsrsW) ? `<div class="set-row"><div class="txt"><b>Revenir aux paramètres standards</b><span>Annule l'optimisation. Tes cartes ne sont pas modifiées.</span></div><button class="btn btn-soft btn-sm" data-action="fsrs-reset">${ic('reset')}Réinitialiser</button></div>` : ''}
-            <p class="tiny faint">Ne concerne que les paquets en FSRS. Les modes Quiz, Écrire et Chrono ne comptent pas dans cet historique.</p>
+            <p class="small muted" style="margin-bottom:8px">Ajuste les 19 paramètres de FSRS sur ton propre historique, préréglage par préréglage. Ne concerne que les paquets en FSRS.</p>
+            ${rows}
+            <p class="tiny faint">Les modes Quiz, Écrire et Chrono ne comptent pas dans cet historique.</p>
         </div>`;
     },
-    fsrsOptimizeModal() {
-        const seqs = fsrsSequences(this.data.revlog), n = fsrsScored(seqs);
-        if (n < FSRS_MIN_REVIEWS) { this.toast(`Il faut au moins ${FSRS_MIN_REVIEWS} révisions (tu en as ${n}).`, 'warning'); return; }
-        const m = this.openModal({ title: 'Optimisation FSRS', size: 'narrow', body: `<p class="muted" id="fo-msg">Calcul en cours sur ${plural(n, 'révision')}...</p><div class="progress"><i id="fo-bar" style="width:3%;background:var(--primary)"></i></div><div id="fo-res"></div>`, foot: `<button class="btn btn-soft" data-close>Fermer</button>` });
+    fsrsOptimizeModal(id = '') {
+        const t = this.fsrsTargets().find(x => x.id === id);
+        if (!t) return;
+        if (t.n < FSRS_MIN_REVIEWS) { this.toast(`Il faut au moins ${FSRS_MIN_REVIEWS} révisions (tu en as ${t.n}).`, 'warning'); return; }
+        const m = this.openModal({ title: `Optimisation FSRS · ${esc(t.name)}`, size: 'narrow', body: `<p class="muted" id="fo-msg">Calcul en cours sur ${plural(t.n, 'révision')}...</p><div class="progress"><i id="fo-bar" style="width:3%;background:var(--primary)"></i></div><div id="fo-res"></div>`, foot: `<button class="btn btn-soft" data-close>Fermer</button>` });
         let closed = false;
         m._onClose = () => { closed = true; };
-        fsrsTrain(seqs, p => { const b = $('#fo-bar', m); if (b) b.style.width = `${Math.round(p * 100)}%`; }).then(r => {
+        fsrsTrain(t.seqs, p => { const b = $('#fo-bar', m); if (b) b.style.width = `${Math.round(p * 100)}%`; }).then(r => {
             if (closed) return;
             const gain = (r.before - r.after) / r.before * 100, better = r.after < r.before - 0.0005;
             $('#fo-msg', m).textContent = '';
             $('#fo-bar', m).style.width = '100%';
             $('#fo-res', m).innerHTML = `<p style="margin-top:12px">Erreur de prédiction (plus bas = mieux), mesurée sur ${plural(r.nVal, 'révision')} mises de côté :</p>
                 <div class="fo-cmp"><div><span>Standard</span><b>${r.before.toFixed(3)}</b></div><div><span>Optimisé</span><b>${r.after.toFixed(3)}</b></div></div>
-                <p class="${better ? '' : 'muted'}" style="margin-top:10px">${better ? `Amélioration d'environ <b>${gain.toFixed(1)} %</b>. Les nouveaux paramètres prédisent mieux quand tu oublies.` : 'Pas d\'amélioration nette : je te conseille de garder les paramètres standards (réessaie avec plus de révisions).'}</p>`;
+                <p class="${better ? '' : 'muted'}" style="margin-top:10px">${better ? `Amélioration d'environ <b>${gain.toFixed(1)} %</b>. Les nouveaux paramètres prédisent mieux quand tu oublies.` : 'Pas d\'amélioration nette : je te conseille de garder les paramètres standards (réessaie avec plus de révisions).'}</p>
+                ${better ? `<label class="check" style="margin-top:10px"><input type="checkbox" id="fo-resched"> Replanifier aussi les cartes déjà apprises avec ces paramètres <span class="small muted">(sinon, seules les prochaines révisions changent)</span></label>` : ''}`;
             const foot = m.querySelector('.modal-foot');
             if (better) {
                 foot.insertAdjacentHTML('beforeend', `<button class="btn btn-primary" id="fo-apply">${ic('check')}Appliquer</button>`);
                 $('#fo-apply', m).addEventListener('click', () => {
-                    this.data.settings.fsrsW = r.w; this.data.settings.fsrsMeta = { at: Date.now(), n, before: r.before, after: r.after };
-                    this.data.settings.settingsMod = Date.now();
-                    fsrsApplyParams(r.w); this.cfgCache.clear(); this.save();
-                    this.closeModal(m); this.renderSettings(); this.toast('Paramètres FSRS personnalisés appliqués', 'success', ic('brain'));
+                    const meta = { at: Date.now(), n: t.n, before: r.before, after: r.after }, resched = $('#fo-resched', m).checked;
+                    if (id) { const p = this.data.presets.find(x => x.id === id); p.opts = { ...p.opts, fsrsW: r.w, fsrsMeta: meta }; }
+                    else { this.data.settings.fsrsW = r.w; this.data.settings.fsrsMeta = meta; this.data.settings.settingsMod = Date.now(); fsrsApplyParams(r.w); }
+                    this.cfgCache.clear();
+                    const n = this.fsrsRecompute(t, r.w, resched);
+                    this.save();
+                    this.closeModal(m); this.renderSettings();
+                    this.toast(`Paramètres FSRS appliqués · mémoire recalculée pour ${plural(n, 'carte')}${resched ? ' et replanifiées' : ''}`, 'success', ic('brain'));
                 });
             }
         }).catch(e => { console.error(e); if (!closed) $('#fo-msg', m).textContent = 'L\'optimisation a échoué.'; });
     },
-    fsrsReset() {
-        this.data.settings.fsrsW = null; this.data.settings.fsrsMeta = null; this.data.settings.settingsMod = Date.now();
-        fsrsApplyParams(null); this.cfgCache.clear(); this.save(); this.renderSettings();
+    /* new memory state (stability, difficulty) of each FSRS card of the target, replayed from its history */
+    fsrsRecompute(t, w, reschedule) {
+        const rowsBy = new Map(t.seqs.map(s => [s.id, s.rows]));
+        const ids = [...t.ids].filter(id => rowsBy.has(id));
+        let n = 0;
+        this.change('optimisation FSRS', ids, () => {
+            ids.forEach(id => {
+                const c = this.card(id), rows = rowsBy.get(id);
+                if (!c || c.state === 'new') return;
+                const cfg = this.deckCfg(c.deckId);
+                if (cfg.scheduler !== 'fsrs') return;
+                const st = fsrsReplay(rows, w), last = rows[rows.length - 1][0];
+                if (!st) return;
+                c.fs = { s: st.s, d: st.d, t: last }; n++;
+                if (reschedule && c.state === 'review') {
+                    c.interval = clamp(Math.round(fsrsIvl(st.s, cfg.retention) * cfg.ivlMult), 1, cfg.maxIvl);
+                    c.due = addDays(c.lastReview || last, c.interval);
+                }
+            });
+        });
+        return n;
+    },
+    fsrsReset(id = '') {
+        if (id) { const p = this.data.presets.find(x => x.id === id); if (p) { const o = { ...p.opts }; delete o.fsrsW; delete o.fsrsMeta; p.opts = o; } }
+        else { this.data.settings.fsrsW = null; this.data.settings.fsrsMeta = null; this.data.settings.settingsMod = Date.now(); fsrsApplyParams(null); }
+        this.cfgCache.clear(); this.save(); this.renderSettings();
         this.toast('Paramètres standards rétablis', 'success');
     }
 });

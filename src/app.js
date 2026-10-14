@@ -269,7 +269,7 @@ const OPT_DEFAULTS = {
 };
 const DEFAULT_SETTINGS = {
     theme: 'auto', cardSize: 'm', showIntervals: true,
-    autoSpeak: false, autoAudio: false, fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
+    autoSpeak: false, autoAudio: false, loadBalance: true, fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
     quizCount: 20, writeCount: 20, chronoDuration: 60,
     rolloverHour: 4, syncKey: '', settingsMod: 0, autoBackup: true, libSeen: false, goalName: '', goalDate: '', deckSort: 'recent',
     ...OPT_DEFAULTS
@@ -306,7 +306,8 @@ function buildCfg(o) {
         autoQSecs: clamp(num(g('autoQSecs', 0), 0), 0, 300), autoASecs: clamp(num(g('autoASecs', 0), 0), 0, 300),
         autoAAction: ['none', 'bury', 'again', 'hard', 'good', 'easy'].includes(g('autoAAction', 'none')) ? g('autoAAction', 'none') : 'none',
         easyDays: /^[012]{7}$/.test(String(g('easyDays', '0000000'))) ? String(g('easyDays', '0000000')) : '0000000',
-        newPerDay: clamp(Math.round(num(g('newPerDay', 20), 20)), 0, 9999), maxReviews: clamp(Math.round(num(g('maxReviews', 9999), 9999)), 0, 9999)
+        newPerDay: clamp(Math.round(num(g('newPerDay', 20), 20)), 0, 9999), maxReviews: clamp(Math.round(num(g('maxReviews', 9999), 9999)), 0, 9999),
+        fsrsW: Array.isArray(o.fsrsW) && o.fsrsW.length === 19 && o.fsrsW.every(Number.isFinite) ? o.fsrsW : null
     };
 }
 const DEFAULT_STATS = () => ({
@@ -526,13 +527,17 @@ const Storage = {
    Spaced repetition (SM-2 as in Anki, with learning steps)
    ============================================================ */
 /* "Easy days": among the days a card could land on, prefer weekdays you marked as normal over reduced / minimum ones */
+let SCHED_LOAD = null;   // Map(start of day -> review cards already due that day), set while answering when load balancing is on
 function pickEasyDay(ivl, base, now, easyDays) {
-    if (!easyDays || easyDays === '0000000' || base < 3) return ivl;
+    const easy = easyDays && easyDays !== '0000000';
+    if ((!easy && !SCHED_LOAD) || base < 3) return ivl;
     const spread = Math.max(1, Math.round(base * 0.05));
-    let best = ivl, bestW = -1;
+    let best = ivl, bestW = -1, bestL = Infinity;
     for (let d = Math.max(1, ivl - spread); d <= ivl + spread; d++) {
-        const wd = new Date(addDays(now, d)).getDay(), w = [2, 1, 0][Number(easyDays[wd])] ?? 2;
-        if (w > bestW || (w === bestW && Math.abs(d - base) < Math.abs(best - base))) { best = d; bestW = w; }
+        const day = addDays(now, d), wd = new Date(day).getDay(), w = easy ? ([2, 1, 0][Number(easyDays[wd])] ?? 2) : 0;
+        const load = SCHED_LOAD ? (SCHED_LOAD.get(startOfDay(day)) || 0) : 0;
+        const better = w > bestW || (w === bestW && (load < bestL || (load === bestL && Math.abs(d - base) < Math.abs(best - base))));
+        if (better) { best = d; bestW = w; bestL = load; }
     }
     return best;
 }
@@ -544,6 +549,7 @@ function fuzzIvl(ivl) {
 /* Returns the new scheduling fields for `card` after answering `grade` (1 = raté .. 4 = facile). */
 function schedule(card, grade, now = Date.now(), useFuzz = false, cfg = buildCfg(OPT_DEFAULTS)) {
     const fsr = cfg.scheduler === 'fsrs';
+    cfg = cfg.fsrsW ? { ...cfg, w: cfg.fsrsW } : cfg;
     const r = { state: card.state, step: card.step || 0, interval: card.interval || 0, ease: card.ease || 2.5, lapses: card.lapses || 0, due: card.due, fs: card.fs || null };
     const inMin = m => now + Math.round(m * MIN);
     let fs = fsr ? fsrsFromCard(card) : null;
@@ -557,8 +563,8 @@ function schedule(card, grade, now = Date.now(), useFuzz = false, cfg = buildCfg
         if (r.state === 'new') r.ease = cfg.startEase;
         const cur = steps[Math.min(r.step, steps.length - 1)];
         if (fsr) {
-            if (!fs || r.state === 'new') fs = { s: fsrsInitS(grade), d: fsrsInitD(grade), t: now };
-            else { fs.s = fsrsShortS(fs.s, grade); fs.d = fsrsNextD(fs.d, grade); }
+            if (!fs || r.state === 'new') fs = { s: fsrsInitS(grade, cfg.w), d: fsrsInitD(grade, cfg.w), t: now };
+            else { fs.s = fsrsShortS(fs.s, grade, cfg.w); fs.d = fsrsNextD(fs.d, grade, cfg.w); }
             keepFs();
         }
         const grad = g => finish(fsr ? Math.max(g === 4 ? cfg.easyIvl : 1, fsrsIvl(fs.s, cfg.retention)) : (g === 4 ? cfg.easyIvl : cfg.gradIvl));
@@ -570,7 +576,7 @@ function schedule(card, grade, now = Date.now(), useFuzz = false, cfg = buildCfg
         } else grad(4);
     } else if (r.state === 'relearning') {
         const steps = cfg.relearnSteps;
-        if (fsr && fs) { fs.s = fsrsShortS(fs.s, grade); fs.d = fsrsNextD(fs.d, grade); keepFs(); }
+        if (fsr && fs) { fs.s = fsrsShortS(fs.s, grade, cfg.w); fs.d = fsrsNextD(fs.d, grade, cfg.w); keepFs(); }
         const back = bonus => finish(fsr && fs ? Math.max(1, fsrsIvl(fs.s, cfg.retention)) : Math.max(1, r.interval) + bonus);
         if (grade === 1) { r.step = 0; r.due = inMin(steps[0]); }
         else if (grade === 2) { r.due = inMin(steps[Math.min(r.step, steps.length - 1)]); }
@@ -587,16 +593,16 @@ function schedule(card, grade, now = Date.now(), useFuzz = false, cfg = buildCfg
             const rr = fsrsR(card.lastReview ? elapsed : ivl, fs.s);
             if (grade === 1) {
                 r.lapses++;
-                fs = { s: fsrsForgetS(fs.s, fs.d, rr), d: fsrsNextD(fs.d, 1), t: now };
+                fs = { s: fsrsForgetS(fs.s, fs.d, rr, cfg.w), d: fsrsNextD(fs.d, 1, cfg.w), t: now };
                 r.interval = clamp(Math.round(fsrsIvl(fs.s, cfg.retention)), cfg.minIvl, cfg.maxIvl);
                 r.state = 'relearning'; r.step = 0; r.due = inMin(cfg.relearnSteps[0]);
                 keepFs();
             } else {
-                const raw = g => Math.round(clamp(fsrsIvl(fsrsRecallS(fs.s, fs.d, rr, g), cfg.retention) * cfg.ivlMult, 1, cfg.maxIvl));
+                const raw = g => Math.round(clamp(fsrsIvl(fsrsRecallS(fs.s, fs.d, rr, g, cfg.w), cfg.retention) * cfg.ivlMult, 1, cfg.maxIvl));
                 let hard = raw(2), good = raw(3), easy = raw(4);
                 hard = Math.min(hard, good); good = Math.max(good, hard + 1); easy = Math.max(easy, good + 1);
                 const ivlFor = { 2: hard, 3: good, 4: easy }[grade];
-                fs = { s: fsrsRecallS(fs.s, fs.d, rr, grade), d: fsrsNextD(fs.d, grade), t: now };
+                fs = { s: fsrsRecallS(fs.s, fs.d, rr, grade, cfg.w), d: fsrsNextD(fs.d, grade, cfg.w), t: now };
                 keepFs();
                 finish(Math.min(ivlFor, cfg.maxIvl));
             }
@@ -948,7 +954,7 @@ class SuperAnki {
         return '';
     }
     defaultOpts() { const o = {}; Object.keys(OPT_DEFAULTS).forEach(k => { o[k] = this.data.settings[k]; }); return o; }
-    optsOfPreset(id) { const p = id && this.data.presets.find(x => x.id === id); return { ...this.defaultOpts(), ...(p ? p.opts : {}) }; }
+    optsOfPreset(id) { const p = id && this.data.presets.find(x => x.id === id); return { ...this.defaultOpts(), fsrsW: this.data.settings.fsrsW, ...(p ? p.opts : {}) }; }
     deckCfg(deckId) {
         let cfg = this.cfgCache.get(deckId);
         if (cfg) return cfg;
@@ -1654,6 +1660,10 @@ class SuperAnki {
                     <div style="display:flex;gap:10px;align-items:center">${sw('autoBackup', 'Sauvegardes automatiques')}<button class="btn btn-soft btn-sm" data-action="backup-now">${ic('plus')}Maintenant</button></div>
                 </div>
                 <div class="set-row">
+                    <div class="txt"><b>Équilibrer la charge de révision</b><span>Quand plusieurs dates sont possibles pour une carte, choisit le jour le moins chargé : moins de jours à pic.</span></div>
+                    ${sw('loadBalance', 'Équilibrer la charge')}
+                </div>
+                <div class="set-row">
                     <div class="txt"><b>Remettre la progression à zéro</b><span>Toutes les cartes redeviennent nouvelles. Les cartes sont conservées.</span></div>
                     <button class="btn btn-danger-soft btn-sm" data-action="reset-progress">${ic('reset')}Remettre à zéro</button>
                 </div>
@@ -1943,7 +1953,9 @@ class SuperAnki {
         const card = this.card(s.current), now = Date.now(), cfg = this.cfgFor(card);
         this.snapshot();
         const prev = card.state, prevIvl = card.interval, secs = this.elapsedSec();
+        SCHED_LOAD = this.data.settings.loadBalance !== false ? this.loadMap(card.id) : null;
         Object.assign(card, schedule(card, g, now, true, cfg));
+        SCHED_LOAD = null;
         card.reps++; card.lastReview = now;
         if (g === 1 && prev !== 'new' && prev !== 'learning') { card.errors++; card.wrong++; }
         else if (g >= 3 && prev === 'review') { card.errors = Math.max(0, card.errors - 1); card.right++; }
@@ -2031,6 +2043,12 @@ class SuperAnki {
     optionHtml(card) {
         const ans = this.cardAnswer(card), t = stripHtml(ans);
         return t ? esc(truncate(t, 170)) : `<span class="rich">${ans}</span>`;
+    }
+    /* review cards due per day (used to spread the load when picking a new interval) */
+    loadMap(exceptId) {
+        const m = new Map();
+        this.data.cards.forEach(c => { if (c.state === 'review' && !c.suspended && c.id !== exceptId) { const k = startOfDay(c.due); m.set(k, (m.get(k) || 0) + 1); } });
+        return m;
     }
     cardAnswer(c) { return c.kind === 'cloze' ? clozeAnswerHtml(c) : c.back; }
     buildOptions(card) {
@@ -3155,8 +3173,8 @@ class SuperAnki {
             case 'go-stats': this.go('stats'); break;
             case 'go-settings': this.go('settings'); break;
             case 'quiz-next': this.nextQuestion(); break;
-            case 'fsrs-optimize': this.fsrsOptimizeModal(); break;
-            case 'fsrs-reset': this.fsrsReset(); break;
+            case 'fsrs-optimize': this.fsrsOptimizeModal(ds.id || ''); break;
+            case 'fsrs-reset': this.fsrsReset(ds.id || ''); break;
             default: if (action.startsWith('tq-')) this.toeicAction(action, el); break;
         }
     }
