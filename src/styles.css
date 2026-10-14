@@ -1415,3 +1415,10 @@ button.tq-opt:hover:not(:disabled) { border-color: var(--primary); background: v
 .fo-cmp > div { flex: 1; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--surface-2); display: grid; }
 .fo-cmp span { font-size: .75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
 .fo-cmp b { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.te-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+.te-row .input { flex: 1; min-width: 0; }
+.te-code { font-family: ui-monospace, 'JetBrains Mono', monospace; font-size: .85rem; min-height: 70px; }
+.te-prev { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 600px) { .te-prev { grid-template-columns: 1fr; } }
+.te-face { padding: 12px 14px; border-radius: var(--radius-sm); background: var(--surface-2); min-width: 0; }
+.te-face small { display: block; color: var(--text-faint); font-weight: 700; text-transform: uppercase; font-size: .68rem; margin-bottom: 4px; }

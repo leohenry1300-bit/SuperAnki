@@ -363,8 +363,8 @@ function normalizeCard(c) {
         lastReview: c.lastReview ? num(c.lastReview, null) : null,
         errors: Math.max(0, num(c.errors, lapses >= 2 ? 1 : 0)), wrong: num(c.wrong, 0), right: num(c.right, 0),
         suspended: !!c.suspended, flag: clamp(Math.round(num(c.flag, 0)), 0, 7), marked: !!c.marked, buriedUntil: num(c.buriedUntil, 0),
-        nid: c.nid ? String(c.nid) : '', kind: ['rev', 'cloze', 'occl'].includes(c.kind) ? c.kind : 'basic', ord: Math.max(0, num(c.ord, 0)),
-        nf: c.nf && typeof c.nf === 'object' ? { front: sanitizeHtml(c.nf.front || ''), back: sanitizeHtml(c.nf.back || ''), text: sanitizeHtml(c.nf.text || ''), extra: sanitizeHtml(c.nf.extra || '') } : null,
+        nid: c.nid ? String(c.nid) : '', kind: ['rev', 'cloze', 'occl', 'custom'].includes(c.kind) ? c.kind : 'basic', ord: Math.max(0, num(c.ord, 0)),
+        nf: c.nf && typeof c.nf === 'object' ? { front: sanitizeHtml(c.nf.front || ''), back: sanitizeHtml(c.nf.back || ''), text: sanitizeHtml(c.nf.text || ''), extra: sanitizeHtml(c.nf.extra || ''), ...(c.nf.t ? { t: String(c.nf.t), f: Object.fromEntries(Object.entries(c.nf.f && typeof c.nf.f === 'object' ? c.nf.f : {}).map(([k, v]) => [String(k).slice(0, 40), sanitizeHtml(v || '')])) } : {}) } : null,
         fs: c.fs && num(c.fs.s, 0) > 0 ? { s: num(c.fs.s), d: clamp(num(c.fs.d, 5), 1, 10), t: num(c.fs.t, 0) } : null,
         mod: num(c.mod, 0)
     };
@@ -443,11 +443,11 @@ function normalizeState(raw) {
     const deleted = {};
     if (raw.deleted && typeof raw.deleted === 'object') Object.entries(raw.deleted).forEach(([k, v]) => { if (num(v, 0) > 0) deleted[k] = num(v); });
     const revlog = toArray(raw.revlog).filter(r => Array.isArray(r) && r.length >= 4 && Number.isFinite(r[0])).slice(-REVLOG_MAX);
-    return { version: 6, decks, cards, presets, stats: normalizeStats(raw.stats), settings, revlog, deleted, toeic: normalizeToeic(raw.toeic), media: normalizeMedia(raw.media), updatedAt: num(raw.updatedAt, 0) };
+    return { version: 6, decks, cards, presets, stats: normalizeStats(raw.stats), settings, revlog, deleted, toeic: normalizeToeic(raw.toeic), media: normalizeMedia(raw.media), noteTypes: normalizeNoteTypes(raw.noteTypes), updatedAt: num(raw.updatedAt, 0) };
 }
 function cardSig(c) {
     return [c.deckId, c.state, c.step, c.due, c.interval, c.ease, c.reps, c.lapses, c.suspended ? 1 : 0, c.flag, c.marked ? 1 : 0, c.buriedUntil, c.errors, c.wrong, c.right,
-        c.front.length, c.back.length, c.hint.length, c.detail.length, c.tags.join(','), c.fs ? c.fs.s.toFixed(3) : '', c.lastReview, c.nid, c.kind, c.ord, c.kind === 'occl' && c.nf ? mediaHash(c.nf.back + c.nf.front) : ''].join('|');
+        c.front.length, c.back.length, c.hint.length, c.detail.length, c.tags.join(','), c.fs ? c.fs.s.toFixed(3) : '', c.lastReview, c.nid, c.kind, c.ord, c.kind === 'occl' && c.nf ? mediaHash(c.nf.back + c.nf.front) : c.kind === 'custom' && c.nf ? mediaHash(c.nf.t + JSON.stringify(c.nf.f)) : ''].join('|');
 }
 const deckSig = d => JSON.stringify([d.name, d.emoji, d.description, d.parent, d.preset, d.limits]);
 const presetSig = p => JSON.stringify([p.name, p.opts]);
@@ -736,13 +736,13 @@ class SuperAnki {
     }
 
     serialize() {
-        const { version, decks, cards, presets, stats, settings, revlog, deleted, toeic, media, updatedAt } = this.data;
-        return JSON.stringify({ version, decks, cards, presets, stats, settings, revlog, deleted, toeic, media, updatedAt });
+        const { version, decks, cards, presets, stats, settings, revlog, deleted, toeic, media, noteTypes, updatedAt } = this.data;
+        return JSON.stringify({ version, decks, cards, presets, stats, settings, revlog, deleted, toeic, media, noteTypes, updatedAt });
     }
     /* Change tracking: per-card modification times let two devices merge instead of overwriting each other */
     initSigs() {
         this.sigs = new Map(this.data.cards.map(c => [c.id, cardSig(c)]));
-        this.dsigs = new Map([...this.data.decks.map(d => [d.id, deckSig(d)]), ...this.data.presets.map(x => [x.id, presetSig(x)])]);
+        this.dsigs = new Map([...this.data.decks.map(d => [d.id, deckSig(d)]), ...this.data.presets.map(x => [x.id, presetSig(x)]), ...this.data.noteTypes.map(x => [x.id, noteTypeSig(x)])]);
     }
     detectChanges(now) {
         const d = this.data, seen = new Set();
@@ -761,6 +761,11 @@ class SuperAnki {
         d.presets.forEach(x => {
             seenD.add(x.id);
             const sig = presetSig(x);
+            if (this.dsigs.get(x.id) !== sig) { x.mod = now; this.dsigs.set(x.id, sig); delete d.deleted[x.id]; }
+        });
+        d.noteTypes.forEach(x => {
+            seenD.add(x.id);
+            const sig = noteTypeSig(x);
             if (this.dsigs.get(x.id) !== sig) { x.mod = now; this.dsigs.set(x.id, sig); delete d.deleted[x.id]; }
         });
         [...this.dsigs.keys()].forEach(id => { if (!seenD.has(id)) { this.dsigs.delete(id); d.deleted[id] = now; } });
@@ -1324,7 +1329,7 @@ class SuperAnki {
             case 'deck': ok = fold(this.deckPath(c.deckId)).includes(v); break;
             case 'tag': ok = v === 'none' ? !c.tags.length : c.tags.some(t => fold(t) === v || fold(t).startsWith(v)); break;
             case 'flag': ok = c.flag === Number(v); break;
-            case 'type': case 'kind': ok = c.kind === v || (v === 'reversed' && c.kind === 'rev'); break;
+            case 'type': case 'kind': ok = c.kind === v || (v === 'reversed' && c.kind === 'rev') || (c.kind === 'custom' && fold(this.noteTypeName(c)).includes(v)) || (v === 'image' && c.kind === 'occl'); break;
             case 'front': ok = fold(stripHtml(c.front)).includes(v); break;
             case 'back': ok = fold(stripHtml(c.back)).includes(v); break;
             case 'added': ok = c.created >= ctx.now - Number(v) * DAY; break;
@@ -1499,7 +1504,7 @@ class SuperAnki {
                     <div class="meta">
                         ${c.flag ? `<span style="color:${FLAGS[c.flag].color}" title="Drapeau ${FLAGS[c.flag].name.toLowerCase()}">${ic('flag', 'i-flag')}</span>` : ''}${c.marked ? `<span style="color:#eab308" title="Marquée">${ic('star', 'i-fill')}</span>` : ''}
                         ${dk ? `<span class="tag">${esc(dk.emoji)} ${esc(this.deckPath(dk.id))}</span>` : ''}
-                        ${c.kind !== 'basic' ? `<span class="tag">${c.kind === 'cloze' ? `trou ${c.ord}` : c.ord ? 'inversée' : 'liée'}</span>` : ''}
+                        ${c.kind !== 'basic' ? `<span class="tag">${c.kind === 'cloze' ? `trou ${c.ord}` : c.kind === 'occl' ? `cadre ${c.ord}` : c.kind === 'custom' ? esc(this.noteTypeName(c)) : c.ord ? 'inversée' : 'liée'}</span>` : ''}
                         <span>${when}</span>
                         ${c.errors ? `<span style="color:var(--due)">${plural(c.errors, 'erreur')}</span>` : ''}
                         ${c.tags.map(t => `<span>#${esc(t)}</span>`).join('')}
@@ -2375,6 +2380,7 @@ class SuperAnki {
         if (!this.data.decks.length) { this.toast('Crée d\'abord un paquet.', 'warning'); this.openDeckModal(); return; }
         const card = cardId ? this.card(cardId) : null;
         if (card && card.kind === 'occl') { this.openOcclusionModal(card.id); return; }
+        if (card && card.kind === 'custom' && card.nf && this.noteType(card.nf.t)) { this.openNoteModal(card.nf.t, card.id); return; }
         const inSession = !!this.session;
         const deckId = card ? card.deckId : presetDeck || (this.ui.deck !== 'all' && this.ui.deck !== 'errors' ? this.ui.deck : this.lastDeckUsed) || this.sortedDecks()[0].id;
         const nf = card ? noteFieldsOf(card) : { front: '', back: '' };
@@ -2387,7 +2393,7 @@ class SuperAnki {
                     <select class="select" id="cf-deck">${this.sortedDecks().map(d => `<option value="${esc(d.id)}" ${d.id === deckId ? 'selected' : ''}>${esc(d.emoji)} ${esc(this.deckPath(d.id))}</option>`).join('')}</select></div>
                     <div><label class="label" for="cf-type">Type de carte</label>
                     ${card ? `<div class="input type-static">${NOTE_TYPES[card.kind] || 'Basique'}</div>`
-                        : `<select class="select" id="cf-type">${Object.entries(NOTE_TYPES).map(([k, l]) => `<option value="${k}" ${k === type ? 'selected' : ''}>${l}</option>`).join('')}</select>`}</div>
+                        : `<select class="select" id="cf-type">${[...Object.entries(NOTE_TYPES), ...this.data.noteTypes.map(t => [`nt:${t.id}`, t.name]), ['manage', '⚙ Gérer les types de notes…']].map(([k, l]) => `<option value="${k}" ${k === type ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`}</div>
                 </div>
                 <div class="field"><span class="label" id="cf-front-label">Recto · question</span>${this.editorHtml('cf-front', 'Question ou terme... (tu peux coller une image)', false, true)}<p class="help hidden" id="cf-cloze-help">Sélectionne un mot puis clique sur <b>[…]</b> (ou <kbd class="k">Ctrl</kbd>+<kbd class="k">Maj</kbd>+<kbd class="k">C</kbd>) pour en faire un trou. Maj+clic réutilise le même numéro (plusieurs mots cachés ensemble). Indice : <code>{{c1::réponse::indice}}</code>.</p></div>
                 <div class="field"><span class="label" id="cf-back-label">Verso · réponse</span>${this.editorHtml('cf-back', 'Réponse...')}</div>
@@ -2420,6 +2426,8 @@ class SuperAnki {
         if (typeSel) typeSel.addEventListener('change', () => {
             type = typeSel.value;
             if (type === 'occl') { const d = $('#cf-deck', m).value; this.closeModal(m); this.openOcclusionModal(null, d); return; }
+            if (type === 'manage') { this.closeModal(m); this.openNoteTypes(); return; }
+            if (type.startsWith('nt:')) { const d = $('#cf-deck', m).value; this.closeModal(m); this.openNoteModal(type.slice(3), null, d); return; }
             relabel();
         });
         relabel();
@@ -3179,6 +3187,7 @@ class SuperAnki {
             case 'filter-edit': this.openFilterModal(ds.id || ''); break;
             case 'filter-start': this.startFilter(ds.id); break;
             case 'tool-filter': this.openFilterModal(''); break;
+            case 'tool-types': this.openNoteTypes(); break;
             case 'tool-sim': this.openLoadSim(); break;
             case 'tool-dups': this.openDuplicates(); break;
             case 'tool-empty': this.openEmptyCards(); break;

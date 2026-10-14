@@ -45,6 +45,7 @@ function clozeAnswerHtml(c) {
 }
 /* front/back are always stored materialized, so the rest of the app never needs to know about note types */
 function materializeCard(c) {
+    if (c.kind === 'custom' && c.nf && c.nf.t) { const r = customRender(c); c.front = r.front; c.back = r.back; return c; }
     if (c.kind === 'occl' && c.nf) { const o = occlusionHtml(c); c.front = o.front; c.back = o.back; return c; }
     if (c.kind === 'cloze' && c.nf) {
         c.front = sanitizeHtml(renderCloze(c.nf.text, c.ord, 'front'));
@@ -259,7 +260,7 @@ Object.assign(SuperAnki.prototype, {
             const seen = new Set();
             cards.forEach(c => {
                 const key = c.nid || c.id;
-                if (c.kind === 'occl' || (c.nf && seen.has(key))) return;
+                if (c.kind === 'occl' || c.kind === 'custom' || (c.nf && seen.has(key))) return;
                 seen.add(key);
                 const sibs = this.noteSiblings(c), f = noteFieldsOf(c);
                 const nf = { front: f.front, back: f.back };
@@ -436,7 +437,7 @@ Object.assign(SuperAnki.prototype, {
         const stateName = { new: 'Nouvelle', learning: 'En apprentissage', review: c.interval >= MATURE_IVL ? 'Maîtrisée' : 'En révision', relearning: 'Réapprentissage' }[c.state];
         const rows = [
             ['Paquet', esc(this.deckPath(c.deckId))],
-            ['Type de note', NOTE_TYPES[c.kind] || 'Basique'],
+            ['Type de note', c.kind === 'custom' ? this.noteTypeName(c) : (NOTE_TYPES[c.kind] || 'Basique')],
             ['État', stateName + (c.suspended ? ' · suspendue' : '') + (c.buriedUntil > now ? ' · enfouie' : '')],
             ['Ajoutée le', fmt(c.created)],
             ['Première révision', fmt(first)], ['Dernière révision', fmt(last)],

@@ -83,7 +83,7 @@ function mergeStates(L, R) {
         });
         return out;
     };
-    const decks = mergeList(L.decks, R.decks, deckSig), cards = mergeList(L.cards, R.cards, cardSig), presets = mergeList(L.presets || [], R.presets || [], presetSig);
+    const noteTypes = mergeList(L.noteTypes || [], R.noteTypes || [], noteTypeSig), decks = mergeList(L.decks, R.decks, deckSig), cards = mergeList(L.cards, R.cards, cardSig), presets = mergeList(L.presets || [], R.presets || [], presetSig);
     const stats = mergeStats(L.stats, R.stats);
     if (JSON.stringify(stats) !== JSON.stringify(L.stats)) localChanged = true;
     if (JSON.stringify(stats) !== JSON.stringify(R.stats)) remoteChanged = true;
@@ -100,7 +100,7 @@ function mergeStates(L, R) {
     const toeic = mergeToeic(L.toeic || normalizeToeic(), R.toeic || normalizeToeic());
     if (toeic.attempts.length > (L.toeic ? L.toeic.attempts.length : 0)) localChanged = true;
     if (toeic.attempts.length > (R.toeic ? R.toeic.attempts.length : 0)) remoteChanged = true;
-    const data = normalizeState({ version: 6, decks, cards, presets, stats, settings, revlog, deleted: tomb, toeic, media: { ...(R.media || {}), ...(L.media || {}) }, updatedAt: Math.max(L.updatedAt || 0, R.updatedAt || 0) });
+    const data = normalizeState({ version: 6, decks, cards, presets, stats, settings, revlog, deleted: tomb, noteTypes, toeic, media: { ...(R.media || {}), ...(L.media || {}) }, updatedAt: Math.max(L.updatedAt || 0, R.updatedAt || 0) });
     return { data, localChanged, remoteChanged };
 }
 
