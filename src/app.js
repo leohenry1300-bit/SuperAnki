@@ -269,7 +269,7 @@ const OPT_DEFAULTS = {
 };
 const DEFAULT_SETTINGS = {
     theme: 'auto', cardSize: 'm', showIntervals: true,
-    autoSpeak: false, autoAudio: false, loadBalance: true, fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
+    autoSpeak: false, autoAudio: false, loadBalance: true, filters: [], fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
     quizCount: 20, writeCount: 20, chronoDuration: 60,
     rolloverHour: 4, syncKey: '', settingsMod: 0, autoBackup: true, libSeen: false, goalName: '', goalDate: '', deckSort: 'recent',
     ...OPT_DEFAULTS
@@ -1135,7 +1135,7 @@ class SuperAnki {
             </div>
 
             <div>
-                <div class="section-head"><h3 class="section-title">Modes d'entraînement</h3><button class="link" data-action="custom-study">${ic('sliders')}Révisions personnalisées</button></div>
+                <div class="section-head"><h3 class="section-title">Modes d'entraînement</h3><span style="display:flex;gap:14px"><button class="link" data-action="filter-edit" data-id="">${ic('filter')}Paquet filtré</button><button class="link" data-action="custom-study">${ic('sliders')}Révisions personnalisées</button></span></div>
                 <div class="mode-grid">
                     <button class="panel mode-tile" style="--c:#0ea5e9" data-action="mode" data-mode="write">
                         <span class="mode-ico">${ic('keyboard')}</span>
@@ -1156,6 +1156,7 @@ class SuperAnki {
                 </div>
             </div>
 
+            ${this.filtersHtml()}
             <div>
                 <div class="section-head">
                     <h3 class="section-title">Tes paquets</h3>
@@ -1674,6 +1675,7 @@ class SuperAnki {
             </div>
 
             ${this.fsrsPanelHtml()}
+            ${this.toolsPanelHtml()}
 
             <div class="panel panel-pad set-section">
                 <h3>${ic('keyboard')} Raccourcis clavier</h3>
@@ -1736,8 +1738,9 @@ class SuperAnki {
         this.beginSrs(deck ? this.deckLabel(deck) : 'Révision du jour', queue, plan.learning);
     }
     /* Starts a scheduled (Anki-style) session on an explicit list of cards: custom study, review ahead... */
-    startSrsIds(title, ids) {
-        const queue = shuffle(ids.filter(id => { const c = this.card(id); return c && !c.suspended; }));
+    startSrsIds(title, ids, keepOrder = false) {
+        const ok = ids.filter(id => { const c = this.card(id); return c && !c.suspended; });
+        const queue = keepOrder ? ok : shuffle(ok);
         const learning = [];
         if (!queue.length) { this.toast('Aucune carte à étudier.', 'warning'); return; }
         this.beginSrs(title, queue, learning);
@@ -3173,6 +3176,13 @@ class SuperAnki {
             case 'go-stats': this.go('stats'); break;
             case 'go-settings': this.go('settings'); break;
             case 'quiz-next': this.nextQuestion(); break;
+            case 'filter-edit': this.openFilterModal(ds.id || ''); break;
+            case 'filter-start': this.startFilter(ds.id); break;
+            case 'tool-filter': this.openFilterModal(''); break;
+            case 'tool-sim': this.openLoadSim(); break;
+            case 'tool-dups': this.openDuplicates(); break;
+            case 'tool-empty': this.openEmptyCards(); break;
+            case 'tool-check': this.checkDatabase(); break;
             case 'fsrs-optimize': this.fsrsOptimizeModal(ds.id || ''); break;
             case 'fsrs-reset': this.fsrsReset(ds.id || ''); break;
             default: if (action.startsWith('tq-')) this.toeicAction(action, el); break;
