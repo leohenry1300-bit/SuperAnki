@@ -44,3 +44,9 @@ Pour installer l'app sur un téléphone, déploie ensemble ces 5 fichiers (ex. N
 - **Image à masquer** : nouveau type de carte ; on dessine des cadres sur une image, un cadre = une carte.
 - **Import .apkg** : Importer › « Importer un fichier .apkg ». Il faut l'export Anki « avec prise en charge des anciennes versions ». Les cartes arrivent comme neuves ; images et sons sont repris.
 - Les images et sons importés sont stockés une seule fois (`data.media`) et synchronisés.
+
+## Outils avancés (comme Anki)
+
+Paramètres › Outils : **types de notes personnalisés** (champs et modèles de cartes), **paquets filtrés** (recherche enregistrée étudiée comme un paquet), **simulateur de charge**, **doublons**, **cartes vides**, **vérification de la base**, **export .apkg** (fichier importable dans Anki : médias, cloze, types perso, progression).
+FSRS : optimisation **par préréglage** (Paramètres › Mémoire), recalcul de la mémoire des cartes après optimisation, option de replanification. « Équilibrer la charge » répartit les révisions sur les jours les moins chargés.
+Le fichier `.apkg` est vérifié avec SQLite (`integrity_check`) et réimporté par l'app, mais pas testé avec l'application Anki elle-même.

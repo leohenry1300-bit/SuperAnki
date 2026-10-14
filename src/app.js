@@ -3187,6 +3187,7 @@ class SuperAnki {
             case 'filter-edit': this.openFilterModal(ds.id || ''); break;
             case 'filter-start': this.startFilter(ds.id); break;
             case 'tool-filter': this.openFilterModal(''); break;
+            case 'tool-export': this.openExportApkg(); break;
             case 'tool-types': this.openNoteTypes(); break;
             case 'tool-sim': this.openLoadSim(); break;
             case 'tool-dups': this.openDuplicates(); break;

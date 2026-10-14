@@ -249,6 +249,7 @@ Object.assign(SuperAnki.prototype, {
     toolsPanelHtml() {
         const b = (a, ico, t, d) => `<div class="set-row"><div class="txt"><b>${t}</b><span>${d}</span></div><button class="btn btn-soft btn-sm" data-action="${a}">${ic(ico)}Ouvrir</button></div>`;
         return `<div class="panel panel-pad set-section"><h3>${ic('wrench')} Outils</h3>
+            ${b('tool-export', 'export', 'Exporter vers Anki (.apkg)', 'Crée un fichier que tu peux importer dans Anki, avec tes médias et ta progression.')}
             ${b('tool-types', 'layers', 'Types de notes', 'Crée tes propres modèles de cartes avec les champs de ton choix (comme Anki).')}
             ${b('tool-filter', 'filter', 'Paquet filtré', 'Crée un paquet qui rassemble les cartes d\'une recherche (ex. « à réviser » + tag).')}
             ${b('tool-sim', 'chart', 'Simulateur de charge', 'Prévois combien de cartes tu auras par jour dans les 60 prochains jours.')}

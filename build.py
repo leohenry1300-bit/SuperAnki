@@ -238,6 +238,7 @@ html = f"""<!DOCTYPE html>
 {read("fsrs-opt.js")}
 {read("tools.js")}
 {read("notetypes.js")}
+{read("export-apkg.js")}
 {read("toeic.js")}
 {read("sync.js")}
 {read("boot.js")}
