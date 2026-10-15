@@ -240,6 +240,7 @@ html = f"""<!DOCTYPE html>
 {read("notetypes.js")}
 {read("export-apkg.js")}
 {read("study.js")}
+{read("focus.js")}
 {read("toeic.js")}
 {read("sync.js")}
 {read("boot.js")}

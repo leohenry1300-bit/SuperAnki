@@ -119,14 +119,11 @@ Object.assign(SuperAnki.prototype, {
         });
     },
 
-    /* ============ session decor: timer, mic button ============ */
+    /* ============ session decor: mic button, voice bar ============ */
     sessionDecor() {
         const s = this.session;
         if (!s || !s.current || !$('#view-session .session-top')) return;
-        const top = $('#view-session .session-top'), set = this.data.settings, usable = s.kind === 'srs' || s.kind === 'practice';
-        if (usable && set.sessionTimer > 0 && !s.timerEnd) { s.timerEnd = Date.now() + set.sessionTimer * 60000; s.timerPaused = false; }
-        if (usable && s.timerEnd && !top.querySelector('#sess-timer')) top.insertAdjacentHTML('afterbegin', `<span class="sess-timer" id="sess-timer" title="Temps restant">${ic('timer')}<b>${toeicMMSS((s.timerEnd - Date.now()) / 1000)}</b></span>`);
-        if (usable && s.timerEnd && !this.sessTick) this.sessTick = setInterval(() => this.sessionTick(), 1000);
+        const top = $('#view-session .session-top'), usable = s.kind === 'srs' || s.kind === 'practice';
         const speak = top.querySelector('[data-action="speak"]');
         if (usable && speak && !top.querySelector('[data-action="voice-toggle"]')) speak.insertAdjacentHTML('beforebegin', `<button class="icon-btn ${this.voice && this.voice.on ? 'voice-on' : ''}" data-action="voice-toggle" title="Étudier à la voix" aria-label="Étudier à la voix">${ic('mic')}</button>`);
         if (this.voice && this.voice.on && !$('#voice-bar')) { const pb = $('#view-session .pbar'); if (pb) pb.insertAdjacentHTML('afterend', `<div class="voice-bar" id="voice-bar"><span class="rec-dot"></span><span id="voice-msg">…</span></div>`); }
@@ -135,27 +132,7 @@ Object.assign(SuperAnki.prototype, {
             if (s.voiceKey !== key) { s.voiceKey = key; this.voiceTurn(); }
         }
     },
-    sessionTick() {
-        const s = this.session;
-        if (!s || !s.timerEnd) { this.sessionCleanup(); return; }
-        if (s.timerPaused) return;
-        const left = (s.timerEnd - Date.now()) / 1000, el = $('#sess-timer b');
-        if (el) el.textContent = toeicMMSS(left);
-        const chip = $('#sess-timer'); if (chip) chip.classList.toggle('low', left < 60);
-        if (left > 0) return;
-        s.timerPaused = true; this.voiceStop(false);
-        const m = this.openModal({
-            title: '⏱️ Temps écoulé', size: 'narrow',
-            body: `<p class="muted">Tu as travaillé ${set_min(s)} minutes. ${s.done} carte${s.done > 1 ? 's' : ''} révisée${s.done > 1 ? 's' : ''}.</p>`,
-            foot: `<button class="btn btn-soft" id="st-more">Encore 5 minutes</button><button class="btn btn-primary" id="st-end">${ic('check')}Terminer</button>`,
-            onClose: () => { if (this.session === s && s.timerPaused && !s.ending) { s.timerEnd = Date.now() + 5 * 60000; s.timerPaused = false; } }
-        });
-        $('#st-more', m).addEventListener('click', () => this.closeModal(m));
-        $('#st-end', m).addEventListener('click', () => { s.ending = true; this.closeModal(m); this.showSummary(); });
-        function set_min(x) { return Math.max(1, Math.round((Date.now() - x.startedAt) / 60000)); }
-    },
     sessionCleanup() {
-        clearInterval(this.sessTick); this.sessTick = null;
         this.voiceStop(true);
     },
 

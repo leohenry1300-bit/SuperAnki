@@ -1443,9 +1443,6 @@ button.tq-opt:hover:not(:disabled) { border-color: var(--primary); background: v
 .te-face small { display: block; color: var(--text-faint); font-weight: 700; text-transform: uppercase; font-size: .68rem; margin-bottom: 4px; }
 
 .section-head { flex-wrap: wrap; }
-.sess-timer { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; background: var(--surface-2); font-size: .82rem; font-variant-numeric: tabular-nums; color: var(--text-muted); order: 5; }
-.sess-timer .i { width: 14px; height: 14px; }
-.sess-timer.low { color: var(--due); background: color-mix(in srgb, var(--due) 12%, var(--surface)); }
 .icon-btn.voice-on { background: var(--primary); color: var(--on-primary); }
 .voice-bar { display: flex; align-items: center; gap: 10px; margin: 10px 0; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--primary-soft); color: var(--primary); font-weight: 700; font-size: .9rem; }
 .voice-bar .rec-dot { width: 10px; height: 10px; flex: none; }
@@ -1454,7 +1451,35 @@ button.tq-opt:hover:not(:disabled) { border-color: var(--primary); background: v
 .logo-svg { width: 100%; height: 100%; display: block; }
 .brand, .nav-btn { white-space: nowrap; }
 @media (max-width: 1080px) { .brand small { display: none; } .nav-btn { padding: 9px 10px; font-size: .85rem; gap: 6px; } }
-@media (max-width: 940px) { .nav-btn { font-size: 0; gap: 0; padding: 10px 12px; } .nav-btn .i { width: 20px; height: 20px; } .nav-btn.active { font-size: 0; } }
+@media (max-width: 1200px) { .nav-btn:not(.active) { font-size: 0; gap: 0; padding: 10px 12px; } .nav-btn:not(.active) .i { width: 20px; height: 20px; } }
+@media (max-width: 960px) { .nav-btn.active { font-size: 0; gap: 0; padding: 10px 12px; } }
+
+/* focus timer widget */
+.focus-w { position: fixed; right: 16px; bottom: 16px; z-index: 60; width: 320px; max-width: calc(100vw - 24px); background: var(--surface); border: var(--border-w) solid var(--border-strong); border-radius: var(--radius); box-shadow: var(--shadow-lg); padding: 12px 14px; }
+.focus-w.hidden { display: none; }
+.fw-head { display: flex; align-items: center; gap: 6px; }
+.fw-ico { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary); flex: none; margin-right: 4px; }
+.focus-w[data-phase="break"] .fw-ico { background: color-mix(in srgb, var(--mature) 15%, var(--surface)); color: var(--mature); }
+.fw-title { flex: 1; min-width: 0; display: grid; line-height: 1.15; }
+.fw-title small { font-size: .74rem; color: var(--text-muted); font-weight: 600; }
+.fw-title b { font-size: 1.7rem; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.fw-phase { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--primary); }
+.focus-w[data-phase="break"] .fw-phase { color: var(--mature); }
+.fw-chev .i { transition: transform .2s; transform: rotate(180deg); }
+.focus-w.collapsed .fw-chev .i { transform: none; }
+.focus-w.collapsed .fw-body { display: none; }
+.fw-body { margin-top: 12px; display: grid; gap: 12px; }
+.fw-presets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.fw-chip { padding: 9px 0; border-radius: 999px; border: 1px solid var(--border-strong); background: transparent; font-weight: 700; font-size: .85rem; color: var(--text); }
+.fw-chip.on { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.fw-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.fw-fields label { display: grid; gap: 6px; font-size: .8rem; font-weight: 700; }
+.fw-foot { display: flex; align-items: center; gap: 8px; }
+.fw-laps { flex: 1; font-size: .78rem; color: var(--text-muted); line-height: 1.2; }
+.fw-sound { display: flex; align-items: center; justify-content: space-between; font-size: .85rem; }
+.nav-chip { font-size: .72rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--primary); }
+body.in-exam .focus-w { display: none; }
+@media (max-width: 767px) { .focus-w { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); right: 12px; } body.in-session .focus-w { bottom: 12px; } }
 
 </style>
 </head>
@@ -1473,6 +1498,7 @@ button.tq-opt:hover:not(:disabled) { border-color: var(--primary); background: v
             <button class="nav-btn" data-nav="settings"><svg class="i" viewBox="0 0 24 24"><use href="#i-settings"/></svg>Paramètres</button>
         </nav>
         <div class="topbar-actions" style="margin-left:auto">
+            <button class="icon-btn focus-btn" data-action="focus-toggle" title="Temps de concentration (minuteur étude / pause)" aria-label="Temps de concentration"><svg class="i" viewBox="0 0 24 24"><use href="#i-brain"/></svg><span class="nav-chip" id="focus-chip"></span></button>
             <button class="icon-btn" data-action="global-search" title="Rechercher une carte (Ctrl+K)" aria-label="Rechercher"><svg class="i" viewBox="0 0 24 24"><use href="#i-search"/></svg></button>
             <button id="sync-indicator" class="sync-dot hidden" title="Synchronisation cloud" data-action="pop-sync" aria-label="Synchronisation cloud"><svg class="i" viewBox="0 0 24 24"><use href="#i-cloud"/></svg></button>
             <button id="streak-chip" class="streak-chip cold" data-action="pop-streak" title="Série actuelle" aria-label="Série actuelle">
@@ -1829,7 +1855,7 @@ const OPT_DEFAULTS = {
 };
 const DEFAULT_SETTINGS = {
     theme: 'auto', cardSize: 'm', showIntervals: true,
-    autoSpeak: false, autoAudio: false, loadBalance: true, filters: [], sessionSize: 0, sessionTimer: 0, fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
+    autoSpeak: false, autoAudio: false, loadBalance: true, filters: [], sessionSize: 0, fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
     quizCount: 20, writeCount: 20, chronoDuration: 60,
     rolloverHour: 4, syncKey: '', settingsMod: 0, autoBackup: true, libSeen: false, goalName: '', goalDate: '', deckSort: 'recent',
     ...OPT_DEFAULTS
@@ -2291,6 +2317,7 @@ class SuperAnki {
         $('#boot').remove();
         this.go('dashboard');
         if (source === 'legacy') this.toast('Tes cartes et ta progression ont été récupérées', 'success');
+        this.focusInit();
         if (this.data.settings.cloudSync) Cloud.sync();
         else Cloud.setStatus('off');
     }
@@ -3233,10 +3260,6 @@ class SuperAnki {
                 <div class="set-row">
                     <div class="txt"><b>Réviser par petits groupes</b><span>Coupe la session après N cartes ; tu peux enchaîner avec le groupe suivant. « Tout » = pas de coupure.</span></div>
                     ${seg('sessionSize', [[0, 'Tout'], [10, '10'], [20, '20'], [30, '30'], [50, '50']])}
-                </div>
-                <div class="set-row">
-                    <div class="txt"><b>Minuteur de session</b><span>Un compte à rebours pendant tes révisions. À la fin, tu choisis de terminer ou de continuer 5 minutes.</span></div>
-                    ${seg('sessionTimer', [[0, 'Aucun'], [5, '5 min'], [10, '10 min'], [15, '15 min'], [20, '20 min'], [30, '30 min']])}
                 </div>
                 <div class="set-row">
                     <div class="txt"><b>Équilibrer la charge de révision</b><span>Quand plusieurs dates sont possibles pour une carte, choisit le jour le moins chargé : moins de jours à pic.</span></div>
@@ -4769,6 +4792,7 @@ class SuperAnki {
             case 'filter-start': this.startFilter(ds.id); break;
             case 'tool-filter': this.openFilterModal(''); break;
             case 'tool-export': this.openExportApkg(); break;
+            case 'focus-toggle': this.focusToggleOpen(); break;
             case 'study-next-group': this.startStudy(ds.deck || null); break;
             case 'voice-toggle': this.voiceToggle(); break;
             case 'tool-trash': this.openTrash(); break;
@@ -7908,14 +7932,11 @@ Object.assign(SuperAnki.prototype, {
         });
     },
 
-    /* ============ session decor: timer, mic button ============ */
+    /* ============ session decor: mic button, voice bar ============ */
     sessionDecor() {
         const s = this.session;
         if (!s || !s.current || !$('#view-session .session-top')) return;
-        const top = $('#view-session .session-top'), set = this.data.settings, usable = s.kind === 'srs' || s.kind === 'practice';
-        if (usable && set.sessionTimer > 0 && !s.timerEnd) { s.timerEnd = Date.now() + set.sessionTimer * 60000; s.timerPaused = false; }
-        if (usable && s.timerEnd && !top.querySelector('#sess-timer')) top.insertAdjacentHTML('afterbegin', `<span class="sess-timer" id="sess-timer" title="Temps restant">${ic('timer')}<b>${toeicMMSS((s.timerEnd - Date.now()) / 1000)}</b></span>`);
-        if (usable && s.timerEnd && !this.sessTick) this.sessTick = setInterval(() => this.sessionTick(), 1000);
+        const top = $('#view-session .session-top'), usable = s.kind === 'srs' || s.kind === 'practice';
         const speak = top.querySelector('[data-action="speak"]');
         if (usable && speak && !top.querySelector('[data-action="voice-toggle"]')) speak.insertAdjacentHTML('beforebegin', `<button class="icon-btn ${this.voice && this.voice.on ? 'voice-on' : ''}" data-action="voice-toggle" title="Étudier à la voix" aria-label="Étudier à la voix">${ic('mic')}</button>`);
         if (this.voice && this.voice.on && !$('#voice-bar')) { const pb = $('#view-session .pbar'); if (pb) pb.insertAdjacentHTML('afterend', `<div class="voice-bar" id="voice-bar"><span class="rec-dot"></span><span id="voice-msg">…</span></div>`); }
@@ -7924,27 +7945,7 @@ Object.assign(SuperAnki.prototype, {
             if (s.voiceKey !== key) { s.voiceKey = key; this.voiceTurn(); }
         }
     },
-    sessionTick() {
-        const s = this.session;
-        if (!s || !s.timerEnd) { this.sessionCleanup(); return; }
-        if (s.timerPaused) return;
-        const left = (s.timerEnd - Date.now()) / 1000, el = $('#sess-timer b');
-        if (el) el.textContent = toeicMMSS(left);
-        const chip = $('#sess-timer'); if (chip) chip.classList.toggle('low', left < 60);
-        if (left > 0) return;
-        s.timerPaused = true; this.voiceStop(false);
-        const m = this.openModal({
-            title: '⏱️ Temps écoulé', size: 'narrow',
-            body: `<p class="muted">Tu as travaillé ${set_min(s)} minutes. ${s.done} carte${s.done > 1 ? 's' : ''} révisée${s.done > 1 ? 's' : ''}.</p>`,
-            foot: `<button class="btn btn-soft" id="st-more">Encore 5 minutes</button><button class="btn btn-primary" id="st-end">${ic('check')}Terminer</button>`,
-            onClose: () => { if (this.session === s && s.timerPaused && !s.ending) { s.timerEnd = Date.now() + 5 * 60000; s.timerPaused = false; } }
-        });
-        $('#st-more', m).addEventListener('click', () => this.closeModal(m));
-        $('#st-end', m).addEventListener('click', () => { s.ending = true; this.closeModal(m); this.showSummary(); });
-        function set_min(x) { return Math.max(1, Math.round((Date.now() - x.startedAt) / 60000)); }
-    },
     sessionCleanup() {
-        clearInterval(this.sessTick); this.sessTick = null;
         this.voiceStop(true);
     },
 
@@ -8036,6 +8037,157 @@ Object.assign(SuperAnki.prototype, {
 /* the session decorations (timer, mic, voice bar) are added after every render of a card */
 (() => { const base = SuperAnki.prototype.renderSession; SuperAnki.prototype.renderSession = function (...a) { const r = base.apply(this, a); this.sessionDecor(); return r; }; })();
 (() => { const base = SuperAnki.prototype.showSummary; SuperAnki.prototype.showSummary = function (...a) { this.sessionCleanup(); return base.apply(this, a); }; })();
+
+/* ============================================================
+   "Temps de concentration": study / break timer (Pomodoro) as a floating widget.
+   Presets 20/5, 25/5, 45/10, 50/15 or your own minutes, laps counter, skip, reset, and a bell
+   (synthesized with Web Audio, no file) when study time ends and when the break ends.
+   State is kept on this device (localStorage) and survives a reload.
+   ============================================================ */
+Object.assign(ICONS, { bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>' });
+const FOCUS_KEY = 'superanki_focus';
+const FOCUS_PRESETS = [[20, 5], [25, 5], [45, 10], [50, 15]];
+const FOCUS_DEFAULT = { open: false, collapsed: false, phase: 'study', running: false, endsAt: 0, remaining: 25 * 60000, study: 25, brk: 5, laps: 0, sound: true };
+
+Object.assign(SuperAnki.prototype, {
+    focusInit() {
+        let st = null;
+        try { st = JSON.parse(localStorage.getItem(FOCUS_KEY) || 'null'); } catch { st = null; }
+        const f = { ...FOCUS_DEFAULT, ...(st && typeof st === 'object' ? st : {}) };
+        f.study = clamp(Math.round(num(f.study, 25)), 1, 240); f.brk = clamp(Math.round(num(f.brk, 5)), 1, 120);
+        f.phase = f.phase === 'break' ? 'break' : 'study';
+        f.remaining = clamp(num(f.remaining, f.study * 60000), 0, 240 * 60000);
+        f.laps = Math.max(0, Math.round(num(f.laps, 0)));
+        this.focus = f;
+        const el = document.createElement('div');
+        el.id = 'focus-w'; el.className = 'focus-w hidden'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Temps de concentration');
+        document.body.appendChild(el);
+        el.addEventListener('click', e => { const b = e.target.closest('[data-fw]'); if (b) this.focusAct(b.dataset.fw, b); });
+        el.addEventListener('change', e => { const k = e.target.dataset && e.target.dataset.fwin; if (k) this.focusInput(k, e.target); if (e.target.id === 'fw-sound') this.focusSet({ sound: e.target.checked }); });
+        this.focusTimer = setInterval(() => this.focusTick(), 500);
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') this.focusTick(); });
+        this.focusRender();
+    },
+    focusSave() { try { localStorage.setItem(FOCUS_KEY, JSON.stringify(this.focus)); } catch { /* storage blocked */ } },
+    focusSet(patch) { Object.assign(this.focus, patch); this.focusSave(); this.focusRender(); },
+    focusLeft() { const f = this.focus; return f.running ? Math.max(0, f.endsAt - Date.now()) : f.remaining; },
+    focusFull(phase = this.focus.phase) { return (phase === 'study' ? this.focus.study : this.focus.brk) * 60000; },
+    focusFmt(ms) { const s = Math.ceil(ms / 1000); return `${pad(Math.floor(s / 60))}:${pad(s % 60)}`; },
+    focusAct(a, el) {
+        const f = this.focus;
+        if (a === 'toggle') this.focusToggle();
+        else if (a === 'collapse') this.focusSet({ collapsed: !f.collapsed });
+        else if (a === 'close') { if (f.running) { f.remaining = this.focusLeft(); f.running = false; } this.focusSet({ open: false }); }
+        else if (a === 'skip') this.focusPhaseEnd(false);
+        else if (a === 'reset') this.focusSet({ phase: 'study', running: false, endsAt: 0, remaining: f.study * 60000, laps: 0 });
+        else if (a === 'preset') { const [s, b] = el.dataset.v.split('/').map(Number); this.focusConfig(s, b); }
+        else if (a === 'test') { this.focusUnlock(); this.focusRing('study'); }
+    },
+    focusInput(k, el) {
+        const f = this.focus;
+        if (k === 'study') this.focusConfig(clamp(Math.round(num(el.value, f.study)), 1, 240), f.brk, true);
+        else this.focusConfig(f.study, clamp(Math.round(num(el.value, f.brk)), 1, 120), true);
+    },
+    /* new durations: the current phase restarts with its new length (keeps running if it was running).
+       `light` = typed in a field: update the widget without rebuilding it (keeps the cursor where it is). */
+    focusConfig(study, brk, light = false) {
+        const f = this.focus, full = (f.phase === 'study' ? study : brk) * 60000;
+        const changedPhase = (f.phase === 'study' ? f.study !== study : f.brk !== brk);
+        f.study = study; f.brk = brk;
+        if (changedPhase || !light) { f.remaining = full; if (f.running) f.endsAt = Date.now() + full; }
+        this.focusSave();
+        if (!light) { this.focusRender(); return; }
+        $$('#focus-w .fw-chip').forEach(c => { const [s, b] = c.dataset.v.split('/').map(Number); c.classList.toggle('on', s === study && b === brk); });
+        this.focusTick();
+    },
+    focusToggle() {
+        const f = this.focus;
+        this.focusUnlock();
+        if (f.running) { f.remaining = this.focusLeft(); f.running = false; }
+        else { if (f.remaining <= 0) f.remaining = this.focusFull(); f.running = true; f.endsAt = Date.now() + f.remaining; }
+        this.focusSave(); this.focusRender();
+    },
+    focusTick() {
+        const f = this.focus;
+        if (!f) return;
+        if (f.running && Date.now() >= f.endsAt) { this.focusPhaseEnd(true); return; }
+        const t = $('#fw-time'), left = this.focusLeft();
+        if (t) t.textContent = this.focusFmt(left);
+        const nav = $('#focus-chip'); if (nav) nav.textContent = f.running ? this.focusFmt(left) : '';
+        document.title = f.running ? `${f.phase === 'study' ? '📚' : '☕'} ${this.focusFmt(left)} · SuperAnki Pro` : 'SuperAnki Pro';
+    },
+    /* natural = the time ran out (rings, laps count). Otherwise it was skipped. */
+    focusPhaseEnd(natural) {
+        const f = this.focus, was = f.phase;
+        if (was === 'study') {
+            if (natural) f.laps++;
+            f.phase = 'break'; f.remaining = f.brk * 60000;
+            f.running = natural ? true : f.running;
+            if (f.running) f.endsAt = Date.now() + f.remaining;
+        } else {
+            f.phase = 'study'; f.remaining = f.study * 60000;
+            f.running = natural ? false : f.running;
+            if (f.running) f.endsAt = Date.now() + f.remaining;
+        }
+        if (natural) {
+            this.focusRing(was);
+            this.toast(was === 'study' ? `Temps de travail terminé ! Pause de ${f.brk} min ☕` : 'Pause terminée : on reprend ? 📚', 'success', ic('bell'));
+            try { if ('Notification' in window && Notification.permission === 'granted') new Notification(was === 'study' ? 'Temps de travail terminé' : 'Pause terminée', { body: was === 'study' ? `Pause de ${f.brk} min` : 'Prêt à reprendre ?', icon: 'icon-192.png' }); } catch { /* ignore */ }
+        }
+        this.focusSave(); this.focusRender(); this.focusTick();
+    },
+    /* the bell: two bell-like tones sequences, different for end of study and end of break */
+    focusUnlock() {
+        try {
+            if (!this.audioCtx) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) this.audioCtx = new AC(); }
+            if (this.audioCtx && this.audioCtx.state === 'suspended') this.audioCtx.resume();
+        } catch { /* no audio */ }
+    },
+    focusRing(kind) {
+        const f = this.focus;
+        try { if (navigator.vibrate) navigator.vibrate([250, 120, 250]); } catch { /* ignore */ }
+        if (!f.sound) return;
+        this.focusUnlock();
+        const ac = this.audioCtx;
+        if (!ac) return;
+        const notes = kind === 'study' ? [988, 1319, 1760] : [784, 988];
+        const t0 = ac.currentTime + 0.05;
+        [0, 1.6].forEach(rep => notes.forEach((hz, i) => {
+            const t = t0 + rep + i * 0.28;
+            [[1, 0.22], [2.76, 0.07], [5.4, 0.03]].forEach(([mul, vol]) => {
+                const o = ac.createOscillator(), g = ac.createGain();
+                o.type = 'sine'; o.frequency.value = hz * mul;
+                g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.1);
+                o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + 1.2);
+            });
+        }));
+    },
+    focusToggleOpen() {
+        const f = this.focus;
+        this.focusSet({ open: !f.open });
+    },
+    focusRender() {
+        const f = this.focus, el = $('#focus-w');
+        if (!f || !el) return;
+        el.classList.toggle('hidden', !f.open);
+        el.classList.toggle('collapsed', f.collapsed);
+        el.dataset.phase = f.phase;
+        const btn = $('[data-action="focus-toggle"]'); if (btn) btn.classList.toggle('active', f.open);
+        const act = (f.phase === 'study' ? `${f.study}/${f.brk}` : '');
+        el.innerHTML = `<div class="fw-head"><span class="fw-ico">${ic('brain')}</span>
+            <div class="fw-title"><small>Temps de concentration</small><b id="fw-time">${this.focusFmt(this.focusLeft())}</b><span class="fw-phase">${f.phase === 'study' ? 'Étude' : 'Pause'}</span></div>
+            <button class="icon-btn" data-fw="toggle" aria-label="${f.running ? 'Pause' : 'Démarrer'}" title="${f.running ? 'Mettre en pause' : 'Démarrer'}">${ic(f.running ? 'pause' : 'play')}</button>
+            <button class="icon-btn fw-chev" data-fw="collapse" aria-label="Réduire ou agrandir" title="Réduire / agrandir">${ic('chevronDown')}</button>
+            <button class="icon-btn" data-fw="close" aria-label="Fermer" title="Fermer">${ic('x')}</button></div>
+            <div class="fw-body">
+                <div class="fw-presets">${FOCUS_PRESETS.map(([s, b]) => `<button class="fw-chip ${f.study === s && f.brk === b ? 'on' : ''}" data-fw="preset" data-v="${s}/${b}">${s}/${b}</button>`).join('')}</div>
+                <div class="fw-fields"><label>Étude (min)<input class="input" type="number" min="1" max="240" value="${f.study}" data-fwin="study" inputmode="numeric"></label>
+                    <label>Pause (min)<input class="input" type="number" min="1" max="120" value="${f.brk}" data-fwin="brk" inputmode="numeric"></label></div>
+                <div class="fw-foot"><span class="fw-laps">Tours effectués : ${f.laps}</span><button class="btn btn-soft btn-sm" data-fw="skip">Sauter</button><button class="btn btn-soft btn-sm" data-fw="reset">${ic('reset')}Réinitialiser</button></div>
+                <div class="fw-sound"><label class="check"><input type="checkbox" id="fw-sound" ${f.sound ? 'checked' : ''}> ${ic('bell', 'inl')} Sonnerie</label><button class="link" data-fw="test">Tester le son</button></div>
+            </div>`;
+    }
+});
 
 /* ============================================================
    TOEIC simulator (Listening & Reading), in the format of the real test:

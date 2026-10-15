@@ -54,6 +54,7 @@ Le fichier `.apkg` est vérifié avec SQLite (`integrity_check`) et réimporté 
 ## Étude : voix, groupes, minuteur, corbeille
 
 - **Mode voix** (micro dans la session) : l'app lit la question, tu dis « réponse », elle lit la réponse, tu dis « raté / difficile / bien / facile ». Nécessite la reconnaissance vocale du navigateur (Chrome, Edge, Safari récent, https).
-- **Petits groupes** et **minuteur de session** : Paramètres › Révision.
+- **Petits groupes** : Paramètres › Révision.
+- **Temps de concentration** (bouton cerveau en haut) : minuteur étude / pause (20/5, 25/5, 45/10, 50/15 ou tes durées), tours, sonnerie à la fin de l'étude et de la pause.
 - **Corbeille** : Paramètres › Outils. Cartes et paquets supprimés gardés 30 jours, restauration avec leur progression.
 - Logo refait (`logo.svg`, icônes 192/512 pour l'installation).

@@ -269,7 +269,7 @@ const OPT_DEFAULTS = {
 };
 const DEFAULT_SETTINGS = {
     theme: 'auto', cardSize: 'm', showIntervals: true,
-    autoSpeak: false, autoAudio: false, loadBalance: true, filters: [], sessionSize: 0, sessionTimer: 0, fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
+    autoSpeak: false, autoAudio: false, loadBalance: true, filters: [], sessionSize: 0, fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
     quizCount: 20, writeCount: 20, chronoDuration: 60,
     rolloverHour: 4, syncKey: '', settingsMod: 0, autoBackup: true, libSeen: false, goalName: '', goalDate: '', deckSort: 'recent',
     ...OPT_DEFAULTS
@@ -731,6 +731,7 @@ class SuperAnki {
         $('#boot').remove();
         this.go('dashboard');
         if (source === 'legacy') this.toast('Tes cartes et ta progression ont été récupérées', 'success');
+        this.focusInit();
         if (this.data.settings.cloudSync) Cloud.sync();
         else Cloud.setStatus('off');
     }
@@ -1673,10 +1674,6 @@ class SuperAnki {
                 <div class="set-row">
                     <div class="txt"><b>Réviser par petits groupes</b><span>Coupe la session après N cartes ; tu peux enchaîner avec le groupe suivant. « Tout » = pas de coupure.</span></div>
                     ${seg('sessionSize', [[0, 'Tout'], [10, '10'], [20, '20'], [30, '30'], [50, '50']])}
-                </div>
-                <div class="set-row">
-                    <div class="txt"><b>Minuteur de session</b><span>Un compte à rebours pendant tes révisions. À la fin, tu choisis de terminer ou de continuer 5 minutes.</span></div>
-                    ${seg('sessionTimer', [[0, 'Aucun'], [5, '5 min'], [10, '10 min'], [15, '15 min'], [20, '20 min'], [30, '30 min']])}
                 </div>
                 <div class="set-row">
                     <div class="txt"><b>Équilibrer la charge de révision</b><span>Quand plusieurs dates sont possibles pour une carte, choisit le jour le moins chargé : moins de jours à pic.</span></div>
@@ -3209,6 +3206,7 @@ class SuperAnki {
             case 'filter-start': this.startFilter(ds.id); break;
             case 'tool-filter': this.openFilterModal(''); break;
             case 'tool-export': this.openExportApkg(); break;
+            case 'focus-toggle': this.focusToggleOpen(); break;
             case 'study-next-group': this.startStudy(ds.deck || null); break;
             case 'voice-toggle': this.voiceToggle(); break;
             case 'tool-trash': this.openTrash(); break;
