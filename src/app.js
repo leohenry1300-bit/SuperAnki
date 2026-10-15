@@ -1115,7 +1115,7 @@ class SuperAnki {
         const chronoBest = d.stats.chronoBest[d.settings.chronoDuration] || 0;
         const goal = this.goalInfo();
         const libTotal = PACKS.reduce((n, p) => n + this.packCardIds(p).length, 0);
-        const libBanner = !d.settings.libSeen ? `<div class="panel lib-banner"><span class="lib-ico">${ic('sparkles')}</span><div style="flex:1;min-width:200px"><b>Nouveau : la bibliothèque de paquets</b><p class="small muted">${libTotal.toLocaleString('fr-FR')} cartes prêtes à apprendre : anglais et TOEIC, banque, assurance, finance, BUT TC.</p></div><button class="btn btn-primary btn-sm" data-action="open-library">Découvrir</button></div>` : '';
+        const libBanner = !d.settings.libSeen && !d.cards.some(c => c.id.startsWith('pk_')) ? `<div class="panel lib-banner"><span class="lib-ico">${ic('sparkles')}</span><div style="flex:1;min-width:200px"><b>Nouveau : la bibliothèque de paquets</b><p class="small muted">${libTotal.toLocaleString('fr-FR')} cartes prêtes à apprendre : anglais et TOEIC, banque, assurance, finance, BUT TC.</p></div><button class="btn btn-primary btn-sm" data-action="open-library">Découvrir</button></div>` : '';
 
         $('#view-dashboard').innerHTML = `
         <div class="stack">
@@ -1623,7 +1623,7 @@ class SuperAnki {
                 <h3>${ic('target')} Objectif / examen</h3>
                 <p class="small muted">Un compte à rebours s'affiche sur l'accueil (ex. ton TOEIC).</p>
                 <div class="set-row"><div class="txt"><b>Nom</b></div><div class="opt-ctl"><input class="input" id="goal-name" value="${esc(s.goalName)}" placeholder="TOEIC" style="min-width:200px"></div></div>
-                <div class="set-row"><div class="txt"><b>Date</b><span>Laisse vide pour supprimer l'objectif.</span></div><div class="opt-ctl"><input class="input" id="goal-date" type="date" value="${esc(s.goalDate)}"></div></div>
+                <div class="set-row"><div class="txt"><b>Date</b><span>Laisse vide pour supprimer l'objectif.</span></div><div class="opt-ctl"><input class="input" id="goal-date" aria-label="Date de l'objectif" type="date" value="${esc(s.goalDate)}"></div></div>
                 <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn btn-primary btn-sm" data-action="save-goal">${ic('check')}Enregistrer</button></div>
             </div>
 

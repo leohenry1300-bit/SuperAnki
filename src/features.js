@@ -604,6 +604,7 @@ Object.assign(SuperAnki.prototype, {
         return out;
     },
     bindOptionsForm(root) {
+        $$('[data-opt], [data-lim]', root).forEach(el => { if (!el.getAttribute('aria-label')) { const b = el.closest('.opt-row'); const t = b && b.querySelector('.txt b'); if (t) el.setAttribute('aria-label', t.textContent); } });
         const sync = () => {
             const fsr = ($('[data-opt="scheduler"]', root) || {}).value === 'fsrs';
             this.optionFields().forEach(f => { const row = $(`[data-optrow="${f.key}"]`, root); if (row && f.only) row.style.display = ((f.only === 'fsrs') === fsr) ? '' : 'none'; });

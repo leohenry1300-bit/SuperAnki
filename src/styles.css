@@ -1469,3 +1469,16 @@ body.in-exam .focus-w { display: none; }
   .topbar-actions .icon-btn { width: 36px; height: 36px; }
   .streak-chip { padding: 6px 9px; }
 }
+
+/* small details: compact focus pill, tap targets, themes on phones */
+.focus-w.collapsed { width: auto; max-width: none; padding: 6px 8px 6px 10px; border-radius: 999px; }
+.focus-w.collapsed .fw-ico, .focus-w.collapsed .fw-title small, .focus-w.collapsed .fw-phase { display: none; }
+.focus-w.collapsed .fw-title b { font-size: 1.15rem; }
+.focus-w.collapsed .fw-head { gap: 2px; }
+@media (max-width: 767px) { body.in-session .focus-w { top: 66px; bottom: auto; right: 10px; } body.in-session .focus-w.collapsed { display: none; } }
+@media (max-width: 480px) { .theme-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
+@media (pointer: coarse) {
+  .link { min-height: 36px; padding: 6px 2px; }
+  [data-action="toggle-deck"] { min-width: 38px; }
+  [data-action="chart-toggle"] { min-height: 36px; }
+}

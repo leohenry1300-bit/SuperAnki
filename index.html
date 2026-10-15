@@ -1489,6 +1489,19 @@ body.in-exam .focus-w { display: none; }
   .streak-chip { padding: 6px 9px; }
 }
 
+/* small details: compact focus pill, tap targets, themes on phones */
+.focus-w.collapsed { width: auto; max-width: none; padding: 6px 8px 6px 10px; border-radius: 999px; }
+.focus-w.collapsed .fw-ico, .focus-w.collapsed .fw-title small, .focus-w.collapsed .fw-phase { display: none; }
+.focus-w.collapsed .fw-title b { font-size: 1.15rem; }
+.focus-w.collapsed .fw-head { gap: 2px; }
+@media (max-width: 767px) { body.in-session .focus-w { top: 66px; bottom: auto; right: 10px; } body.in-session .focus-w.collapsed { display: none; } }
+@media (max-width: 480px) { .theme-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
+@media (pointer: coarse) {
+  .link { min-height: 36px; padding: 6px 2px; }
+  [data-action="toggle-deck"] { min-width: 38px; }
+  [data-action="chart-toggle"] { min-height: 36px; }
+}
+
 </style>
 </head>
 <body>
@@ -2709,7 +2722,7 @@ class SuperAnki {
         const chronoBest = d.stats.chronoBest[d.settings.chronoDuration] || 0;
         const goal = this.goalInfo();
         const libTotal = PACKS.reduce((n, p) => n + this.packCardIds(p).length, 0);
-        const libBanner = !d.settings.libSeen ? `<div class="panel lib-banner"><span class="lib-ico">${ic('sparkles')}</span><div style="flex:1;min-width:200px"><b>Nouveau : la bibliothèque de paquets</b><p class="small muted">${libTotal.toLocaleString('fr-FR')} cartes prêtes à apprendre : anglais et TOEIC, banque, assurance, finance, BUT TC.</p></div><button class="btn btn-primary btn-sm" data-action="open-library">Découvrir</button></div>` : '';
+        const libBanner = !d.settings.libSeen && !d.cards.some(c => c.id.startsWith('pk_')) ? `<div class="panel lib-banner"><span class="lib-ico">${ic('sparkles')}</span><div style="flex:1;min-width:200px"><b>Nouveau : la bibliothèque de paquets</b><p class="small muted">${libTotal.toLocaleString('fr-FR')} cartes prêtes à apprendre : anglais et TOEIC, banque, assurance, finance, BUT TC.</p></div><button class="btn btn-primary btn-sm" data-action="open-library">Découvrir</button></div>` : '';
 
         $('#view-dashboard').innerHTML = `
         <div class="stack">
@@ -3217,7 +3230,7 @@ class SuperAnki {
                 <h3>${ic('target')} Objectif / examen</h3>
                 <p class="small muted">Un compte à rebours s'affiche sur l'accueil (ex. ton TOEIC).</p>
                 <div class="set-row"><div class="txt"><b>Nom</b></div><div class="opt-ctl"><input class="input" id="goal-name" value="${esc(s.goalName)}" placeholder="TOEIC" style="min-width:200px"></div></div>
-                <div class="set-row"><div class="txt"><b>Date</b><span>Laisse vide pour supprimer l'objectif.</span></div><div class="opt-ctl"><input class="input" id="goal-date" type="date" value="${esc(s.goalDate)}"></div></div>
+                <div class="set-row"><div class="txt"><b>Date</b><span>Laisse vide pour supprimer l'objectif.</span></div><div class="opt-ctl"><input class="input" id="goal-date" aria-label="Date de l'objectif" type="date" value="${esc(s.goalDate)}"></div></div>
                 <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn btn-primary btn-sm" data-action="save-goal">${ic('check')}Enregistrer</button></div>
             </div>
 
@@ -6064,6 +6077,7 @@ Object.assign(SuperAnki.prototype, {
         return out;
     },
     bindOptionsForm(root) {
+        $$('[data-opt], [data-lim]', root).forEach(el => { if (!el.getAttribute('aria-label')) { const b = el.closest('.opt-row'); const t = b && b.querySelector('.txt b'); if (t) el.setAttribute('aria-label', t.textContent); } });
         const sync = () => {
             const fsr = ($('[data-opt="scheduler"]', root) || {}).value === 'fsrs';
             this.optionFields().forEach(f => { const row = $(`[data-optrow="${f.key}"]`, root); if (row && f.only) row.style.display = ((f.only === 'fsrs') === fsr) ? '' : 'none'; });
@@ -7945,6 +7959,7 @@ Object.assign(SuperAnki.prototype, {
         const s = this.session;
         if (!s || !s.current || !$('#view-session .session-top')) return;
         const top = $('#view-session .session-top'), usable = s.kind === 'srs' || s.kind === 'practice';
+        if (!s.focusSeen) { s.focusSeen = true; if (this.focus && this.focus.open && !this.focus.collapsed) this.focusSet({ collapsed: true }); }
         const speak = top.querySelector('[data-action="speak"]');
         if (usable && speak && !top.querySelector('[data-action="voice-toggle"]')) speak.insertAdjacentHTML('beforebegin', `<button class="icon-btn ${this.voice && this.voice.on ? 'voice-on' : ''}" data-action="voice-toggle" title="Étudier à la voix" aria-label="Étudier à la voix">${ic('mic')}</button>`);
         if (this.voice && this.voice.on && !$('#voice-bar')) { const pb = $('#view-session .pbar'); if (pb) pb.insertAdjacentHTML('afterend', `<div class="voice-bar" id="voice-bar"><span class="rec-dot"></span><span id="voice-msg">…</span></div>`); }

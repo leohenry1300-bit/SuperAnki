@@ -124,6 +124,7 @@ Object.assign(SuperAnki.prototype, {
         const s = this.session;
         if (!s || !s.current || !$('#view-session .session-top')) return;
         const top = $('#view-session .session-top'), usable = s.kind === 'srs' || s.kind === 'practice';
+        if (!s.focusSeen) { s.focusSeen = true; if (this.focus && this.focus.open && !this.focus.collapsed) this.focusSet({ collapsed: true }); }
         const speak = top.querySelector('[data-action="speak"]');
         if (usable && speak && !top.querySelector('[data-action="voice-toggle"]')) speak.insertAdjacentHTML('beforebegin', `<button class="icon-btn ${this.voice && this.voice.on ? 'voice-on' : ''}" data-action="voice-toggle" title="Étudier à la voix" aria-label="Étudier à la voix">${ic('mic')}</button>`);
         if (this.voice && this.voice.on && !$('#voice-bar')) { const pb = $('#view-session .pbar'); if (pb) pb.insertAdjacentHTML('afterend', `<div class="voice-bar" id="voice-bar"><span class="rec-dot"></span><span id="voice-msg">…</span></div>`); }
