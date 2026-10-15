@@ -269,7 +269,7 @@ const OPT_DEFAULTS = {
 };
 const DEFAULT_SETTINGS = {
     theme: 'auto', cardSize: 'm', showIntervals: true,
-    autoSpeak: false, autoAudio: false, loadBalance: true, filters: [], fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
+    autoSpeak: false, autoAudio: false, loadBalance: true, filters: [], sessionSize: 0, sessionTimer: 0, fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
     quizCount: 20, writeCount: 20, chronoDuration: 60,
     rolloverHour: 4, syncKey: '', settingsMod: 0, autoBackup: true, libSeen: false, goalName: '', goalDate: '', deckSort: 'recent',
     ...OPT_DEFAULTS
@@ -443,7 +443,7 @@ function normalizeState(raw) {
     const deleted = {};
     if (raw.deleted && typeof raw.deleted === 'object') Object.entries(raw.deleted).forEach(([k, v]) => { if (num(v, 0) > 0) deleted[k] = num(v); });
     const revlog = toArray(raw.revlog).filter(r => Array.isArray(r) && r.length >= 4 && Number.isFinite(r[0])).slice(-REVLOG_MAX);
-    return { version: 6, decks, cards, presets, stats: normalizeStats(raw.stats), settings, revlog, deleted, toeic: normalizeToeic(raw.toeic), media: normalizeMedia(raw.media), noteTypes: normalizeNoteTypes(raw.noteTypes), updatedAt: num(raw.updatedAt, 0) };
+    return { version: 6, decks, cards, presets, stats: normalizeStats(raw.stats), settings, revlog, deleted, toeic: normalizeToeic(raw.toeic), media: normalizeMedia(raw.media), noteTypes: normalizeNoteTypes(raw.noteTypes), trash: normalizeTrash(raw.trash), updatedAt: num(raw.updatedAt, 0) };
 }
 function cardSig(c) {
     return [c.deckId, c.state, c.step, c.due, c.interval, c.ease, c.reps, c.lapses, c.suspended ? 1 : 0, c.flag, c.marked ? 1 : 0, c.buriedUntil, c.errors, c.wrong, c.right,
@@ -736,12 +736,14 @@ class SuperAnki {
     }
 
     serialize() {
-        const { version, decks, cards, presets, stats, settings, revlog, deleted, toeic, media, noteTypes, updatedAt } = this.data;
-        return JSON.stringify({ version, decks, cards, presets, stats, settings, revlog, deleted, toeic, media, noteTypes, updatedAt });
+        const { version, decks, cards, presets, stats, settings, revlog, deleted, toeic, media, noteTypes, trash, updatedAt } = this.data;
+        return JSON.stringify({ version, decks, cards, presets, stats, settings, revlog, deleted, toeic, media, noteTypes, trash, updatedAt });
     }
     /* Change tracking: per-card modification times let two devices merge instead of overwriting each other */
     initSigs() {
         this.sigs = new Map(this.data.cards.map(c => [c.id, cardSig(c)]));
+        this.refs = new Map(this.data.cards.map(c => [c.id, c]));
+        this.drefs = new Map(this.data.decks.map(d => [d.id, d]));
         this.dsigs = new Map([...this.data.decks.map(d => [d.id, deckSig(d)]), ...this.data.presets.map(x => [x.id, presetSig(x)]), ...this.data.noteTypes.map(x => [x.id, noteTypeSig(x)])]);
     }
     detectChanges(now) {
@@ -749,14 +751,16 @@ class SuperAnki {
         d.cards.forEach(c => {
             seen.add(c.id);
             const sig = cardSig(c);
-            if (this.sigs.get(c.id) !== sig) { c.mod = now; this.sigs.set(c.id, sig); delete d.deleted[c.id]; }
+            if (this.sigs.get(c.id) !== sig) { c.mod = now; this.sigs.set(c.id, sig); delete d.deleted[c.id]; if (d.trash.length) this.trashDrop('card', c.id); }
+            this.refs.set(c.id, c);
         });
-        [...this.sigs.keys()].forEach(id => { if (!seen.has(id)) { this.sigs.delete(id); d.deleted[id] = now; } });
+        [...this.sigs.keys()].forEach(id => { if (!seen.has(id)) { this.sigs.delete(id); d.deleted[id] = now; const gone = this.refs.get(id); if (gone) this.trashAdd('card', gone, now); this.refs.delete(id); } });
         const seenD = new Set();
         d.decks.forEach(k => {
             seenD.add(k.id);
             const sig = deckSig(k);
-            if (this.dsigs.get(k.id) !== sig) { k.mod = now; this.dsigs.set(k.id, sig); delete d.deleted[k.id]; }
+            if (this.dsigs.get(k.id) !== sig) { k.mod = now; this.dsigs.set(k.id, sig); delete d.deleted[k.id]; if (d.trash.length) this.trashDrop('deck', k.id); }
+            this.drefs.set(k.id, k);
         });
         d.presets.forEach(x => {
             seenD.add(x.id);
@@ -768,6 +772,7 @@ class SuperAnki {
             const sig = noteTypeSig(x);
             if (this.dsigs.get(x.id) !== sig) { x.mod = now; this.dsigs.set(x.id, sig); delete d.deleted[x.id]; }
         });
+        [...this.dsigs.keys()].forEach(id => { if (!seenD.has(id) && this.drefs.has(id)) { this.trashAdd('deck', this.drefs.get(id), now); this.drefs.delete(id); } });
         [...this.dsigs.keys()].forEach(id => { if (!seenD.has(id)) { this.dsigs.delete(id); d.deleted[id] = now; } });
         const keys = Object.keys(d.deleted);
         if (keys.length > 6000) keys.sort((a, b) => d.deleted[a] - d.deleted[b]).slice(0, keys.length - 5000).forEach(k => delete d.deleted[k]);
@@ -1666,6 +1671,14 @@ class SuperAnki {
                     <div style="display:flex;gap:10px;align-items:center">${sw('autoBackup', 'Sauvegardes automatiques')}<button class="btn btn-soft btn-sm" data-action="backup-now">${ic('plus')}Maintenant</button></div>
                 </div>
                 <div class="set-row">
+                    <div class="txt"><b>Réviser par petits groupes</b><span>Coupe la session après N cartes ; tu peux enchaîner avec le groupe suivant. « Tout » = pas de coupure.</span></div>
+                    ${seg('sessionSize', [[0, 'Tout'], [10, '10'], [20, '20'], [30, '30'], [50, '50']])}
+                </div>
+                <div class="set-row">
+                    <div class="txt"><b>Minuteur de session</b><span>Un compte à rebours pendant tes révisions. À la fin, tu choisis de terminer ou de continuer 5 minutes.</span></div>
+                    ${seg('sessionTimer', [[0, 'Aucun'], [5, '5 min'], [10, '10 min'], [15, '15 min'], [20, '20 min'], [30, '30 min']])}
+                </div>
+                <div class="set-row">
                     <div class="txt"><b>Équilibrer la charge de révision</b><span>Quand plusieurs dates sont possibles pour une carte, choisit le jour le moins chargé : moins de jours à pic.</span></div>
                     ${sw('loadBalance', 'Équilibrer la charge')}
                 </div>
@@ -1726,7 +1739,10 @@ class SuperAnki {
         const sorters = { due: (a, b) => a.due - b.due, ivlAsc: (a, b) => a.interval - b.interval, ivlDesc: (a, b) => b.interval - a.interval, easeAsc: (a, b) => a.ease - b.ease, added: (a, b) => a.created - b.created };
         const revs = cfg0.reviewSort === 'random' ? shuffle([...plan.reviews]) : [...plan.reviews].sort(sorters[cfg0.reviewSort]);
         const revIds = revs.map(c => c.id), newIds = plan.news.map(c => c.id);
-        const queue = cfg0.newReviewOrder === 'after' ? [...revIds, ...newIds] : cfg0.newReviewOrder === 'before' ? [...newIds, ...revIds] : interleave(revIds, newIds);
+        let queue = cfg0.newReviewOrder === 'after' ? [...revIds, ...newIds] : cfg0.newReviewOrder === 'before' ? [...newIds, ...revIds] : interleave(revIds, newIds);
+        const group = this.data.settings.sessionSize;
+        const grouped = group > 0 && queue.length > group;
+        if (grouped) queue = queue.slice(0, group);
         if (!queue.length && !plan.learning.length) {
             if (plan.freshTotal > 0 && !extraNew) {
                 this.confirm({
@@ -1740,7 +1756,7 @@ class SuperAnki {
             return;
         }
         const deck = deckId && this.deck(deckId);
-        this.beginSrs(deck ? this.deckLabel(deck) : 'Révision du jour', queue, plan.learning);
+        this.beginSrs(deck ? this.deckLabel(deck) : 'Révision du jour', queue, plan.learning, { deckId: deckId || null, grouped });
     }
     /* Starts a scheduled (Anki-style) session on an explicit list of cards: custom study, review ahead... */
     startSrsIds(title, ids, keepOrder = false) {
@@ -1750,10 +1766,10 @@ class SuperAnki {
         if (!queue.length) { this.toast('Aucune carte à étudier.', 'warning'); return; }
         this.beginSrs(title, queue, learning);
     }
-    beginSrs(title, queue, learning) {
+    beginSrs(title, queue, learning, extra = {}) {
         this.session = {
             kind: 'srs', title, answer: this.data.settings.answerMode, queue, learning, current: null, lastId: null,
-            revealed: false, typed: null, done: 0, correct: 0, missed: [], history: [], startedAt: Date.now(), cardStart: Date.now()
+            revealed: false, typed: null, done: 0, correct: 0, missed: [], history: [], startedAt: Date.now(), cardStart: Date.now(), ...extra
         };
         this.go('session');
         this.nextCard();
@@ -1779,6 +1795,7 @@ class SuperAnki {
     endSession(goHome = true) {
         const s = this.session;
         if (!s) return;
+        this.sessionCleanup();
         if (s.timer) clearInterval(s.timer);
         clearTimeout(this.autoTimer);
         if ('speechSynthesis' in window) speechSynthesis.cancel();
@@ -2043,7 +2060,7 @@ class SuperAnki {
         if (!text) return;
         speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
-        u.lang = 'fr-FR';
+        u.lang = guessLang(text);
         speechSynthesis.speak(u);
     }
 
@@ -2228,6 +2245,9 @@ class SuperAnki {
         if (!s.done && s.kind !== 'chrono') { this.endSession(true); return; }
         const missed = s.missed.map(id => this.card(id)).filter(Boolean);
         const kind = s.kind;
+        let groupLeft = 0;
+        if (kind === 'srs' && s.grouped) { const pl = this.studyPlan(s.deckId ? [s.deckId] : null); groupLeft = pl.reviews.length + pl.news.length; }
+        const groupDeck = s.deckId || '';
         const replay = { kind, pool: s.pool, duration: s.duration, total: s.total, title: s.title };
         this.session = null;
         this.lastSession = { missed: missed.map(c => c.id), replay };
@@ -2248,7 +2268,8 @@ class SuperAnki {
                 ${missed.slice(0, 30).map(c => `<div class="missed-item"><div class="rich" style="font-weight:700">${c.front}</div><div class="a">${esc(truncate(stripHtml(c.back), 200))}</div></div>`).join('')}
             </div>` : ''}
             <div style="display:grid;gap:10px">
-                ${missed.length ? `<button class="btn btn-primary btn-lg" data-action="practice-missed">${ic('target')}Retravailler ces ${plural(missed.length, 'erreur')}</button>` : ''}
+                ${groupLeft ? `<button class="btn btn-primary btn-lg" data-action="study-next-group" data-deck="${esc(groupDeck)}">${ic('play')}Groupe suivant (${plural(groupLeft, 'carte restante', 'cartes restantes')})</button>` : ''}
+                ${missed.length ? `<button class="btn ${groupLeft ? 'btn-soft' : 'btn-primary'} btn-lg" data-action="practice-missed">${ic('target')}Retravailler ces ${plural(missed.length, 'erreur')}</button>` : ''}
                 ${kind === 'chrono' || kind === 'quiz' ? `<button class="btn btn-soft btn-lg" data-action="replay">${ic('repeat')}Rejouer</button>` : ''}
                 <button class="btn ${missed.length ? 'btn-soft' : 'btn-primary'} btn-lg" data-action="home">${ic('home')}Retour à l'accueil</button>
             </div>
@@ -3188,6 +3209,9 @@ class SuperAnki {
             case 'filter-start': this.startFilter(ds.id); break;
             case 'tool-filter': this.openFilterModal(''); break;
             case 'tool-export': this.openExportApkg(); break;
+            case 'study-next-group': this.startStudy(ds.deck || null); break;
+            case 'voice-toggle': this.voiceToggle(); break;
+            case 'tool-trash': this.openTrash(); break;
             case 'tool-types': this.openNoteTypes(); break;
             case 'tool-sim': this.openLoadSim(); break;
             case 'tool-dups': this.openDuplicates(); break;

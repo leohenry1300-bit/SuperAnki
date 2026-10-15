@@ -1424,3 +1424,15 @@ button.tq-opt:hover:not(:disabled) { border-color: var(--primary); background: v
 .te-face small { display: block; color: var(--text-faint); font-weight: 700; text-transform: uppercase; font-size: .68rem; margin-bottom: 4px; }
 
 .section-head { flex-wrap: wrap; }
+.sess-timer { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; background: var(--surface-2); font-size: .82rem; font-variant-numeric: tabular-nums; color: var(--text-muted); order: 5; }
+.sess-timer .i { width: 14px; height: 14px; }
+.sess-timer.low { color: var(--due); background: color-mix(in srgb, var(--due) 12%, var(--surface)); }
+.icon-btn.voice-on { background: var(--primary); color: var(--on-primary); }
+.voice-bar { display: flex; align-items: center; gap: 10px; margin: 10px 0; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--primary-soft); color: var(--primary); font-weight: 700; font-size: .9rem; }
+.voice-bar .rec-dot { width: 10px; height: 10px; flex: none; }
+
+.logo-mark { background: none; overflow: hidden; padding: 0; }
+.logo-svg { width: 100%; height: 100%; display: block; }
+.brand, .nav-btn { white-space: nowrap; }
+@media (max-width: 1080px) { .brand small { display: none; } .nav-btn { padding: 9px 10px; font-size: .85rem; gap: 6px; } }
+@media (max-width: 940px) { .nav-btn { font-size: 0; gap: 0; padding: 10px 12px; } .nav-btn .i { width: 20px; height: 20px; } .nav-btn.active { font-size: 0; } }

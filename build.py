@@ -239,6 +239,7 @@ html = f"""<!DOCTYPE html>
 {read("tools.js")}
 {read("notetypes.js")}
 {read("export-apkg.js")}
+{read("study.js")}
 {read("toeic.js")}
 {read("sync.js")}
 {read("boot.js")}

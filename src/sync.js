@@ -100,7 +100,7 @@ function mergeStates(L, R) {
     const toeic = mergeToeic(L.toeic || normalizeToeic(), R.toeic || normalizeToeic());
     if (toeic.attempts.length > (L.toeic ? L.toeic.attempts.length : 0)) localChanged = true;
     if (toeic.attempts.length > (R.toeic ? R.toeic.attempts.length : 0)) remoteChanged = true;
-    const data = normalizeState({ version: 6, decks, cards, presets, stats, settings, revlog, deleted: tomb, noteTypes, toeic, media: { ...(R.media || {}), ...(L.media || {}) }, updatedAt: Math.max(L.updatedAt || 0, R.updatedAt || 0) });
+    const data = normalizeState({ version: 6, decks, cards, presets, stats, settings, revlog, deleted: tomb, noteTypes, trash: mergeTrash(L.trash, R.trash, cards, decks), toeic, media: { ...(R.media || {}), ...(L.media || {}) }, updatedAt: Math.max(L.updatedAt || 0, R.updatedAt || 0) });
     return { data, localChanged, remoteChanged };
 }
 

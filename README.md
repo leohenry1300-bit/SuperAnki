@@ -50,3 +50,10 @@ Pour installer l'app sur un téléphone, déploie ensemble ces 5 fichiers (ex. N
 Paramètres › Outils : **types de notes personnalisés** (champs et modèles de cartes), **paquets filtrés** (recherche enregistrée étudiée comme un paquet), **simulateur de charge**, **doublons**, **cartes vides**, **vérification de la base**, **export .apkg** (fichier importable dans Anki : médias, cloze, types perso, progression).
 FSRS : optimisation **par préréglage** (Paramètres › Mémoire), recalcul de la mémoire des cartes après optimisation, option de replanification. « Équilibrer la charge » répartit les révisions sur les jours les moins chargés.
 Le fichier `.apkg` est vérifié avec SQLite (`integrity_check`) et réimporté par l'app, mais pas testé avec l'application Anki elle-même.
+
+## Étude : voix, groupes, minuteur, corbeille
+
+- **Mode voix** (micro dans la session) : l'app lit la question, tu dis « réponse », elle lit la réponse, tu dis « raté / difficile / bien / facile ». Nécessite la reconnaissance vocale du navigateur (Chrome, Edge, Safari récent, https).
+- **Petits groupes** et **minuteur de session** : Paramètres › Révision.
+- **Corbeille** : Paramètres › Outils. Cartes et paquets supprimés gardés 30 jours, restauration avec leur progression.
+- Logo refait (`logo.svg`, icônes 192/512 pour l'installation).
