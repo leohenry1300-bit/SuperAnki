@@ -1480,6 +1480,14 @@ button.tq-opt:hover:not(:disabled) { border-color: var(--primary); background: v
 .nav-chip { font-size: .72rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--primary); }
 body.in-exam .focus-w { display: none; }
 @media (max-width: 767px) { .focus-w { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); right: 12px; } body.in-session .focus-w { bottom: 12px; } }
+@media (max-width: 430px) {
+  .topbar-inner { gap: 6px; }
+  .brand { gap: 8px; font-size: .92rem; min-width: 0; }
+  .brand small { display: none; }
+  .topbar-actions { gap: 2px; margin-left: auto; }
+  .topbar-actions .icon-btn { width: 36px; height: 36px; }
+  .streak-chip { padding: 6px 9px; }
+}
 
 </style>
 </head>
