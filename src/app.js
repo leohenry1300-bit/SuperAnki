@@ -2073,24 +2073,6 @@ class SuperAnki {
         return m;
     }
     cardAnswer(c) { return c.kind === 'cloze' ? clozeAnswerHtml(c) : c.back; }
-    buildOptions(card) {
-        const ans = c => this.cardAnswer(c);
-        const correctKey = normAnswer(ans(card)) || card.id;
-        const seen = new Set([correctKey]);
-        const usable = this.data.cards.filter(c => c.kind !== 'cloze' && c.kind !== 'occl' && c.id !== card.id);
-        const sameDeck = shuffle(usable.filter(c => c.deckId === card.deckId));
-        const others = shuffle(usable.filter(c => c.deckId !== card.deckId)).slice(0, 40);
-        const len = stripHtml(ans(card)).length;
-        const pick = (list, n) => {
-            const out = [];
-            list.slice(0, 24).sort((a, b) => Math.abs(stripHtml(ans(a)).length - len) - Math.abs(stripHtml(ans(b)).length - len))
-                .forEach(c => { const k = normAnswer(ans(c)) || c.id; if (out.length < n && !seen.has(k)) { seen.add(k); out.push(c); } });
-            return out;
-        };
-        let wrong = pick(sameDeck, 3);
-        if (wrong.length < 3) wrong = wrong.concat(pick(others, 3 - wrong.length));
-        return shuffle([{ id: card.id, ok: true }, ...wrong.map(c => ({ id: c.id, ok: false }))]);
-    }
     startQuiz(deckIds, count, chrono = 0) {
         const pool = this.poolFor(deckIds).filter(c => c.kind !== 'cloze' && c.kind !== 'occl');
         if (this.data.cards.filter(c => c.kind !== 'cloze' && c.kind !== 'occl').length < 4) { this.toast('Il faut au moins 4 cartes pour un quiz.', 'warning'); return; }
@@ -2153,7 +2135,7 @@ class SuperAnki {
                 <div class="fc-content fc-front rich" style="padding:10px 0 4px">${card.front}</div>
             </div>
             <div class="quiz-options" id="quiz-options">
-                ${s.options.map((o, i) => `<button class="quiz-opt" data-action="quiz-answer" data-i="${i}"><span class="k">${i + 1}</span><span>${this.optionHtml(this.card(o.id))}</span></button>`).join('')}
+                ${s.options.map((o, i) => `<button class="quiz-opt" data-action="quiz-answer" data-i="${i}"><span class="k">${i + 1}</span><span>${o.text ? esc(o.text) : this.optionHtml(this.card(o.id))}</span></button>`).join('')}
             </div>
             <div id="quiz-after"></div>
         </div>`;

@@ -1487,3 +1487,15 @@ body.in-exam .focus-w { display: none; }
 .focus-btn .nav-chip:empty { display: none; }
 .focus-btn.active { background: var(--primary-soft); color: var(--primary); }
 @media (max-width: 430px) { .topbar-actions .focus-btn { width: auto; min-width: 36px; padding: 0 6px; } .focus-btn .nav-chip { font-size: .68rem; } }
+
+/* phones: consistent alignment of section headers and date fields (iOS centers date inputs by default) */
+input[type="date"].input, input[type="time"].input { -webkit-appearance: none; appearance: none; display: block; width: 100%; min-height: 46px; text-align: left; }
+input[type="date"].input::-webkit-date-and-time-value { text-align: left; margin: 0; }
+input[type="date"].input::-webkit-datetime-edit { padding: 0; }
+@media (max-width: 600px) {
+  .section-head { align-items: center; }
+  .section-head:has(> span > :nth-child(2)) { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .section-head:has(> span > :nth-child(2)) > span { width: 100%; justify-content: flex-start !important; flex-wrap: wrap; row-gap: 4px; }
+  .set-row .opt-ctl { width: 100%; }
+  .set-row .opt-ctl .input { width: 100%; }
+}

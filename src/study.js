@@ -225,3 +225,72 @@ Object.assign(SuperAnki.prototype, {
 /* the session decorations (timer, mic, voice bar) are added after every render of a card */
 (() => { const base = SuperAnki.prototype.renderSession; SuperAnki.prototype.renderSession = function (...a) { const r = base.apply(this, a); this.sessionDecor(); return r; }; })();
 (() => { const base = SuperAnki.prototype.showSummary; SuperAnki.prototype.showSummary = function (...a) { this.sessionCleanup(); return base.apply(this, a); }; })();
+
+/* ============================================================
+   Quiz: plausible wrong answers.
+   Distractors are chosen among cards whose answer LOOKS like the right one (same sub-deck, shared words,
+   similar length and shape, similar question) so the right answer can't be guessed from its length or format.
+   Numeric answers get close numeric alternatives.
+   ============================================================ */
+const quizTokens = t => new Set(fold(t).split(/[^a-z0-9]+/).filter(w => w.length > 2));
+const jaccard = (a, b) => { if (!a.size || !b.size) return 0; let i = 0; a.forEach(x => { if (b.has(x)) i++; }); return i / (a.size + b.size - i); };
+const quizShape = t => ({ num: /^[\s\d.,%€$£+\-–/:x×()]+$/.test(t) && /\d/.test(t), digits: /\d/.test(t), upper: /^[A-ZÀ-ÖØ-Þ]/.test(t), words: t.split(/\s+/).length, pct: /%/.test(t), money: /[€$£]/.test(t), sentence: /[.!?]$/.test(t) });
+function numericAlternatives(text, n) {
+    const m = text.match(/-?\d[\d\s]*(?:[.,]\d+)?/);
+    if (!m) return [];
+    const raw = m[0], val = Number(raw.replace(/\s/g, '').replace(',', '.'));
+    if (!Number.isFinite(val)) return [];
+    const dec = (raw.split(/[.,]/)[1] || '').length, fmt = v => { let s = v.toFixed(dec); if (dec) s = s.replace('.', raw.includes(',') ? ',' : '.'); return text.replace(raw, s); };
+    const steps = val === 0 ? [1, 2, 5] : [val * 0.5, val * 2, val * 1.2, val * 0.8, val + Math.max(1, Math.abs(val) * 0.1), val - Math.max(1, Math.abs(val) * 0.1), val * 10, val / 10];
+    const out = [];
+    for (const v of shuffle(steps)) {
+        const w = Number.isInteger(val) ? Math.round(v) : Math.round(v * 10 ** Math.max(dec, 1)) / 10 ** Math.max(dec, 1);
+        const t = fmt(w);
+        if (w !== val && w > 0 === val > 0 && !out.includes(t)) out.push(t);
+        if (out.length >= n) break;
+    }
+    return out;
+}
+Object.assign(SuperAnki.prototype, {
+    buildOptions(card) {
+        const ans = c => stripHtml(this.cardAnswer(c)).trim();
+        const correct = ans(card), cNorm = normAnswer(correct) || card.id, cTok = quizTokens(correct), fTok = quizTokens(stripHtml(card.front));
+        const cShape = quizShape(correct), cLang = guessLang(correct), cLen = correct.length || 1;
+        const deck = this.deck(card.deckId), parent = deck && deck.parent;
+        const seen = new Set([cNorm]);
+        const usable = this.data.cards.filter(c => c.id !== card.id && (!c.nid || c.nid !== card.nid) && c.kind !== 'cloze' && c.kind !== 'occl' && !c.suspended);
+        const scored = [];
+        usable.forEach(c => {
+            const t = ans(c);
+            if (!t) return;
+            const n = normAnswer(t) || c.id;
+            if (n === cNorm || (n.length > 3 && (cNorm.includes(n) || n.includes(cNorm)) && cNorm.length > 3)) return;   // same answer, or contains it
+            const sh = quizShape(t), tok = quizTokens(t);
+            let sc = 0;
+            if (c.deckId === card.deckId) sc += 3; else { const d2 = this.deck(c.deckId); if (parent && d2 && d2.parent === parent) sc += 1.5; }
+            sc += jaccard(cTok, tok) * 4 + jaccard(fTok, quizTokens(stripHtml(c.front))) * 2;
+            sc += (1 - Math.abs(t.length - cLen) / Math.max(t.length, cLen)) * 2.5;
+            if (sh.num === cShape.num) sc += 1.5; else sc -= 2;
+            if (sh.upper === cShape.upper) sc += 0.6;
+            if (sh.pct === cShape.pct) sc += 0.6;
+            if (sh.money === cShape.money) sc += 0.6;
+            if (sh.sentence === cShape.sentence) sc += 0.6;
+            if (Math.abs(sh.words - cShape.words) <= 1) sc += 0.8;
+            if (card.tags.length && c.tags.some(x => card.tags.includes(x))) sc += 0.8;
+            sc += guessLang(t) === cLang ? 1.5 : -2.5;
+            scored.push({ c, t, n, tok, sc: sc + Math.random() * 0.9 });
+        });
+        scored.sort((a, b) => b.sc - a.sc);
+        const picks = [];
+        for (const x of scored) {
+            if (picks.length >= 3) break;
+            if (seen.has(x.n) || picks.some(p => jaccard(p.tok, x.tok) > 0.85 && x.tok.size > 1)) continue;
+            seen.add(x.n); picks.push(x);
+        }
+        const options = [{ id: card.id, ok: true }, ...picks.map(x => ({ id: x.c.id, ok: false }))];
+        if (cShape.num && picks.length < 3) {       // numbers: close alternatives instead of random cards
+            numericAlternatives(correct, 3 - picks.length).forEach(t => options.push({ id: card.id, ok: false, text: t }));
+        }
+        return shuffle(options);
+    }
+});
