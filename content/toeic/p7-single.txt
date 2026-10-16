@@ -151,3 +151,219 @@ X: The new building has a fitness room and a café on the ground floor. Parking 
 Q: What will employees be required to do before the move? ;; Pack their personal items | Move their own furniture | Rent a vehicle | Update their e-mail address ;; « responsible for packing their personal belongings ». ;; détail
 Q: When will boxes be delivered? ;; On February 10 | On January 14 | On February 22 | On February 24 ;; « Boxes will be delivered to each department on February 10 ». ;; détail
 Q: What is attached to the e-mail? ;; A floor plan | A parking permit | A budget | A list of movers ;; « the floor plan attached to this e-mail ». ;; détail
+
+@P7S e-mail | e-mail | E-mail – Parking permits
+H: To: All employees
+H: From: Facilities Office
+H: Date: March 2
+H: Subject: Parking permits
+X: Starting April 1, all employees who park in the Cedar Street lot must display a permit on their windshield. Permits are free and can be picked up at the security desk between 8:00 A.M. and 5:00 P.M. You will need to show your employee badge and your vehicle registration.
+X: Cars without permits will be fined thirty dollars after April 15. Employees who carpool with at least two colleagues may request a reserved space close to the entrance.
+Q: What is the purpose of the e-mail? ;; To announce a new parking requirement | To raise parking fees | To close a parking lot | To advertise a carpool ;; Permis obligatoire à partir du 1er avril. ;; objectif
+Q: What must employees show to get a permit? ;; A badge and a vehicle registration | A driver's license | A payment receipt | A letter from a manager ;; « your employee badge and your vehicle registration ». ;; détail
+Q: What is indicated about carpoolers? ;; They can request a reserved space. | They pay a lower fine. | They do not need a permit. | They must park on Cedar Street. ;; « may request a reserved space ». ;; détail
+
+@P7S annonce | advertisement | Advertisement – Used furniture
+H: Second Chance Furniture
+X: Looking for quality furniture at low prices? Second Chance Furniture sells carefully inspected used sofas, tables, and bookshelves at up to seventy percent off the original price. Our showroom at 45 Mill Road is open Tuesday through Saturday, 10:00 A.M. to 6:00 P.M.
+X: Delivery is available within twenty miles for a flat fee of thirty dollars. Bring this advertisement to the store before May 31 and receive an additional ten percent off your first purchase.
+Q: What is NOT mentioned about the business? ;; A phone number | Its opening days | Its location | A delivery fee ;; Aucun numéro de téléphone n'est donné. ;; NOT question
+Q: How can customers get an additional discount? ;; By bringing the advertisement | By buying two items | By paying in cash | By ordering online ;; « Bring this advertisement… ten percent off ». ;; détail
+Q: What is suggested about the furniture? ;; It has been checked. | It is brand new. | It is handmade. | It is imported. ;; « carefully inspected used » = vérifié. ;; inférence
+
+@P7S message | text-message chain | Text-message chain
+C: Nora Banks | 3:12 P.M. ;; Hi Jim, did the client approve the new logo design?
+C: Jim Foster | 3:14 P.M. ;; Not yet. She wants to see it in two other colors first.
+C: Nora Banks | 3:15 P.M. ;; That's a lot of extra work. When is her deadline?
+C: Jim Foster | 3:17 P.M. ;; She needs the final files by Friday noon.
+C: Nora Banks | 3:18 P.M. ;; OK. I'll prepare the blue and green versions tonight. Can you handle the red one?
+C: Jim Foster | 3:19 P.M. ;; Sure, no problem. I'll send it to you by six.
+Q: What problem does Mr. Foster mention? ;; The client has not approved a design. | A file is missing. | A deadline passed. | A printer is broken. ;; « Not yet. She wants to see it in two other colors ». ;; problème
+Q: At 3:15 P.M., what does Ms. Banks mean when she writes, "That's a lot of extra work"? ;; She is concerned about the workload. | She wants a higher payment. | She refuses to continue. | She likes the new colors. ;; Elle s'inquiète de la charge de travail supplémentaire. ;; intention
+Q: What will Mr. Foster most likely do next? ;; Prepare a red version | Call the client | Print the files | Visit Ms. Banks ;; « Can you handle the red one? » – « Sure ». ;; action future
+
+@P7S lettre | letter | Letter – Complaint reply
+H: Greenway Appliances
+H: 220 Commerce Drive, Dayton
+H: June 18
+X: Dear Mr. Okoye,
+X: Thank you for writing to us about the blender you purchased on May 2. We were sorry to learn that the motor stopped working after only three weeks. Your blender is covered by our one-year warranty, so we would be happy to send you a replacement free of charge.
+X: To receive the new product, please return the defective blender in the enclosed prepaid envelope. Once we receive it, the replacement will be shipped within five working days. If you would prefer a refund instead, please let us know.
+X: Sincerely, Karen Wolfe, Customer Relations
+Q: Why was the letter written? ;; To respond to a complaint | To advertise a product | To confirm an order | To request payment ;; Réponse à une réclamation sur un blender défectueux. ;; objectif
+Q: What is Mr. Okoye asked to do? ;; Return the blender | Pay a shipping fee | Visit a store | Call customer service ;; « return the defective blender in the enclosed prepaid envelope ». ;; consigne
+Q: What option does Ms. Wolfe offer besides a replacement? ;; A refund | A discount | A repair | A store credit ;; « If you would prefer a refund instead ». ;; détail
+
+@P7S article | article | Article – Local bakery expands
+H: Sweet Rise Bakery to open second location
+X: RIVERTON (June 5) – Sweet Rise Bakery, a family business known for its sourdough bread and fruit tarts, will open a second shop in the Eastgate shopping center on July 1. The owner, Maria Santos, said the new store will employ twelve people, including four who currently work at the original shop on Elm Street.
+X: "Our customers have been asking for a bakery on the east side for years," Ms. Santos said. The new location will also have a small seating area where customers can enjoy coffee. To celebrate the opening, the first fifty visitors will receive a free loaf of bread.
+Q: What is the article mainly about? ;; The opening of a new store | A change of owner | A new bread recipe | A shopping center sale ;; Un deuxième magasin ouvre le 1er juillet. ;; sujet principal
+Q: How many employees will work at the new shop? ;; Twelve | Four | Fifty | Two ;; « will employ twelve people ». ;; chiffre
+Q: What will the first fifty customers receive? ;; A free loaf of bread | A coupon | A cup of coffee | A fruit tart ;; « a free loaf of bread ». ;; détail
+
+@P7S formulaire | form | Form – Expense report
+H: Expense Report – Ms. Dana Wells, Sales Department
+R: Date | Description | Amount
+R: May 12 | Taxi to client meeting | $28.00
+R: May 12 | Lunch with client | $54.50
+R: May 14 | Train ticket to Albany | $62.00
+R: May 14 | Hotel (1 night) | $119.00
+X: Total: $263.50. Receipts are attached for all items over $25. Approved by: R. Costa. Date approved: May 20.
+Q: What is the total amount of the expenses? ;; $263.50 | $119.00 | $62.00 | $54.50 ;; Le total est indiqué à la dernière ligne. ;; détail
+Q: What is indicated about Ms. Wells? ;; She traveled for work. | She works in finance. | She lost a receipt. | She approved the report. ;; Taxi, train et hôtel pour des clients. ;; inférence
+Q: Who approved the report? ;; R. Costa | Dana Wells | The client | The hotel ;; « Approved by: R. Costa ». ;; détail
+
+@P7S notice | notice | Notice – Library hours
+H: Riverton Public Library – Summer hours
+X: Beginning June 15 and continuing through August 31, the library will operate on a reduced schedule. We will be open Monday to Thursday from 10:00 A.M. to 7:00 P.M., Friday from 10:00 A.M. to 5:00 P.M., and Saturday from 9:00 A.M. to 1:00 P.M. The library will be closed on Sundays and on July 4.
+X: Our popular summer reading program for children begins on June 20. Registration is free and can be completed at the front desk or on our Web site.
+Q: What is the purpose of the notice? ;; To announce a change in hours | To advertise a book sale | To close the library | To describe a new building ;; Horaires d'été. ;; objectif
+Q: When will the library be open the shortest time? ;; Saturday | Monday | Friday | Thursday ;; Samedi : 9h–13h (4 heures). ;; calcul
+Q: How can parents register a child for the reading program? ;; On the Web site | By telephone | By mail | At a school ;; « at the front desk or on our Web site ». ;; détail
+
+@P7S e-mail | e-mail | E-mail – Schedule change
+H: To: Warehouse team
+H: From: Gary Lindqvist
+H: Date: November 8
+H: Subject: Shift changes next week
+X: Due to the holiday sales, we expect a much larger number of orders next week. To handle the volume, the morning shift will start at 6:00 A.M. instead of 7:00 A.M. from Monday to Friday. Employees who prefer to remain on the regular schedule should tell their supervisors by Thursday, and we will do our best to accommodate them.
+X: Overtime will be paid at one and a half times the normal rate. Lunch will be provided every day.
+Q: Why is the schedule changing? ;; More orders are expected. | A machine is being repaired. | A supervisor is leaving. | A new building is opening. ;; « Due to the holiday sales, we expect a much larger number of orders ». ;; raison
+Q: What are some employees invited to do by Thursday? ;; Tell their supervisors | Work extra hours | Sign a contract | Attend a meeting ;; « tell their supervisors by Thursday ». ;; consigne
+Q: What is stated about lunch? ;; It will be free. | It will be earlier. | It will be shorter. | It will be at noon. ;; « Lunch will be provided every day ». ;; détail
+
+@P7S annonce | job posting | Job posting – Accounting clerk
+H: Hartman & Lowe Accounting
+X: Hartman & Lowe is seeking a full-time accounting clerk to join our busy downtown office. The successful candidate will process invoices, prepare monthly reports, and assist clients with tax questions. A degree in accounting or at least two years of related experience is required. Knowledge of Excel is essential.
+X: We offer a competitive salary, paid vacation, and tuition support for evening courses. Interested applicants should send a résumé and two references to careers@hartmanlowe.example by October 12. Only selected candidates will be contacted.
+Q: What is a requirement for the job? ;; Knowledge of Excel | A tax license | Fluency in two languages | Management experience ;; « Knowledge of Excel is essential ». ;; détail
+Q: What does the company offer? ;; Help with tuition | A company car | A flexible schedule | Housing ;; « tuition support for evening courses ». ;; détail
+Q: What will happen to applicants who are not selected? ;; They will not be contacted. | They will receive a letter. | They will be put on a list. | They will get an interview. ;; « Only selected candidates will be contacted ». ;; inférence
+
+@P7S e-mail | e-mail | E-mail – Training invitation
+H: To: Department managers
+H: From: Anita Rao, Human Resources
+H: Date: February 14
+H: Subject: Leadership workshop
+X: I'm pleased to invite you to a two-day leadership workshop to be held March 20 and 21 at the Parkview Conference Center. The workshop is led by consultant Dr. Ellen Brooks and covers communication, delegation, and conflict resolution.
+X: The company will cover the registration fee, but participants must arrange their own transportation. Space is limited to twenty managers, so please confirm your attendance by February 25. Participants will receive a certificate at the end of the program.
+Q: What is the purpose of the e-mail? ;; To invite managers to a workshop | To announce a new policy | To report training results | To hire a consultant ;; Invitation à un atelier de deux jours. ;; objectif
+Q: What must participants pay for? ;; Their own transportation | The registration fee | Their meals | The hotel ;; « participants must arrange their own transportation » (le transport est à leur charge). ;; détail
+Q: By when must managers confirm? ;; February 25 | March 20 | February 14 | March 21 ;; « confirm your attendance by February 25 ». ;; détail
+
+@P7S message | text-message chain | Text-message chain
+C: Leila Haddad | 9:41 A.M. ;; Tom, are you at the venue yet? The caterers are asking where to set up.
+C: Tom Whitaker | 9:43 A.M. ;; I just arrived. The ballroom is locked, though. Do you have the key code?
+C: Leila Haddad | 9:44 A.M. ;; It's 4-7-1-9. The banquet manager changed it last night.
+C: Tom Whitaker | 9:46 A.M. ;; That worked. I'll show them where the tables are.
+C: Leila Haddad | 9:47 A.M. ;; Great. I'm on my way with the name badges. Back in twenty minutes.
+Q: Where most likely is Mr. Whitaker? ;; At an event venue | At a restaurant | At a hotel front desk | At a printing shop ;; Ballroom, caterers, tables : lieu d'un événement. ;; lieu
+Q: Why did Mr. Whitaker contact Ms. Haddad? ;; To get a code | To report a delay | To order food | To change a date ;; « Do you have the key code? ». ;; raison
+Q: What will Ms. Haddad do next? ;; Bring name badges | Meet caterers | Change the code | Clean the ballroom ;; « I'm on my way with the name badges ». ;; action future
+
+@P7S annonce | notice | Notice – Gym rules
+H: Fitness Center – Please read
+X: For the safety and comfort of all members, please observe the following rules: Wipe down equipment after use. Wear clean athletic shoes at all times. Remove personal belongings from lockers by closing time; items left overnight will be donated to charity each Monday.
+X: Members may bring one guest per month, free of charge. Additional guests must pay a day fee of twelve dollars. Please speak to the front desk about personal training sessions.
+Q: According to the notice, what happens to items left in lockers overnight? ;; They are given to charity. | They are thrown away. | They are kept for a month. | They are returned by mail. ;; « donated to charity each Monday ». ;; détail
+Q: How much does an additional guest pay? ;; Twelve dollars | Nothing | Twenty dollars | One dollar ;; « a day fee of twelve dollars ». ;; chiffre
+Q: Who should members contact about personal training? ;; The front desk | A manager | A coach by e-mail | A locker attendant ;; « speak to the front desk ». ;; détail
+
+@P7S article | article | Article – Remote work survey
+H: More companies embrace flexible work
+X: A recent survey of 1,200 employees by the Workplace Institute found that sixty percent of workers would like to work from home at least two days a week. Respondents cited the absence of commuting and a better balance between work and family as the main benefits.
+X: However, many managers expressed concern about communication within teams. "It's harder to build trust when you don't see people regularly," said Carla Mendes, a human resources consultant. As a result, a growing number of companies now require employees to be in the office on certain days, while allowing remote work the rest of the week.
+Q: What did the survey find? ;; Many workers prefer to work from home sometimes. | Most workers dislike their jobs. | Managers want more office space. | Commuting times are shorter. ;; « sixty percent … work from home at least two days a week ». ;; objectif
+Q: What is a concern of managers? ;; Communication in teams | Employee salaries | Office rent | Equipment costs ;; « concern about communication within teams ». ;; détail
+Q: What do some companies now do? ;; Require office attendance on certain days | End remote work | Reduce salaries | Open new offices ;; « require employees to be in the office on certain days ». ;; détail
+
+@P7S annonce | advertisement | Advertisement – Moving company
+H: SwiftMove – We make moving easy
+X: Planning to move? SwiftMove offers local and long-distance moving services at fair prices. Our team will pack, load, transport, and unpack your belongings, so you can focus on settling in. All items are covered by insurance up to $20,000 at no extra charge.
+X: Book at least two weeks in advance and receive a free set of packing boxes. Call 555-0178 for a free estimate, or fill out the form on our Web site.
+Q: What is being advertised? ;; A moving service | A storage facility | A furniture shop | An insurance plan ;; SwiftMove : déménagement. ;; sujet
+Q: What is included at no additional cost? ;; Insurance coverage | Cleaning | Storage | Furniture repair ;; « covered by insurance … at no extra charge ». ;; détail
+Q: How can customers get free packing boxes? ;; By booking two weeks ahead | By calling after 5 P.M. | By paying in cash | By referring a friend ;; « Book at least two weeks in advance ». ;; condition
+
+@P7S e-mail | e-mail | E-mail – Invoice question
+H: To: Accounts Receivable
+H: From: Hiroshi Tanaka
+H: Date: April 9
+H: Subject: Invoice 5521
+X: Dear Sir or Madam,
+X: I received invoice 5521 yesterday for the printing of 1,000 flyers. The invoice shows a unit price of 0.30 dollars, but our agreement, signed on March 10, was for 0.25 dollars. Please send me a corrected invoice so that I can submit it for payment.
+X: I have attached a copy of the signed agreement for your reference. Thank you for your help. Hiroshi Tanaka, Office Manager, Brookline Dental
+Q: Why did Mr. Tanaka write the e-mail? ;; To report a price error | To order flyers | To cancel an agreement | To request a discount ;; Le prix unitaire facturé ne correspond pas à l'accord. ;; objectif
+Q: What did Mr. Tanaka attach? ;; A signed agreement | A payment | A list of flyers | A receipt ;; « a copy of the signed agreement ». ;; détail
+Q: What is suggested about Brookline Dental? ;; It ordered printed materials. | It sells printing services. | It will close soon. | It changed its address. ;; Le cabinet dentaire a commandé 1 000 flyers. ;; inférence
+
+@P7S notice | notice | Notice – Road construction
+H: Maple Avenue Construction Update
+X: Beginning Monday, September 8, Maple Avenue will be closed between Fifth Street and Ninth Street while crews install new water pipes. The work is expected to last three weeks. Drivers should use Oak Street or Highway 12 as alternate routes.
+X: Local businesses will remain open, and pedestrian access will be maintained. Parking will be available in the temporary lot behind the post office. For updates, call the city information line at 555-0123.
+Q: What is the reason for the road closure? ;; New pipes will be installed. | A parade will be held. | A bridge collapsed. | A new store will open. ;; « install new water pipes ». ;; raison
+Q: How long is the work expected to take? ;; Three weeks | Three days | Three months | One week ;; « expected to last three weeks ». ;; durée
+Q: What is indicated about local businesses? ;; They will stay open. | They will close. | They will move. | They will pay a fee. ;; « Local businesses will remain open ». ;; détail
+
+@P7S e-mail | e-mail | E-mail – Welcome message
+H: To: Sam Ortega
+H: From: Priya Menon
+H: Date: January 6
+H: Subject: Welcome to Atlas Logistics
+X: Dear Sam,
+X: On behalf of everyone at Atlas Logistics, welcome to the team! Your first day is Monday, January 13. Please arrive at 8:30 A.M. at the main entrance, where I will meet you and give you your security badge. Your orientation will begin at nine in the training room.
+X: You will be working with the dispatch team, led by Mr. Kowalski. Lunch is on us on your first day, so there's no need to bring anything. I am looking forward to meeting you.
+Q: What is the purpose of the e-mail? ;; To welcome a new employee | To schedule an interview | To announce a promotion | To offer a job ;; Message d'accueil avant le premier jour. ;; objectif
+Q: Where will Mr. Ortega get his badge? ;; At the main entrance | In the training room | At the dispatch office | At the security desk ;; « I will meet you and give you your security badge » à l'entrée. ;; détail
+Q: What is indicated about the first day's lunch? ;; The company will pay. | It will be at noon. | It must be brought. | It will be in the training room. ;; « Lunch is on us ». ;; détail
+
+@P7S annonce | advertisement | Advertisement – Cooking classes
+H: Kitchen Table Cooking School
+X: Learn to cook like a professional! Kitchen Table offers six-week courses for beginners and advanced cooks. Each class meets once a week for three hours, and all ingredients are provided. Students take home what they cook.
+X: Our spring session begins on April 7. The cost is two hundred forty dollars, or two hundred ten dollars if you register before March 1. Gift certificates are also available. Visit our Web site to see the full course list.
+Q: How long does each course last? ;; Six weeks | Three weeks | Three months | One day ;; « six-week courses ». ;; durée
+Q: What is true about the classes? ;; Ingredients are provided. | They are only for beginners. | They are held online. | They meet daily. ;; « all ingredients are provided ». ;; détail
+Q: How much do students pay if they register on February 20? ;; $210 | $240 | $200 | $120 ;; « two hundred ten dollars if you register before March 1 ». ;; calcul
+
+@P7S lettre | letter | Letter – Job offer
+H: Rowan Technologies
+H: May 3
+X: Dear Ms. Silva,
+X: I am pleased to offer you the position of Project Coordinator at Rowan Technologies, with an annual salary of $58,000. Your start date will be June 3. As we discussed during your interview, you will report to the director of operations and will be eligible for health insurance after ninety days.
+X: Please sign the enclosed copy of this letter and return it by May 10 to confirm your acceptance. If you have any questions, do not hesitate to contact me. We are excited about the possibility of working with you.
+X: Sincerely, Brian Fox, Human Resources
+Q: What is the purpose of the letter? ;; To offer a job | To schedule an interview | To reject an application | To announce a promotion ;; « I am pleased to offer you the position ». ;; objectif
+Q: When will Ms. Silva be eligible for health insurance? ;; After ninety days | On June 3 | Immediately | After one year ;; « after ninety days ». ;; détail
+Q: What is Ms. Silva asked to do by May 10? ;; Return a signed copy | Call the director | Submit her résumé | Attend an orientation ;; « sign … and return it by May 10 ». ;; consigne
+
+@P7S e-mail | e-mail | E-mail – Product recall
+H: To: Customers who purchased Model T-200
+H: From: Customer Safety, Brightwave Electronics
+H: Date: July 22
+H: Subject: Important safety notice
+X: Brightwave Electronics is recalling all Model T-200 toasters sold between January and May. In rare cases, the heating element may overheat. No injuries have been reported, but for your safety, we ask you to stop using the product immediately.
+X: To receive a full refund, visit our Web site and enter the serial number on the bottom of the toaster. You will receive a prepaid shipping label by e-mail. We apologize for the inconvenience.
+Q: Why was the e-mail sent? ;; To announce a product recall | To advertise a sale | To thank customers | To announce a new model ;; Rappel de produit. ;; objectif
+Q: What are customers asked to do? ;; Stop using the toaster | Repair the toaster | Return it to a store | Wait for a technician ;; « stop using the product immediately ». ;; consigne
+Q: What will customers receive by e-mail? ;; A shipping label | A coupon | A replacement | A repair kit ;; « a prepaid shipping label ». ;; détail
+
+@P7S formulaire | form | Form – Hotel confirmation
+H: Lakeside Inn – Reservation Confirmation
+R: Guest | Daniel Cho
+R: Arrival | Friday, October 3
+R: Departure | Monday, October 6
+R: Room | Deluxe double, lake view
+R: Rate per night | $140
+H: Breakfast is included. Free cancellation until September 26. After that date, the first night will be charged. Check-in begins at 3:00 P.M.
+Q: How many nights will Mr. Cho stay? ;; Three | Two | Four | Five ;; Du 3 au 6 octobre = 3 nuits. ;; calcul
+Q: What is indicated about breakfast? ;; It is included in the price. | It costs extra. | It is served at 3:00 P.M. | It is available only on weekends. ;; « Breakfast is included ». ;; détail
+Q: What happens if Mr. Cho cancels on September 30? ;; The first night is charged. | He gets a full refund. | He pays the full stay. | He gets a credit. ;; Après le 26 septembre : première nuit facturée. ;; inférence
+
+@P7S article | article | Article – Mayor's announcement
+H: City plans new bike lanes
+X: Mayor Rosa Delgado announced yesterday that the city will add twenty kilometers of protected bike lanes over the next two years. The project, which will cost an estimated eight million dollars, is funded partly by a state grant.
+X: "We want cycling to be a safe choice for everyone," Ms. Delgado said. Construction will begin in the downtown area this autumn. Some parking spaces will be removed, but the city will build two new parking garages to make up for the loss. Residents can comment on the plan at a public meeting on October 3.
+Q: What is mentioned about the funding? ;; A state grant covers part of it. | It comes from parking fees. | It was donated by a company. | It is not yet decided. ;; « funded partly by a state grant ». ;; détail
+Q: Where will construction start? ;; Downtown | In the suburbs | Near the airport | Along the river ;; « begin in the downtown area ». ;; détail
+Q: What can residents do on October 3? ;; Give opinions | Ride bicycles | Vote | Sign a contract ;; « comment on the plan at a public meeting ». ;; consigne

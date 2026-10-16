@@ -88,3 +88,80 @@ Q: state-of-the-art | state | stately | stating ;; « state-of-the-art equipment
 Q: complimentary | complimenting | compliment | complimentarily ;; Adjectif : « complimentary » = gratuit. ;; vocabulaire
 Q: Annual members also enjoy a discount on personal training. | The gym was closed for repairs last year. | Parking is prohibited. | The trainers are all new. ;; Phrase liée aux plans d'abonnement présentés plus haut. ;; insertion de phrase
 Q: call | calls | calling | called ;; Impératif : base verbale. ;; impératif
+
+@P6 lettre | letter | Letter – Membership renewal
+X: Dear Ms. Harris,
+X: Your annual membership at the Westside Fitness Center is due to [1] ____ on March 31. To continue enjoying our facilities without interruption, please renew before that date.
+X: [2] ____ you renew online, you will receive a ten percent discount. [3] ____. We have also added new yoga and cycling classes to the weekly schedule.
+X: Thank you for being a [4] ____ member of our community.
+Q: expire | expiration | expiring | expired ;; Après « due to », un verbe à la base : « expire ». ;; forme du verbe
+Q: If | Despite | Whereas | Unless ;; « If you renew online, you will receive… » : condition. ;; conjonction
+Q: Renewals can also be completed at the front desk. | The center was founded in 1998. | Parking is available behind the building. | Our instructors are all certified. ;; La phrase suit l'offre de renouvellement en ligne et présente une autre option. ;; insertion de phrase
+Q: valued | value | valuable to | valuing ;; Adjectif participe devant « member » : « a valued member ». ;; participe adjectif
+
+@P6 note interne | memo | Memo – New expense policy
+X: To: All staff
+X: From: Finance Department
+X: Effective July 1, all travel expenses must be submitted through the new online system. Employees who have not yet [1] ____ an account should contact the IT help desk.
+X: Receipts must be uploaded within ten days of the trip. [2] ____ reports will not be reimbursed. [3] ____. If you have questions, please attend the training session on June 24.
+X: We [4] ____ your cooperation.
+Q: created | create | creating | creation ;; « have not yet + participe passé ». ;; temps verbal
+Q: Late | Lately | Later | Latest ;; Adjectif devant « reports » : « Late reports ». ;; famille de mots
+Q: The new system is faster and easier to use than the previous one. | The company was founded in 1985. | Travel to Europe has increased. | The cafeteria will be closed in July. ;; Phrase qui complète l'annonce du nouveau système. ;; insertion de phrase
+Q: appreciate | appreciation | appreciative | appreciably ;; Sujet « We » + verbe au présent. ;; famille de mots
+
+@P6 annonce | advertisement | Advertisement – Language courses
+X: Do you want to improve your English for work? Linguaplus offers evening courses for every level, from beginner to advanced. Our teachers are native speakers with [1] ____ years of experience in business training.
+X: Classes meet twice a week in small groups, [2] ____ you receive plenty of personal attention. [3] ____. Registration for the autumn term opens on August 20.
+X: Visit our Web site to [4] ____ a free level test.
+Q: many | much | a lot | each ;; « years » est pluriel dénombrable : « many ». ;; quantité
+Q: so | although | unless | because of ;; « so you receive… » : conséquence. ;; connecteur
+Q: Students can also choose to study online. | The school is near the central station. | Last year, enrollment doubled. | The teachers wear uniforms. ;; Phrase qui prolonge la description des cours. ;; insertion de phrase
+Q: take | taking | taken | takes ;; « to + verbe » : « to take a test ». ;; forme du verbe
+
+@P6 e-mail | e-mail | E-mail – Interview confirmation
+X: Dear Mr. Fernandez,
+X: Thank you for your interest in the Marketing Analyst position. We would like to invite you for an interview on Tuesday, May 6, at 2:00 P.M. at our headquarters on Pine Street.
+X: Please [1] ____ a copy of your résumé and two references. [2] ____, you will meet with the department director and a member of the HR team. [3] ____. If you cannot attend at this time, please let us know as soon as possible.
+X: We look forward to [4] ____ you.
+Q: bring | brought | bringing | brings ;; Impératif poli : « Please + base ». ;; forme du verbe
+Q: During the interview | Because the interview | Whether the interview | After interviewing ;; « During the interview, you will meet… ». ;; préposition
+Q: The interview will last about forty-five minutes. | The position was posted in April. | Our offices are on the tenth floor. | Salary details are in the contract. ;; Détail pratique sur l'entretien. ;; insertion de phrase
+Q: meeting | meet | to meet | met ;; « look forward to + -ing ». ;; gérondif
+
+@P6 article | article | Article – New city library
+X: Riverton will open its new public library on Saturday, after two years of construction. The building, located next to City Park, has [1] ____ space than the old one.
+X: It contains more than 50,000 books, a children's reading room, and a café. [2] ____, visitors will be able to use free Wi-Fi throughout the building. [3] ____. Mayor Linda Cho said the library is "a gift to the community."
+X: The opening ceremony [4] ____ at 10:00 A.M.
+Q: much more | many more | more much | most ;; « space » est indénombrable : « much more space than ». ;; quantité
+Q: In addition | Therefore | Otherwise | Nevertheless ;; Ajout d'un équipement : « In addition ». ;; connecteur
+Q: Admission to the building will be free for all residents. | The old library was built in 1960. | Construction workers were hired locally. | City Park has many tall trees. ;; Information utile sur l'ouverture, cohérente avec le ton. ;; insertion de phrase
+Q: will begin | began | has begun | was beginning ;; Événement à venir : « will begin ». ;; temps verbal
+
+@P6 courriel client | e-mail | E-mail – Service interruption
+X: Dear customers,
+X: We are writing to inform you that our online ordering system will be [1] ____ from 11:00 P.M. on Friday until 5:00 A.M. on Saturday for scheduled maintenance.
+X: During this period, you will not be able to place new orders or [2] ____ existing ones. [3] ____. We apologize for any inconvenience this may cause.
+X: [4] ____ you need immediate assistance, please call our customer service line.
+Q: unavailable | unavailably | unavailability | unavail ;; « be + adjectif » : « unavailable ». ;; famille de mots
+Q: modify | modification | modifying | modified ;; « or + verbe à la base » (parallèle à « place »). ;; forme du verbe
+Q: The system will return to normal on Saturday morning. | Our new store opens next month. | Customers love our products. | The maintenance team has ten members. ;; Phrase qui conclut sur la durée de l'interruption. ;; insertion de phrase
+Q: Should | Unless | Although | Since ;; « Should you need… » = si jamais vous aviez besoin (inversion formelle). ;; connecteur
+
+@P6 note de service | memo | Memo – Recycling program
+X: To: All employees
+X: Beginning next month, our office will launch a recycling program. Blue bins will be placed on every floor, near the printers and in the break rooms.
+X: Please [1] ____ paper, plastic bottles, and cans in the bins. [2] ____ items such as batteries must be taken to the facilities office. [3] ____. Together, we can reduce waste and [4] ____ our environmental impact.
+Q: place | placing | placement | placed ;; Impératif poli : « Please + base ». ;; forme du verbe
+Q: Hazardous | Hazard | Hazardously | Hazards ;; Adjectif devant un nom pluriel : « Hazardous items ». ;; famille de mots
+Q: Employees with questions can contact Ms. Ruiz in building services. | The recycling center was built in 1990. | Paper prices have risen this year. | The break room has been painted. ;; Information de contact qui complète la note. ;; insertion de phrase
+Q: lower | lowers | lowering | lowered ;; « reduce … and lower » : deux verbes à la base après « can ». ;; forme du verbe
+
+@P6 offre d'emploi | advertisement | Job advertisement – Sales assistant
+X: Pinnacle Books is looking for a sales assistant for its downtown store. The [1] ____ candidate will have excellent communication skills and a passion for reading.
+X: Duties include greeting customers, [2] ____ displays, and processing payments. [3] ____. Evening and weekend availability is required.
+X: To apply, send your résumé and a cover letter to jobs@pinnaclebooks.example [4] ____ April 15.
+Q: ideal | ideally | idealize | ideals ;; Adjectif devant un nom : « the ideal candidate ». ;; famille de mots
+Q: arranging | arrange | arranged | arrangement ;; Série de gérondifs : « greeting …, arranging …, and processing ». ;; parallélisme
+Q: Previous experience in retail is preferred but not required. | The store was renovated last year. | Our books are available online. | The manager has worked here for ten years. ;; Phrase sur le profil, avant la disponibilité requise. ;; insertion de phrase
+Q: by | at | in | into ;; « by April 15 » = avant le 15 avril (date limite). ;; préposition

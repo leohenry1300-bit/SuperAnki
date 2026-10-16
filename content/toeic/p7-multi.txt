@@ -116,3 +116,170 @@ Q: Why did Ms. Mendez write to the IT department? ;; She has a deadline to meet.
 Q: What does Mr. Ahn offer to do? ;; Extend access for finance | Postpone the upgrade | Cancel the training | Replace the software ;; « extend the access time on Friday until 5:30 P.M. for the finance department only ». ;; détail
 Q: When will a technician visit the finance office? ;; On Thursday | On Friday | On Saturday | On October 9 ;; « I will also send a technician… on Thursday ». ;; détail
 Q: What is suggested about the finance department's report? ;; It is due after the planned shutdown begins. | It was already submitted. | It is rejected by the regulator. | It will be sent by mail. ;; Date limite vendredi 17h, alors que la coupure commence à 15h. ;; croisement de documents
+
+@P7D réunion client
+D: advertisement | Advertisement – Meeting rooms
+H: Harbor Business Center
+X: Need a professional space for your next meeting? Harbor Business Center rents fully equipped meeting rooms by the hour. The Small Room (up to 6 people) costs $40 per hour, and the Large Room (up to 20 people) costs $90 per hour. All rooms include Wi-Fi, a projector, and coffee service. Reservations must be made at least 48 hours in advance.
+D: e-mail | E-mail – Reservation request
+H: To: reservations@harborbc.example
+H: From: Nina Petrov
+H: Date: April 14
+H: Subject: Room for April 22
+X: Dear Sir or Madam, I would like to reserve a room on April 22 from 1:00 P.M. to 4:00 P.M. for a training session with fourteen participants. We will also need a whiteboard. Could you please confirm the total cost and let me know if lunch can be delivered at noon? Nina Petrov, Greenfield Marketing
+Q: What is indicated about Harbor Business Center? ;; It rents rooms by the hour. | It sells office equipment. | It provides lunch. | It is open only on weekdays. ;; « rents fully equipped meeting rooms by the hour ». ;; détail
+Q: Which room will Ms. Petrov most likely reserve? ;; The Large Room | The Small Room | Both rooms | A different building ;; Quatorze participants : plus de 6, donc la grande salle. ;; double document
+Q: How much will Ms. Petrov probably pay for the room? ;; $270 | $120 | $360 | $90 ;; 3 heures × 90 $ = 270 $. ;; double document
+Q: What is suggested about the reservation? ;; It was made in time. | It was canceled. | It includes lunch. | It is for a small room. ;; Du 14 au 22 avril : plus de 48 h à l'avance. ;; double document
+
+@P7D abonnement logiciel
+D: notice | Notice – Software subscription changes
+H: CloudDesk Subscription Update
+X: Effective August 1, CloudDesk will offer three plans: Basic ($10 per month, one user), Team ($35 per month, up to five users), and Business ($80 per month, up to twenty users). Current customers will keep their existing price for six months. After that, they will be moved to the plan that matches their number of users. Annual payment saves fifteen percent.
+D: e-mail | E-mail – Customer question
+H: To: support@clouddesk.example
+H: From: Luis Ferrer
+H: Date: July 18
+H: Subject: My plan
+X: Hello, I currently pay $25 per month for CloudDesk, and we have four users in my company. I read your notice about the new plans. Will my price change on August 1? Also, if we hire two more employees next year, can we switch plans easily? Thanks, Luis Ferrer
+Q: What does the notice announce? ;; New subscription plans | A new product | A company merger | A change of address ;; Trois formules à partir du 1er août. ;; objectif
+Q: According to the notice, when will Mr. Ferrer's price change? ;; In six months | On August 1 | Immediately | After a year ;; « keep their existing price for six months ». ;; double document
+Q: Which plan will Mr. Ferrer's company most likely be moved to? ;; Team | Basic | Business | Annual ;; Quatre utilisateurs : la formule Team (jusqu'à cinq). ;; double document
+Q: What will happen if Mr. Ferrer's company has six users? ;; It will need the Business plan. | It will stay on Team. | It will pay less. | It will lose access. ;; Team = jusqu'à 5 utilisateurs, donc Business. ;; inférence
+
+@P7D remboursement
+D: notice | Notice – Return policy
+H: Urban Closet – Return policy
+X: Items may be returned within thirty days of purchase with a receipt for a full refund. Sale items may be exchanged but not refunded. Shoes must be unworn and in their original box. Returns by mail are accepted; however, the customer is responsible for shipping costs unless the item is defective.
+D: e-mail | E-mail – Return request
+H: To: help@urbancloset.example
+H: From: Jade Morris
+H: Date: May 20
+H: Subject: Return of order 8802
+X: Hello, I bought a pair of boots on April 10 for $90, but they are a size too small. Unfortunately, I wore them once around my apartment to test them. I live in another city and cannot go to the store. Would it be possible to return them by mail? Jade Morris
+Q: What is the problem with Ms. Morris's request? ;; She bought the boots more than thirty days ago. | She lost the receipt. | The boots are defective. | The boots were on sale. ;; Du 10 avril au 20 mai : plus de 30 jours (délai dépassé), et les bottes ont été portées. ;; double document
+Q: What does the policy say about mailed returns? ;; Customers usually pay the shipping cost. | They are not accepted. | They are free. | They require a manager's approval. ;; « the customer is responsible for shipping costs unless defective ». ;; détail
+Q: What is suggested about the boots? ;; They have been worn. | They are on sale. | They are defective. | They are too large. ;; « I wore them once ». ;; inférence
+Q: What can Ms. Morris most likely NOT do? ;; Return worn shoes | Return by mail | Send an e-mail | Exchange an item ;; Les chaussures doivent être non portées. ;; NOT question
+
+@P7D candidature
+D: job posting | Job posting – Receptionist
+H: Mason & Clark Law Offices
+X: Mason & Clark seeks a full-time receptionist. Duties include answering phones, greeting clients, and scheduling appointments. Requirements: one year of office experience, good communication skills, and availability to work until 6:00 P.M. Applications must be received by June 6. Interviews will be held the following week.
+D: e-mail | E-mail – Application
+H: To: jobs@masonclark.example
+H: From: Hana Abe
+H: Date: June 4
+H: Subject: Receptionist position
+X: Dear Hiring Manager, I am applying for the receptionist position. For the past two years, I have worked at a dental clinic, where I managed the appointment calendar and welcomed patients. I am available to work any hours, including evenings. My résumé is attached. I would be glad to come for an interview at any time. Sincerely, Hana Abe
+Q: What does the job posting list as a requirement? ;; Availability in the evening | A law degree | Knowledge of a foreign language | Computer programming ;; « availability to work until 6:00 P.M. ». ;; détail
+Q: Why is Ms. Abe qualified? ;; She has experience scheduling appointments. | She studied law. | She managed a team. | She speaks French. ;; Elle a géré le calendrier de rendez-vous. ;; double document
+Q: When will interviews probably be held? ;; The week after June 6 | On June 4 | Before June 4 | In July ;; « the following week » après le 6 juin. ;; double document
+Q: What did Ms. Abe send with her e-mail? ;; Her résumé | A reference letter | A certificate | A photograph ;; « My résumé is attached ». ;; détail
+
+@P7T salon professionnel
+D: e-mail | E-mail – Invitation to trade show
+H: To: Exhibitors
+H: From: Organizing Committee, BuildExpo
+H: Date: January 10
+X: We are delighted to invite you to exhibit at BuildExpo, to be held at the Metro Convention Center from March 12 to 14. Booth sizes are 3 × 3 meters (small) and 3 × 6 meters (large). Early registration before February 1 includes a 15 percent discount. Setup begins on March 11 at 8:00 A.M.
+D: schedule | Floor plan and fees
+R: Booth | Size | Fee
+R: Small | 3 × 3 m | $900
+R: Large | 3 × 6 m | $1,600
+R: Corner (large) | 3 × 6 m | $1,900
+H: Electricity: $100 per booth. Wi-Fi: free.
+D: e-mail | E-mail – Registration
+H: To: Organizing Committee
+H: From: Peter Lang, Zenith Tools
+H: Date: January 20
+X: Hello, we would like to reserve one large corner booth and require electricity. Please send the invoice. Also, our trucks will arrive on the morning of March 10. Is it possible to unload that day? Thanks, Peter Lang
+Q: What is the purpose of the first e-mail? ;; To invite companies to exhibit | To announce a cancellation | To sell tickets | To advertise a convention center ;; Invitation aux exposants. ;; objectif
+Q: How much will Zenith Tools most likely pay for the booth and electricity? ;; $1,715 | $1,900 | $2,000 | $1,615 ;; Stand d'angle 1 900 $ − 15 % = 1 615 $ ; + électricité 100 $ = 1 715 $. ;; calcul
+Q: What problem does Mr. Lang's request raise? ;; Setup starts after the truck arrives. | Booths are sold out. | Electricity is unavailable. | The show was canceled. ;; Installation à partir du 11 mars, camions le 10. ;; triple document
+Q: What is indicated about the registration? ;; It qualifies for a discount. | It is late. | It is for a small booth. | It includes Wi-Fi fees. ;; Le 20 janvier est avant le 1er février. ;; triple document
+Q: What is true about Wi-Fi? ;; It is free. | It costs $100. | It is only in large booths. | It is not available. ;; « Wi-Fi: free ». ;; détail
+
+@P7T commande de matériel
+D: advertisement | Advertisement – Office supplies sale
+H: OfficeMax Direct – Spring sale
+X: Save up to 30 percent on office chairs, desks, and filing cabinets. Free delivery on orders over $500. Offer ends April 30. Business customers can apply for a corporate account to enjoy net-30 payment terms.
+D: e-mail | E-mail – Order inquiry
+H: To: sales@officemaxdirect.example
+H: From: Sandra Wu, Wu & Partners
+H: Date: April 18
+X: Hello, I would like to order ten ergonomic chairs advertised at $120 each in your spring sale. Will the total qualify for free delivery? We are also interested in opening a corporate account. Could you send me the application? Thank you, Sandra Wu
+D: e-mail | E-mail – Reply
+H: To: Sandra Wu
+H: From: Raymond Hill, Sales
+H: Date: April 19
+X: Dear Ms. Wu, thank you for your order inquiry. Ten chairs at $120 come to $1,200, so delivery is free. I have attached the corporate account application. Please note that approval takes about five business days, so your first order would be invoiced at standard terms unless you apply before placing it. Regards, Raymond Hill
+Q: What does the advertisement offer? ;; Free delivery on large orders | A free chair | A free assembly | Free installation ;; « Free delivery on orders over $500 ». ;; détail
+Q: What is Ms. Wu's total for the chairs? ;; $1,200 | $120 | $500 | $1,000 ;; 10 × 120 = 1 200. ;; calcul
+Q: What does Mr. Hill suggest? ;; Applying before ordering for better terms | Waiting until May | Buying fewer chairs | Calling a manager ;; Il précise qu'il vaut mieux postuler avant de commander. ;; triple document
+Q: What can be inferred about Ms. Wu's company? ;; It is a business customer. | It is a distributor. | It has an account. | It lives in another country. ;; Elle s'intéresse à un compte corporate. ;; inférence
+Q: What is attached to Mr. Hill's e-mail? ;; An application form | An invoice | A price list | A catalog ;; « I have attached the corporate account application ». ;; détail
+
+@P7T voyage d'affaires
+D: e-mail | E-mail – Travel request
+H: To: Travel Desk
+H: From: Mark Doyle
+H: Date: September 2
+X: I need to attend the client workshop in Singapore from October 14 to 17. Please book me a flight departing October 13 in the evening and returning October 17. I prefer a window seat and a hotel near the client's office on Marina Road.
+D: itinerary | Itinerary – Mark Doyle
+R: Date | Details
+R: Oct 13 | Flight SA 220 – Depart Chicago 6:45 P.M.
+R: Oct 14 | Arrive Singapore 11:10 P.M.
+R: Oct 14–17 | Marina Bay Hotel (breakfast included)
+R: Oct 17 | Flight SA 221 – Depart Singapore 8:30 A.M.
+D: e-mail | E-mail – Itinerary comment
+H: To: Travel Desk
+H: From: Mark Doyle
+H: Date: September 4
+X: Thanks for the itinerary. The hotel is perfect, but I'm concerned about the return flight. I have a meeting with the client until 7:00 P.M. on the 17th, so the morning flight is too early. Could you look for an evening flight on that date?
+Q: Why did Mr. Doyle write the first e-mail? ;; To request travel arrangements | To cancel a workshop | To complain about a hotel | To change a meeting ;; Demande de réservation. ;; objectif
+Q: What does the itinerary indicate about the hotel? ;; Breakfast is included. | It is far from the client. | It costs $200 per night. | It has a pool. ;; « breakfast included ». ;; détail
+Q: What is the problem with the return flight? ;; It departs before his meeting ends. | It is too expensive. | It is full. | It lands too late. ;; Départ à 8h30 le 17, réunion jusqu'à 19h. ;; triple document
+Q: When does Mr. Doyle arrive in Singapore? ;; October 14 | October 13 | October 15 | October 17 ;; Arrivée le 14 à 23h10. ;; détail
+Q: What does Mr. Doyle ask the Travel Desk to do? ;; Find an evening flight | Change the hotel | Book a taxi | Add a stop ;; « look for an evening flight ». ;; consigne
+
+@P7T déménagement de bureau
+D: notice | Notice – Office relocation
+H: Orion Insurance – Moving to 450 Lake Street
+X: Orion Insurance will move to its new headquarters at 450 Lake Street on Saturday, June 21. The old office will close on Friday, June 20 at noon. Our phone number will remain the same, but there will be no service from Friday afternoon until Monday morning. Clients may submit claims on our Web site during that period.
+D: e-mail | E-mail – Client question
+H: To: info@orioninsurance.example
+H: From: Charles Bennett
+H: Date: June 12
+X: Hello, I am planning to bring documents for my car claim to your office on Friday, June 20, around 3:00 P.M. Will someone be there? If not, where can I drop them? Charles Bennett
+D: e-mail | E-mail – Reply
+H: To: Charles Bennett
+H: From: Orion Insurance
+H: Date: June 13
+X: Dear Mr. Bennett, unfortunately our current office will be closed by 3:00 P.M. on that day. You may either upload your documents to our Web site at any time, or bring them to the new office after Monday, June 23, when we reopen. We apologize for the inconvenience. Orion Insurance
+Q: What is announced in the notice? ;; An office move | A new insurance product | A price increase | A merger ;; Déménagement du siège. ;; objectif
+Q: Why can't Mr. Bennett drop off documents on June 20 at 3:00 P.M.? ;; The office will be closed. | The documents are late. | The office has moved already. | The claim is complete. ;; Fermeture à midi le 20 juin. ;; triple document
+Q: What is one option for Mr. Bennett? ;; Uploading documents online | Mailing them to Lake Street | Calling a manager | Waiting until July ;; « upload your documents to our Web site ». ;; détail
+Q: When will the new office reopen? ;; Monday, June 23 | Saturday, June 21 | Friday, June 20 | Tuesday, June 24 ;; « after Monday, June 23, when we reopen ». ;; détail
+Q: What will NOT change? ;; The phone number | The address | The Web site | The office hours ;; « Our phone number will remain the same ». ;; NOT question
+
+@P7T abonnement magazine
+D: advertisement | Advertisement – Magazine subscription
+H: Travel Today Magazine
+X: Discover the world with Travel Today! Subscribe for one year (12 issues) for just $48 and get a free travel bag. Or choose two years (24 issues) for $80. Subscribers also get access to our digital edition. Offer valid until March 31.
+D: form | Subscription form
+R: Name | Olivia Grant
+R: Plan | Two years
+R: Payment | Credit card
+R: Gift option | Gift for: Peter Grant
+H: Digital edition login will be e-mailed within 24 hours.
+D: e-mail | E-mail – Confirmation
+H: To: Olivia Grant
+H: From: Travel Today
+H: Date: March 29
+X: Thank you for subscribing to Travel Today. Your gift subscription for Mr. Peter Grant has been processed. The first issue will be mailed to him on April 5. Because you subscribed before March 31, we have enclosed a coupon for $10 off your next purchase from our online store.
+Q: What is the advertised price for a one-year subscription? ;; $48 | $80 | $24 | $12 ;; « one year (12 issues) for just $48 ». ;; détail
+Q: What did Ms. Grant do? ;; Buy a gift subscription | Cancel a subscription | Renew her own plan | Order a travel bag ;; « Gift for: Peter Grant ». ;; triple document
+Q: How much did Ms. Grant most likely pay? ;; $80 | $48 | $90 | $10 ;; Plan de deux ans : 80 $. ;; triple document
+Q: When will the first issue be sent? ;; April 5 | March 31 | March 29 | Within 24 hours ;; « mailed to him on April 5 ». ;; détail
+Q: What is Ms. Grant offered in the confirmation? ;; A discount coupon | A free bag | A free issue | A digital edition ;; « a coupon for $10 off ». ;; détail

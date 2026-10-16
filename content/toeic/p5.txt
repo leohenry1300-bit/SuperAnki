@@ -65,3 +65,67 @@ P5: The factory will ____ operations next month after repairs. ;; resume | resig
 P5: The shop offers a 20 percent discount on all ____ items. ;; clearance | clearly | clear | cleared ;; « clearance items » = articles en liquidation (nom en fonction d'adjectif). ;; vocabulaire
 P5: Mr. Adams, along with his colleagues, ____ attending the workshop. ;; is | are | were | have been ;; Le sujet réel est « Mr. Adams » (singulier). ;; accord sujet-verbe
 P5: The company has a strict policy ____ the use of personal devices. ;; regarding | regarded | regard | regards ;; « regarding » = concernant (préposition). ;; préposition
+P5: The manager asked all staff to complete the safety training ____ Friday. ;; by | during | since | among ;; « by » + date = au plus tard à cette date. ;; préposition
+P5: Ms. Alvarez is one of the most ____ designers in our department. ;; creative | creatively | create | creation ;; Après « most », un adjectif : « creative ». ;; famille de mots
+P5: We are pleased to ____ that the renovation will be finished early. ;; announce | announcement | announcing | announced ;; Après « to », un verbe à la base. ;; forme du verbe
+P5: The new printer is ____ faster than the old one. ;; much | very | more | most ;; « much » renforce un comparatif (much faster). « very » ne se combine pas avec un comparatif. ;; comparatif
+P5: Customers may return any item ____ thirty days of purchase. ;; within | between | during | across ;; « within thirty days » = dans un délai de trente jours. ;; préposition
+P5: The company's profits have risen ____ since the new CEO arrived. ;; steadily | steady | steadiness | steadier ;; Adverbe après un verbe : « risen steadily ». ;; adverbe
+P5: ____ you have any questions, please contact the help desk. ;; If | Unless | Although | Whereas ;; « If you have any questions » : formule de politesse standard. ;; conjonction
+P5: Mr. Kim was ____ to the position of regional director last month. ;; promoted | promoting | promote | promotion ;; Voix passive : « was promoted ». ;; voix passive
+P5: The report must be signed by both the manager ____ the supervisor. ;; and | or | but | so ;; « both … and » forme une paire fixe. ;; corrélation
+P5: Please keep your receipt as ____ of purchase. ;; proof | prove | proving | provable ;; Après « as », un nom : « proof ». ;; famille de mots
+P5: The seminar will be held in the main hall, ____ seats 300 people. ;; which | who | where | what ;; « which » remplace « the main hall » (une chose, sujet de « seats »). ;; pronom relatif
+P5: All applications must be ____ before the end of the month. ;; submitted | submitting | submit | submission ;; Voix passive après « must be » : participe passé. ;; voix passive
+P5: Our factory has operated ____ it opened in 1998. ;; since | for | during | from ;; « since » + point de départ dans le passé (+ prétérit). ;; temps verbal
+P5: The airline apologized to passengers for the ____ caused by the delay. ;; inconvenience | inconvenient | inconveniently | convenience ;; Après « the », un nom : « inconvenience ». ;; famille de mots
+P5: Ms. Okafor is in charge ____ coordinating the annual conference. ;; of | for | with | to ;; « in charge of » = responsable de. ;; expression
+P5: The warehouse will be closed ____ the inventory is being counted. ;; while | during | for | between ;; « while » + sujet + verbe ; « during » + nom. ;; conjonction
+P5: Employees are ____ to use the stairs in case of fire. ;; advised | advise | advising | advice ;; « are advised to » = il est conseillé de (passif). ;; voix passive
+P5: The hotel offers ____ rates for groups of ten or more. ;; discounted | discounting | discountable | discounts ;; Participe passé adjectif devant un nom : « discounted rates » (tarifs réduits). ;; participe adjectif
+P5: Mr. Ross has worked in finance ____ twenty years. ;; for | since | during | by ;; « for » + durée. ;; préposition
+P5: The software update is ____ available on our Web site. ;; now | yet | ever | such ;; « now available » = disponible dès maintenant ; « yet » seulement en négation/question. ;; adverbe
+P5: Please ____ a copy of your ID to the application form. ;; attach | attached | attaching | attachment ;; Impératif : verbe à la base. ;; forme du verbe
+P5: The new policy is intended to ____ waste and save money. ;; reduce | reduction | reductive | reducing ;; Après « to » (but), verbe à la base. ;; vocabulaire
+P5: Ms. Evans is highly ____ by her colleagues. ;; respected | respectful | respecting | respect ;; Voix passive : « is respected ». ;; voix passive
+P5: Neither Mr. Hall ____ Ms. Reed was available for comment. ;; nor | or | and | either ;; « Neither … nor ». ;; corrélation
+P5: The tour guide spoke so ____ that we could not understand her. ;; quickly | quick | quicker | quickness ;; Adverbe qui modifie « spoke » : « so quickly that ». ;; adverbe
+P5: The finance committee ____ meet on the first Monday of every month. ;; will | would have | has been | being ;; « will » + base exprime une habitude planifiée ; les autres formes sont impossibles devant « meet ». ;; modal
+P5: A full ____ will be given if the item arrives damaged. ;; refund | refunded | refunding | refundable ;; Après l'article « a full », un nom : « refund ». ;; famille de mots
+P5: The consultant gave us a very ____ analysis of the market. ;; thorough | thoroughly | thoroughness | throughout ;; Adjectif devant un nom : « thorough analysis ». ;; famille de mots
+P5: Visitors must sign in ____ entering the building. ;; before | during | later | along ;; « before + -ing » : avant d'entrer. ;; préposition
+P5: Production costs ____ by 8 percent last year. ;; rose | rise | have risen | will rise ;; « last year » impose le prétérit : « rose ». ;; temps verbal
+P5: We need someone who can work ____ under pressure. ;; effectively | effective | effect | effectiveness ;; Adverbe après « work » : « work effectively ». ;; adverbe
+P5: The prize will be awarded to the employee ____ sales exceed the target. ;; whose | who | whom | which ;; « whose » = dont/de qui (possession) devant « sales ». ;; pronom relatif
+P5: ____ the weather forecast, the outdoor event has been moved indoors. ;; According to | Because | In case | Even though ;; « according to » + nom : d'après. ;; préposition
+P5: The shipment should arrive ____ Wednesday or Thursday. ;; on | at | in | by the ;; « on » + jour de la semaine. ;; préposition
+P5: This product is ____ to customers who sign up for the premium plan. ;; available | availably | availability | avail ;; « be + adjectif » : « available to ». ;; famille de mots
+P5: Ms. Lin was ____ to find an error in the contract. ;; able | ably | ability | enable ;; « be able to + base » : adjectif après « be ». ;; famille de mots
+P5: The training session is open ____ all new employees. ;; to | for to | at | of ;; « open to » = ouvert à. ;; préposition
+P5: After several attempts, the technician ____ fixed the problem. ;; finally | final | finalize | finality ;; Adverbe devant le verbe. ;; adverbe
+P5: Our branch in Tokyo is ____ larger than the one in Osaka. ;; slightly | slight | slighted | slightness ;; Adverbe devant un comparatif : « slightly larger ». ;; adverbe
+P5: Please be advised that the offices will be closed ____ the holiday. ;; for | since | upon | among ;; « closed for the holiday » = fermé pour (à cause de) la fête. ;; préposition
+P5: The brochure provides ____ information about our services. ;; detailed | detail | detailing | details ;; Adjectif devant un nom indénombrable : « detailed information ». ;; participe adjectif
+P5: If Ms. Cruz ____ the offer, she would have to move to Berlin. ;; accepted | accepts | will accept | had accepted ;; Type 2 : « if + prétérit, would + base ». ;; conditionnel
+P5: The committee members could not agree ____ a date for the next meeting. ;; on | to | with | at ;; « agree on » = se mettre d'accord sur. ;; verbe + préposition
+P5: Sales of electric cars are expected to ____ next year. ;; increase | increasingly | increased | increment ;; Après « to », verbe à la base. ;; forme du verbe
+P5: The restaurant is popular ____ its friendly staff and fresh ingredients. ;; for | at | on | into ;; « popular for » = apprécié pour. ;; adjectif + préposition
+P5: We have ____ received the shipment, so we cannot confirm the order yet. ;; not | no | never | none ;; « have not received » : négation du present perfect. ;; négation
+P5: Applicants should have ____ two years of relevant experience. ;; at least | at most | at last | at all ;; « at least » = au minimum (exigence d'un poste). ;; expression
+P5: The CEO delivered an ____ speech that motivated the whole team. ;; inspiring | inspire | inspiration | inspirationally ;; Adjectif devant un nom : « inspiring speech ». ;; participe adjectif
+P5: Every employee ____ a copy of the new handbook by Monday. ;; will receive | will be received | have received | receiving ;; Sujet singulier « every employee » + futur actif. ;; accord sujet-verbe
+P5: The ____ of the new system took about three months. ;; installation | install | installing | installed ;; Après « The », un nom : « installation ». ;; famille de mots
+P5: ____ the contract is signed, the work cannot begin. ;; Until | During | Despite | Because of ;; « until » + sujet + verbe : tant que… ne… pas. ;; conjonction
+P5: Mr. Tan prefers to take the train ____ driving to work. ;; to | than | rather | instead ;; « prefer A to B » (B = -ing). ;; expression
+P5: The merger will ____ the company the largest in the region. ;; make | do | take | put ;; « make + objet + adjectif/nom » : rendre. ;; vocabulaire
+P5: As a ____ of the storm, several flights were canceled. ;; result | resulting | resultant | resultingly ;; « as a result of » = à la suite de. ;; expression
+P5: Employees are encouraged to take ____ of the company's fitness program. ;; advantage | benefit to | favor | profit of ;; « take advantage of » = profiter de. ;; expression
+P5: The store manager is looking for someone ____ can start immediately. ;; who | whom | which | whose ;; « who » = sujet du verbe « can start » (personne). ;; pronom relatif
+P5: Most customers prefer ____ online rather than in stores. ;; shopping | shop | to shopping | shopped ;; « prefer + -ing … rather than … ». ;; gérondif
+P5: The assistant will ____ the visitors to the conference room. ;; escort | escorts | escorting | escorted ;; Après « will », verbe à la base. ;; forme du verbe
+P5: Our offices are ____ located near the central station. ;; conveniently | convenient | convenience | convene ;; Adverbe entre « are » et le participe « located ». ;; adverbe
+P5: The CEO is known for ____ decisions quickly. ;; making | make | to make | made ;; « for » + -ing. ;; gérondif
+P5: Please do not hesitate ____ us if you need further assistance. ;; to contact | contacting | contact | contacted ;; « hesitate to + base ». ;; infinitif
+P5: Passengers are reminded that smoking is ____ prohibited on all flights. ;; strictly | strict | strictness | stricter ;; Adverbe devant un participe : « strictly prohibited ». ;; adverbe
+P5: The new hire was given a ____ tour of the facilities. ;; guided | guiding | guide | guides ;; Participe adjectif devant un nom : « guided tour ». ;; participe adjectif
+P5: Mr. Wu has been with the firm ____ he graduated from college. ;; since | during | while | by ;; « since + sujet + prétérit » avec present perfect. ;; temps verbal

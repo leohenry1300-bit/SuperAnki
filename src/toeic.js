@@ -607,10 +607,10 @@ Object.assign(SuperAnki.prototype, {
         let top = '';
         if (u.type === 'p1') {
             const it = u.item;
-            top = `<div class="tq-scene scene-${esc(it.bg)}"><div class="tq-scene-ground"></div><div class="tq-scene-em">${it.e.map(e => `<span>${esc(e)}</span>`).join('')}</div></div>${this.exAudioHtml(u)}`;
+            top = `${toeicSceneHtml(it, false)}${this.exAudioHtml(u)}`;
         } else if (u.type === 'p2') top = this.exAudioHtml(u);
         else if (u.type === 'p3' || u.type === 'p4') top = this.exAudioHtml(u) + (u.item.g ? this.exGraphicHtml(u.item.g) : '');
-        else if (u.type === 'p6') top = `<div class="panel panel-pad tq-doc">${u.item.ps.map(p => `<p>${esc(p).replace(/\[(\d)\](\s*_{2,})?/g, (m, d) => `<span class="blank">(${qs[u.q[Number(d) - 1]].n}) ______</span>`)}</p>`).join('')}</div>`;
+        else if (u.type === 'p6') top = `${this.toeicWordChip()}<div class="panel panel-pad tq-doc">${u.item.ps.map(p => `<p>${esc(p).replace(/\[(\d)\](\s*_{2,})?/g, (m, d) => `<span class="blank">(${qs[u.q[Number(d) - 1]].n}) ______</span>`)}</p>`).join('')}</div>`;
         else if (u.type === 'p7') top = this.exDocsHtml(u.item);
         const split = u.type === 'p6' || u.type === 'p7';
         return `<div class="ex-unit ${split ? 'split' : ''}" data-unit="${run.unit}"><div class="ex-stim">${top}</div><div class="ex-qs">${u.q.map(qh).join('')}${u.type === 'p5' || !listening ? '' : ''}</div></div>`;
@@ -634,7 +634,7 @@ Object.assign(SuperAnki.prototype, {
     },
     exDocsHtml(it) {
         const docs = it.docs || [{ k: it.k, ti: it.ti, bl: it.bl }];
-        return `<div class="tq-docs">${docs.map((d, i) => `<div class="panel panel-pad tq-doc">${docs.length > 1 ? `<div class="tq-doc-n">Document ${i + 1}</div>` : ''}${d.ti ? `<div class="tq-doc-ti">${esc(d.ti)}</div>` : ''}${this.exBlocksHtml(d.bl)}</div>`).join('')}</div>`;
+        return `${this.toeicWordChip()}<div class="tq-docs">${docs.map((d, i) => `<div class="panel panel-pad tq-doc">${docs.length > 1 ? `<div class="tq-doc-n">Document ${i + 1}</div>` : ''}${d.ti ? `<div class="tq-doc-ti">${esc(d.ti)}</div>` : ''}${this.exBlocksHtml(d.bl)}</div>`).join('')}</div>`;
     },
     exBlocksHtml(bl) {
         let out = '', i = 0;
@@ -1035,7 +1035,7 @@ Object.assign(SuperAnki.prototype, {
             if (u.sec === 'L') stim = this.exTranscriptHtml(u) + (u.item.g ? this.exGraphicHtml(u.item.g) : '');
             else if (u.type === 'p6') stim = `<div class="tq-doc">${u.item.ps.map(p => `<p>${esc(p).replace(/\[(\d)\](\s*_{2,})?/g, (m, d) => { const q = rv.qs[u.q[Number(d) - 1]]; return `<span class="blank filled">(${q.n}) ${esc(q.opts[q.ans].t)}</span>`; })}</p>`).join('')}</div>`;
             else if (u.type === 'p7') stim = this.exDocsHtml(u.item);
-            const sceneHtml = u.type === 'p1' ? `<div class="tq-scene scene-${esc(u.item.bg)} small"><div class="tq-scene-ground"></div><div class="tq-scene-em">${u.item.e.map(e => `<span>${esc(e)}</span>`).join('')}</div></div>` : '';
+            const sceneHtml = u.type === 'p1' ? toeicSceneHtml(u.item, true) : '';
             return `<div class="panel panel-pad tq-rv-unit"><div class="tq-rv-head"><span class="tq-part-badge" style="--c:${P.color}">${P.label}</span><span class="small muted">${u.q.length > 1 ? `Questions ${first.n}-${rv.qs[u.q[u.q.length - 1]].n}` : `Question ${first.n}`}</span></div>
                 ${sceneHtml}${stim ? `<details class="tq-rv-stim" ${u.type === 'p6' ? 'open' : ''}><summary>${u.sec === 'L' ? 'Transcription' : u.type === 'p6' ? 'Texte complété' : 'Voir les documents'}</summary>${stim}</details>` : ''}
                 ${u.q.map(i => { const q = rv.qs[i], d = rv.by.get(q.uid) || [q.uid, -1, 0, 0]; return `${this.exQHtml(q, 'review', d[1] < 0 ? -1 : d[1])}<div class="tq-rv-meta">${d[2] ? `<span>${Math.round(d[2] / 1000)} s</span>` : ''}${d[3] ? `<span class="tag">marquée</span>` : ''}<button class="link" data-action="tq-addcard" data-uid="${esc(q.uid)}">${ic('plus')}Ajouter aux cartes</button></div>`; }).join('')}</div>`;
@@ -1050,6 +1050,7 @@ Object.assign(SuperAnki.prototype, {
         const it = e.item, tags = ['toeic', `toeic-${e.part}`, ...((e.qi < 0 ? it.t : it.qs[e.qi].t) ? [(e.qi < 0 ? it.t : it.qs[e.qi].t).replace(/\s+/g, '-')] : [])];
         const plain = h => escapePlain(String(h));
         if (e.part === 'p5') return { type: 'cloze', front: plain(it.q.replace(/_{3,}/, `{{c1::${it.o[0]}}}`)), back: plain(it.x), hint: '', detail: '', tags };
+        if (e.part === 'p1' && it.ph) { const ph = typeof TOEIC_PHOTOS !== 'undefined' ? TOEIC_PHOTOS[it.ph] : null; return { type: 'basic', front: plain(`Part 1 — photo : ${ph ? ph.d : it.ph}. Quelle phrase la décrit le mieux ?`), back: plain(`${it.o[0]}\n\n${it.x}`), hint: '', detail: '', tags }; }
         if (e.part === 'p1') return { type: 'basic', front: plain(`Scène : ${it.e.join(' ')} — quelle phrase décrit le mieux l'image ?`), back: plain(`${it.o[0]}\n\n${it.x}`), hint: '', detail: '', tags };
         if (e.part === 'p2') return { type: 'basic', front: plain(it.q), back: plain(`${it.o[0]}\n\n${it.x}`), hint: '', detail: '', tags };
         const q = it.qs[e.qi];
@@ -1143,6 +1144,8 @@ Object.assign(SuperAnki.prototype, {
                 this.toeicStart({ kind: a.kind === 'errors' ? 'errors' : a.kind, part: a.part, count: a.part === 'p7' ? a.d.length : items, style: a.style });
                 break;
             }
+            case 'tq-wordmode': { this.ex.wordMode = !this.toeicWordOn(); this.toeicWordChipsRefresh(); break; }
+            case 'tq-word-save': this.toeicWordSave(); break;
             case 'tq-addcard': { const n = this.toeicAddCards([ds.uid]); this.toast(n ? 'Carte ajoutée au paquet « TOEIC : mes erreurs »' : 'Déjà dans tes cartes', n ? 'success' : 'warning'); break; }
             case 'tq-addall': {
                 const rv = this.ex.rv, uids = rv.qs.filter(q => !toeicIsRight(q.uid, (rv.by.get(q.uid) || [0, -1])[1])).map(q => q.uid);
@@ -1154,3 +1157,81 @@ Object.assign(SuperAnki.prototype, {
         }
     }
 });
+
+/* Part 1 picture: a real photo (TOEIC_PHOTOS, with credit line) or the emoji scene fallback */
+function toeicSceneHtml(it, small) {
+    const ph = it.ph && typeof TOEIC_PHOTOS !== 'undefined' ? TOEIC_PHOTOS[it.ph] : null;
+    if (ph) return `<figure class="tq-photo${small ? ' small' : ''}"><img src="${ph.s}" alt="" draggable="false"><figcaption>${esc(ph.c)}</figcaption></figure>`;
+    return `<div class="tq-scene scene-${esc(it.bg)}${small ? ' small' : ''}"><div class="tq-scene-ground"></div><div class="tq-scene-em">${(it.e || []).map(e => `<span>${esc(e)}</span>`).join('')}</div></div>`;
+}
+
+/* ---------- « mot inconnu » : touche un mot d'un texte (parties 6 et 7) pour en faire une carte ---------- */
+Object.assign(SuperAnki.prototype, {
+    toeicWordOn() { const ex = this.ex; return !!ex && (ex.wordMode === undefined ? (ex.run && ex.run.style === 'train') || !!ex.rv : ex.wordMode); },
+    toeicWordChip() { return `<button class="chip tq-wm${this.toeicWordOn() ? ' active' : ''}" data-action="tq-wordmode">🔎 Mot inconnu : ${this.toeicWordOn() ? 'activé — touche un mot' : 'désactivé'}</button>`; },
+    toeicWordChipsRefresh() { const on = this.toeicWordOn(); $$('.tq-wm').forEach(b => { b.classList.toggle('active', on); b.textContent = `🔎 Mot inconnu : ${on ? 'activé — touche un mot' : 'désactivé'}`; }); },
+    /* word + sentence under a tap, via the browser's caret hit-test */
+    toeicWordAt(x, y) {
+        let node, off;
+        if (document.caretPositionFromPoint) { const p = document.caretPositionFromPoint(x, y); if (p) { node = p.offsetNode; off = p.offset; } }
+        else if (document.caretRangeFromPoint) { const r = document.caretRangeFromPoint(x, y); if (r) { node = r.startContainer; off = r.startOffset; } }
+        if (!node || node.nodeType !== 3) return null;
+        const t = node.nodeValue, isW = ch => /[A-Za-zÀ-ÿ'’\-]/.test(ch || '');
+        let a = Math.min(off, t.length), b = a;
+        if (!isW(t[a]) && isW(t[a - 1])) { a--; b--; }
+        while (a > 0 && isW(t[a - 1])) a--;
+        while (b < t.length && isW(t[b])) b++;
+        let w = t.slice(a, b).replace(/^['’\-]+|['’\-]+$/g, '').replace(/['’]s$/i, '');
+        if (w.length < 2 || !/[A-Za-z]/.test(w)) return null;
+        const blk = node.parentElement && node.parentElement.closest('p,li,td,th,.tq-chat-m,.tq-doc-h,.tq-doc-ti,div') || node.parentElement;
+        const full = (blk ? blk.textContent : t).replace(/\s+/g, ' ').trim();
+        const sents = full.match(/[^.!?]+[.!?]*/g) || [full], lw = w.toLowerCase();
+        const sent = (sents.find(s => s.toLowerCase().includes(lw)) || full).trim().slice(0, 240);
+        return { word: w, sent: sent.replace(/_{2,}/g, '…') };
+    },
+    toeicWordTap(e) {
+        if (!this.toeicWordOn() || e.target.closest('button,a,input,textarea,select,summary,.modal-back,.tq-opt,label')) return;
+        if (!e.target.closest('.tq-doc,.tq-rv-stim')) return;
+        const sel = window.getSelection && String(window.getSelection()).trim();
+        const hit = this.toeicWordAt(e.clientX, e.clientY);
+        if (!hit) return;
+        this.toeicWordAsk(hit.word, hit.sent);
+    },
+    toeicWordAsk(word, sent) {
+        const m = this.openModal({ title: '🔎 Mot inconnu', body: `
+            <div class="field"><label>Mot ou expression (modifiable)</label><input class="input" id="tw-word" value="${esc(word.toLowerCase())}" autocapitalize="none" spellcheck="false"></div>
+            <div class="field"><label>Traduction en français <span class="muted" id="tw-st"></span></label><input class="input" id="tw-fr" placeholder="Recherche de la traduction…" autocapitalize="none"></div>
+            <div class="field"><label>Phrase d'origine (gardée en indice)</label><textarea class="input" id="tw-sent" rows="3">${esc(sent)}</textarea></div>`,
+            foot: `<button class="btn ghost" data-close>Annuler</button><button class="btn primary" data-action="tq-word-save">Créer la carte</button>` });
+        this._tw = m;
+        const fr = $('#tw-fr', m), st = $('#tw-st', m);
+        const look = () => {
+            const w = $('#tw-word', m).value.trim(); if (!w) return;
+            st.textContent = '(recherche…)';
+            const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 5000);
+            fetch(`https://api.mymemory.translated.net/get?langpair=en|fr&q=${encodeURIComponent(w)}`, { signal: ctl.signal }).then(r => r.json()).then(j => {
+                const tr = j && j.responseData && j.responseData.translatedText;
+                if (tr && !fr.value && !/MYMEMORY|INVALID/i.test(tr)) { fr.value = tr.toLowerCase(); st.textContent = '(proposition automatique : vérifie-la)'; }
+                else st.textContent = '(à compléter)';
+            }).catch(() => { st.textContent = navigator.onLine ? '(à compléter)' : '(hors ligne : saisis-la)'; }).finally(() => { clearTimeout(to); fr.placeholder = 'Traduction'; });
+        };
+        look();
+        $('#tw-word', m).addEventListener('change', () => { fr.value = ''; look(); });
+        setTimeout(() => fr.focus(), 50);
+    },
+    toeicWordSave() {
+        const m = this._tw; if (!m) return;
+        const word = $('#tw-word', m).value.trim(), fr = $('#tw-fr', m).value.trim(), sent = $('#tw-sent', m).value.trim();
+        if (!word || !fr) { this.toast('Renseigne le mot et sa traduction', 'warning'); return; }
+        const deckId = 'toeic_words', plain = h => escapePlain(String(h));
+        const dup = this.data.cards.some(c => c.deckId === deckId && c.front.toLowerCase() === plain(word).toLowerCase());
+        if (dup) { this.toast('Ce mot est déjà dans « TOEIC : mots inconnus »', 'warning'); this.closeModal(m); return; }
+        this.change('mot inconnu TOEIC', [], () => {
+            if (!this.deck(deckId)) this.data.decks.push({ id: deckId, name: 'TOEIC : mots inconnus', emoji: '🔎', description: 'Mots touchés dans les textes du simulateur', created: Date.now(), parent: null, opts: null, mod: 0, preset: this.data.presets.some(x => x.id === TOEIC_PRESET_ID) ? TOEIC_PRESET_ID : null, limits: null });
+            return this.createNote({ type: 'basic', deckId, front: plain(word), back: plain(fr), hint: plain(sent), detail: '', tags: ['toeic', 'mot-inconnu'] });
+        }, { decks: true });
+        this.closeModal(m); this._tw = null;
+        this.toast(`« ${word} » ajouté à « TOEIC : mots inconnus »`, 'success');
+    }
+});
+document.addEventListener('click', e => { if (typeof app !== 'undefined' && app && app.toeicWordTap) app.toeicWordTap(e); });

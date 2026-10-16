@@ -122,7 +122,10 @@ def parse_toeic():
             where = f"toeic/{fname}.txt:{n}"
             if line.startswith("P1:"):
                 f = [x.strip() for x in re.split(r"\s*;;\s*", line[3:])]
-                bank["p1"].append({"id": newid("p1"), "e": f[0].split(), "bg": f[1], "o": opts_of(f[2], where, 4), "a": 0, "x": f[3], "t": f[4] if len(f) > 4 else ""})
+                if f[0].startswith("@"):   # real photo: "@key" (content/toeic/photos/<key>.jpg)
+                    bank["p1"].append({"id": newid("p1"), "ph": f[0][1:], "e": [], "bg": "", "o": opts_of(f[1], where, 4), "a": 0, "x": f[2], "t": f[3] if len(f) > 3 else ""})
+                else:
+                    bank["p1"].append({"id": newid("p1"), "e": f[0].split(), "bg": f[1], "o": opts_of(f[2], where, 4), "a": 0, "x": f[3], "t": f[4] if len(f) > 4 else ""})
             elif line.startswith(("P2:", "P5:")):
                 kind = "p2" if line.startswith("P2:") else "p5"
                 f = [x.strip() for x in re.split(r"\s*;;\s*", line[3:])]
@@ -194,6 +197,17 @@ def parse_toeic():
 
 
 toeic = parse_toeic()
+import base64
+_ph = {}
+_pdir = ROOT / "content" / "toeic" / "photos"
+if _pdir.exists():
+    _cr = json.loads((_pdir / "credits.json").read_text(encoding="utf-8"))
+    for _f in sorted(_pdir.glob("*.jpg")):
+        _ph[_f.stem] = {"s": "data:image/jpeg;base64," + base64.b64encode(_f.read_bytes()).decode(), "c": _cr[_f.stem]["c"], "d": _cr[_f.stem]["d"]}
+for _it in toeic["p1"]:
+    if _it.get("ph") and _it["ph"] not in _ph:
+        raise SystemExit("missing photo " + _it["ph"])
+(SRC / "toeic-photos.js").write_text("const TOEIC_PHOTOS = " + json.dumps(_ph, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
 (SRC / "toeic-bank.js").write_text("const TOEIC_BANK = " + json.dumps(toeic, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
 print("toeic bank:", {k: len(v) for k, v in toeic.items()}, "questions:",
       sum(len(v) if k in ("p1", "p2", "p5") else sum(len(i["qs"]) for i in v) for k, v in toeic.items()))
@@ -226,6 +240,7 @@ html = f"""<!DOCTYPE html>
 {read("seed-data.js").strip()}
 {read("packs-data.js").strip()}
 {read("toeic-bank.js").strip()}
+{read("toeic-photos.js").strip()}
 </script>
 <script>
 {read("fsrs.js")}

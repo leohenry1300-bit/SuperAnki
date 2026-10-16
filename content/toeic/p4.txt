@@ -76,3 +76,129 @@ T: This is Sandra Wu with the Business Hour. Today we're talking about a trend t
 Q: What is the topic of the program? ;; Working from home | Salary negotiation | Office design | Company mergers ;; Le télétravail. ;; sujet principal
 Q: What benefit of the policy is mentioned? ;; Increased productivity | Reduced office costs | Higher salaries | Shorter meetings ;; +15 % de productivité. ;; détail
 Q: Who will the speaker talk to after the break? ;; A psychology expert | A company manager | A government official | A job applicant ;; « Dr. Alan Reed, an expert in workplace psychology ». ;; action future
+
+@P4 annonce de magasin
+T: Attention, shoppers. Thank you for visiting Greenfield Market. For the next hour, all fresh fruit and vegetables on aisle four are twenty percent off. In addition, our bakery is giving out free samples of its new whole-grain bread near the entrance. Please remember that the store will close early today at six o'clock because of a staff meeting. We apologize for any inconvenience and thank you for shopping with us.
+Q: Where is the announcement being made? ;; At a grocery store | At a bakery school | At a farm | At a restaurant ;; « shoppers », « aisle four », « fruit and vegetables ». ;; lieu
+Q: What is being offered at a discount? ;; Fresh produce | Whole-grain bread | Kitchen equipment | Gift cards ;; « fresh fruit and vegetables … twenty percent off ». ;; détail
+Q: Why will the store close early? ;; A staff meeting will be held. | A sale is ending. | There is a power failure. | An inspection is scheduled. ;; « because of a staff meeting ». ;; raison
+
+@P4 message vocal : médecin
+T: Hello, Mr. Alvarez. This is Dr. Lee's office calling to confirm your appointment tomorrow at ten fifteen. Please arrive fifteen minutes early to fill out some forms, and don't forget to bring your insurance card. If you can't make it, please call us at five five five, zero one one seven before five o'clock today so we can offer your time to another patient. Thank you.
+Q: Why is the speaker calling? ;; To confirm an appointment | To cancel a surgery | To send test results | To ask about insurance ;; « calling to confirm your appointment ». ;; objectif
+Q: What is Mr. Alvarez asked to bring? ;; An insurance card | A medical report | A payment | A photo ID ;; « bring your insurance card ». ;; détail
+Q: What should Mr. Alvarez do if he cannot attend? ;; Call before five o'clock | Send an e-mail | Visit the office | Reschedule online ;; « call us … before five o'clock today ». ;; consigne
+
+@P4 présentation d'entreprise
+T: Good morning, everyone, and welcome to Delta Solutions. My name is Sara Kim, and I'll be leading your orientation this week. Today we'll start with a tour of the building, followed by a presentation about our company values. After lunch, you'll receive your laptops and learn how to log in to our network. Tomorrow you'll meet your team leaders. If you have any questions at any time, please don't hesitate to ask.
+Q: Who is the speaker? ;; An orientation leader | A security guard | A software engineer | A team leader ;; « I'll be leading your orientation ». ;; identité
+Q: What will the listeners do after lunch? ;; Receive laptops | Tour the building | Meet team leaders | Sign contracts ;; « After lunch, you'll receive your laptops ». ;; détail
+Q: When will the listeners meet their team leaders? ;; Tomorrow | Today | After the tour | Next week ;; « Tomorrow you'll meet your team leaders ». ;; détail
+
+@P4 annonce d'aéroport
+T: May I have your attention, please? Passengers on Flight 482 to Toronto, we are now ready to begin boarding at Gate 14. Because of a gate change, passengers who were waiting at Gate 11 should now go to Gate 14. We will begin with passengers who need extra assistance and families with small children. All other passengers will board by row number. Please have your boarding pass and identification ready.
+Q: What is the reason for the announcement? ;; To start boarding a flight | To announce a delay | To describe safety rules | To cancel a flight ;; « we are now ready to begin boarding ». ;; objectif
+Q: What has changed? ;; The gate | The destination | The flight number | The departure time ;; « Because of a gate change ». ;; détail
+Q: Who will board first? ;; Families with small children | Business travelers | Crew members | Passengers in the last row ;; « passengers who need extra assistance and families with small children ». ;; détail
+
+@P4 publicité radio
+T: Are you tired of slow Internet? Switch to FiberNet today and enjoy speeds up to ten times faster than ordinary connections. For a limited time, new customers receive their first three months for half price, and installation is completely free. Our friendly technicians are available seven days a week. Visit our Web site or call five five five, zero one nine four to sign up. Don't wait. This offer ends at the end of the month.
+Q: What is being advertised? ;; Internet service | A mobile phone | A television | A computer repair ;; « Switch to FiberNet… speeds ». ;; sujet
+Q: What do new customers receive? ;; A reduced price for three months | Free equipment | A free phone | A year of service ;; « first three months for half price ». ;; détail
+Q: What is mentioned about the offer? ;; It ends at the end of the month. | It is for businesses only. | It requires a contract. | It is available in stores only. ;; « This offer ends at the end of the month ». ;; détail
+
+@P4 discours de remise de prix
+T: Good evening, ladies and gentlemen. It is my great pleasure to present this year's Employee of the Year award. This person joined our company only three years ago, but has already improved our customer satisfaction scores by twenty percent. She also trained more than thirty new staff members and volunteered to lead our community garden project. Please join me in congratulating Ms. Teresa Alonso.
+Q: What is the occasion? ;; An award ceremony | A product demonstration | A job interview | A shareholder meeting ;; « present this year's Employee of the Year award ». ;; contexte
+Q: What has Ms. Alonso improved? ;; Customer satisfaction | Production speed | Sales prices | Office space ;; « improved our customer satisfaction scores ». ;; détail
+Q: What did Ms. Alonso volunteer to do? ;; Lead a garden project | Train a new manager | Organize a party | Design a Web site ;; « volunteered to lead our community garden project ». ;; détail
+
+@P4 bulletin météo
+T: Good morning, this is your weather update. Expect cloudy skies in the city this morning, with rain starting around noon and continuing through the evening. Temperatures will drop to eight degrees tonight. If you are traveling to the north of the region, be aware that heavy snow is forecast on the mountain roads, and drivers may need chains. The sun returns on Thursday, and weekend temperatures will be much warmer.
+Q: What is the weather expected to be in the city this afternoon? ;; Rainy | Sunny | Snowy | Windy ;; « rain starting around noon ». ;; détail
+Q: What are drivers in the north advised about? ;; They may need chains. | Roads are closed. | Speed limits are lower. | Traffic is heavy. ;; « drivers may need chains ». ;; consigne
+Q: When will the weather improve? ;; On Thursday | Tonight | Tomorrow morning | Next month ;; « The sun returns on Thursday ». ;; détail
+
+@P4 réunion d'équipe
+T: Before we begin the meeting, I have a few announcements. First, the quarterly sales results are in, and we exceeded our target by eight percent. Congratulations to everyone. Second, our new accountant, Mr. Dubois, will join us on Monday. I'd like you to welcome him and show him around. Finally, the building's cafeteria will be closed for renovation next week, so please bring your own lunch or use the restaurants nearby.
+Q: What is the main topic of the talk? ;; Company announcements | A sales strategy | A budget proposal | A product design ;; Annonces avant la réunion. ;; sujet principal
+Q: What happened last quarter? ;; Sales exceeded the goal. | A manager retired. | Sales dropped. | A client left. ;; « exceeded our target by eight percent ». ;; détail
+Q: What are the listeners asked to do? ;; Welcome a new employee | Attend a training | Complete a survey | Update a schedule ;; « welcome him and show him around ». ;; consigne
+
+@P4 visite guidée musée
+T: Welcome to the City History Museum. My name is Peter, and I'll be your guide this afternoon. Our tour lasts about ninety minutes and includes the ancient coins exhibit, the maritime gallery, and the new photography collection on the second floor. Please remember that flash photography is not allowed, and large bags must be left at the coat check. If you're feeling tired, there are benches in every gallery. Shall we begin?
+Q: Who most likely is the speaker? ;; A tour guide | A museum director | A photographer | A security guard ;; « I'll be your guide this afternoon ». ;; identité
+Q: What is NOT allowed? ;; Flash photography | Walking in groups | Asking questions | Using benches ;; « flash photography is not allowed ». ;; NOT question
+Q: What are listeners asked to do with large bags? ;; Leave them at the coat check | Carry them in front | Place them on benches | Show them at the door ;; « large bags must be left at the coat check ». ;; consigne
+
+@P4 annonce de gare : retard
+T: Attention, passengers waiting for the five thirty-five train to Manchester. Due to a signal problem, this train is delayed by approximately forty minutes. We recommend that passengers with connecting trains speak to a staff member at the information desk. Refreshments are available in the waiting room, and tickets will remain valid for the next available train. We are sorry for the delay and will update you as soon as we have further information.
+Q: What is the reason for the delay? ;; A signal problem | Bad weather | A staff shortage | A collision ;; « Due to a signal problem ». ;; raison
+Q: How long is the delay? ;; About forty minutes | About fifteen minutes | About an hour | About two hours ;; « delayed by approximately forty minutes ». ;; chiffre
+Q: What should passengers with connecting trains do? ;; Speak to a staff member | Buy new tickets | Board another train | Wait in the café ;; « speak to a staff member at the information desk ». ;; consigne
+
+@P4 message vocal : fournisseur
+T: Hi, this is Linda from Evergreen Supplies. I'm calling about your order of two hundred ink cartridges. I'm afraid the cartridges for the model X5 are out of stock until the fifteenth, but we do have a compatible model that's available right now at the same price. If you'd prefer to wait, I'll hold your order and ship everything together on the sixteenth. Please call me back by Wednesday to let me know which option you prefer.
+Q: Why is the speaker calling? ;; To report a stock problem | To confirm a payment | To advertise a sale | To change an address ;; Le modèle X5 est en rupture. ;; objectif
+Q: What does the speaker offer? ;; A different model at the same price | A discount | Free shipping | A refund ;; « a compatible model … at the same price ». ;; offre
+Q: What does the speaker ask the listener to do? ;; Choose an option by Wednesday | Visit a store | Send a payment | Check an invoice ;; « call me back by Wednesday ». ;; demande
+
+@P4 annonce de maintenance
+T: Attention all employees. The building's elevator system will undergo maintenance this Saturday from eight in the morning until four in the afternoon. During this time, all elevators will be out of service. Employees who must work on the upper floors on Saturday are asked to use the stairs, and deliveries will be accepted only at the loading dock on the ground floor. If you have any questions, please contact Mr. Grant in building services.
+Q: What will happen on Saturday? ;; Elevators will be shut down. | A fire drill will be held. | The building will be painted. | A new entrance will open. ;; « all elevators will be out of service ». ;; détail
+Q: What are employees working on upper floors asked to do? ;; Use the stairs | Work from home | Arrive early | Park outside ;; « asked to use the stairs ». ;; consigne
+Q: Who should listeners contact with questions? ;; Mr. Grant | The loading dock | A delivery service | The elevator company ;; « contact Mr. Grant in building services ». ;; détail
+
+@P4 podcast : conseils carrière
+T: Welcome back to Career Corner. Today we're talking about writing a successful résumé. First, keep it to one page; hiring managers rarely read more. Second, use numbers to show your achievements, for example the percentage by which you increased sales. And finally, always customize your résumé for each job. Later in the show, I'll be speaking with recruiter Natalie Chen, who will tell us what mistakes to avoid. But first, a short break.
+Q: What is the topic of the program? ;; Writing a résumé | Starting a business | Changing careers | Negotiating a salary ;; « writing a successful résumé ». ;; sujet
+Q: What advice does the speaker give? ;; Use numbers to show achievements | Use many colors | Include a photo | List every job ;; « use numbers to show your achievements ». ;; détail
+Q: What will happen next? ;; A commercial break | A guest interview | A listener call | A news report ;; « But first, a short break. » ;; action future
+
+@P4 annonce de cinéma
+T: Ladies and gentlemen, before tonight's film begins, a few reminders. Please silence your mobile phones, and refrain from using the flash on cameras. Refreshments are available at the concession stand until the end of the first half hour. Tonight, we're proud to announce that the director of the film will answer questions after the show. Anyone wishing to attend the discussion should remain in their seats. Enjoy the movie.
+Q: Where is the announcement being made? ;; At a movie theater | At a train station | At a concert hall | At a stadium ;; « tonight's film », « concession stand ». ;; lieu
+Q: What are listeners asked to do? ;; Silence their phones | Turn off the lights | Move to the front | Buy tickets ;; « Please silence your mobile phones ». ;; consigne
+Q: What will happen after the film? ;; A director will take questions. | Prizes will be given. | A second film will start. | The theater will close. ;; « the director … will answer questions after the show ». ;; action future
+
+@P4 message : entrepreneur de travaux
+T: Hello, this is Ben from Hartley Contractors. I'm calling about the kitchen renovation at your house on Maple Street. We were going to start on Monday, but we're still waiting for the countertops, which are delayed at the factory. I suggest we begin with the electrical work instead, which doesn't require the new materials. I can come by tomorrow afternoon to discuss the plan and go over the revised schedule. Please call me back to confirm.
+Q: What is the problem? ;; Some materials are delayed. | A worker is ill. | A price has increased. | A permit was denied. ;; « the countertops … are delayed at the factory ». ;; problème
+Q: What does the speaker suggest? ;; Starting with electrical work | Canceling the project | Changing the design | Hiring a new company ;; « begin with the electrical work ». ;; suggestion
+Q: What will the speaker do tomorrow afternoon? ;; Visit the house | Order materials | Send an invoice | Go to the factory ;; « I can come by tomorrow afternoon ». ;; action future
+
+@P4 conférence : nouveau service bancaire
+T: Thank you all for joining today's webinar. I'm excited to introduce our new mobile banking application. With it, you can deposit checks by taking a photo, set up alerts for unusual transactions, and transfer money in seconds. Security is our top priority, so the app uses fingerprint recognition. At the end of the session, we will answer your questions, and participants will receive a link to download the app for free.
+Q: What is being introduced? ;; A mobile app | A savings account | A credit card | A branch office ;; « our new mobile banking application ». ;; sujet
+Q: What feature is mentioned? ;; Depositing checks with a photo | Paying taxes | Buying stocks | Ordering cash ;; « deposit checks by taking a photo ». ;; détail
+Q: What will participants receive? ;; A download link | A free gift | A cash bonus | A printed guide ;; « a link to download the app ». ;; détail
+
+@P4 annonce : parking
+T: Attention, employees. Beginning next Monday, the parking lot behind the main building will be reserved for visitors and clients. Employees are asked to use the new lot on Cedar Street, which is a five-minute walk from the entrance. A free shuttle will run every ten minutes between eight and nine in the morning and between five and six in the evening. Parking permits for the Cedar Street lot can be picked up at the security desk.
+Q: What change is announced? ;; Employees must use a different parking lot. | The parking fee is being raised. | The building is moving. | The security desk is closing. ;; « the new lot on Cedar Street ». ;; sujet principal
+Q: How often will the shuttle run? ;; Every ten minutes | Every half hour | Every hour | Every five minutes ;; « every ten minutes ». ;; chiffre
+Q: Where can employees get a parking permit? ;; At the security desk | At the main entrance | At the human resources office | On the Web site ;; « picked up at the security desk ». ;; détail
+
+@P4 discours d'ouverture : festival
+T: Welcome to the twelfth annual Riverside Food Festival! We have more than eighty vendors this year, offering dishes from fifteen countries. Don't miss the cooking demonstrations on the main stage, beginning at noon with a special appearance by chef Marco Bellini. Because of the large crowds expected, we encourage you to use public transportation. And remember to vote for your favorite dish; the winner will be announced at six o'clock.
+Q: What event is being introduced? ;; A food festival | A trade fair | A concert | A marathon ;; « Riverside Food Festival ». ;; sujet
+Q: What will take place at noon? ;; A cooking demonstration | A prize ceremony | A parade | A tasting contest ;; « cooking demonstrations … beginning at noon ». ;; détail
+Q: What are visitors encouraged to do? ;; Use public transportation | Buy tickets online | Arrive early | Bring cash ;; « we encourage you to use public transportation ». ;; consigne
+
+@P4 message de la direction
+T: Good afternoon, team. I want to update you on the merger with Beltran Industries. The agreement was signed this morning, and the two companies will officially combine on the first of July. Please don't worry; no one will lose their job. Over the next few weeks, you'll meet colleagues from Beltran's design department. A series of workshops will be organized to help both teams work together. A schedule will be sent to you by e-mail tomorrow.
+Q: What is the speaker mainly talking about? ;; A company merger | A product recall | A hiring plan | A budget cut ;; « the merger with Beltran Industries ». ;; sujet principal
+Q: What does the speaker reassure listeners about? ;; Their jobs | Their salaries | Their offices | Their vacations ;; « no one will lose their job ». ;; détail
+Q: What will listeners receive tomorrow? ;; A schedule | A contract | A bonus | A map ;; « A schedule will be sent to you by e-mail tomorrow ». ;; action future
+
+@P4 annonce : bibliothèque
+T: Attention, library patrons. The library will close in fifteen minutes. Please bring any books you wish to borrow to the front desk. The computers in the Internet room will shut down in five minutes, so please save your work. A reminder that books borrowed today are due in three weeks, and the library's winter hours start next Monday: we will close at six instead of eight on weekdays.
+Q: Where is the announcement most likely made? ;; At a library | At a bookstore | At a school office | At a computer shop ;; « library patrons », « borrow ». ;; lieu
+Q: What are listeners asked to do in five minutes? ;; Save their work | Return books | Pay fees | Leave the building ;; « computers … will shut down in five minutes, so please save your work ». ;; consigne
+Q: What will change next Monday? ;; The closing time | The loan period | The location | The fees ;; « winter hours start next Monday ». ;; détail
+
+@P4 message vocal : agence de voyage
+T: Hello, Ms. Greene. This is Omar at Horizon Travel. Good news: the hotel in Lisbon has confirmed your reservation for the week of June 9. However, the flight you wanted from Paris is full on Saturday, so I've booked you on Sunday morning instead, at the same price. The itinerary was e-mailed to you a few minutes ago. If you want to make any changes, call me before Friday, because after that, there will be a change fee.
+Q: What is the purpose of the call? ;; To give an update about a trip | To offer a discount | To ask for payment | To cancel a hotel ;; Confirmation de l'hôtel et changement de vol. ;; objectif
+Q: What has been changed? ;; The flight day | The hotel | The ticket price | The destination ;; « I've booked you on Sunday morning instead ». ;; détail
+Q: What will happen if Ms. Greene makes changes after Friday? ;; She will pay a fee. | She will lose her reservation. | She will get a discount. | She will fly later. ;; « after that, there will be a change fee ». ;; conséquence

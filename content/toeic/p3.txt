@@ -183,3 +183,289 @@ W: Thanks. Please include a limit for hotel rooms as well.
 Q: Why are the travel costs high? ;; Employees went to a trade show. | Hotel prices increased. | The company opened a new branch. | Several clients visited. ;; Salon professionnel à Dubaï, six participants. ;; cause
 Q: What does the woman suggest? ;; Booking flights earlier | Using public transport | Attending fewer events | Hiring a travel agent ;; « Booking at least a month in advance would save a lot. » ;; suggestion
 Q: What will the man do by the end of the month? ;; Create a new policy | Submit an expense report | Book a hotel room | Attend a trade show ;; « I'll set up a new travel policy… by the end of the month ». ;; action future
+
+@P3 réservation d'hôtel
+W: Good afternoon, Lakeview Hotel. How can I help you?
+M: Hi, I have a reservation for next weekend, but I'd like to change it from two nights to three.
+W: Let me check. Is it under the name Peterson?
+M: Yes, Mark Peterson. I'm arriving Friday and now I'd like to stay until Monday morning.
+W: We do have a room available, but the rate for Sunday night is a little higher because of a local marathon.
+M: That's fine. Could you also add breakfast for the extra night?
+Q: Why is the man calling? ;; To extend his stay | To cancel a booking | To ask about a marathon | To book a conference room ;; Il veut passer de deux à trois nuits. ;; sujet principal
+Q: What does the woman say about Sunday night? ;; The rate is higher. | The hotel is fully booked. | Breakfast is not available. | The room is smaller. ;; « the rate for Sunday night is a little higher ». ;; détail
+Q: What does the man ask the woman to do? ;; Add breakfast | Change the room | Send a map | Call him back ;; « Could you also add breakfast… ». ;; demande
+
+@P3 imprimante en panne
+M: Rachel, the printer on the third floor isn't working again. I need to print the contracts for this afternoon's meeting.
+W: Did you try the one next to the cafeteria? It was repaired yesterday.
+M: I did, but it only prints in black and white, and the contracts have a color logo.
+W: Then let's call the technician. I'll ask him to come before noon.
+M: Thanks. In the meantime, I'll send the files to the print shop across the street.
+W: Good idea. Just keep the receipt so accounting can reimburse you.
+Q: What problem does the man mention? ;; A printer is not working. | A contract is missing. | A meeting was canceled. | A file is too large. ;; « the printer on the third floor isn't working ». ;; problème
+Q: Why can't the man use the printer near the cafeteria? ;; It cannot print in color. | It is out of paper. | It is being repaired. | It is on another floor. ;; « it only prints in black and white ». ;; détail
+Q: What does the woman remind the man to do? ;; Keep a receipt | Call a technician | Update a logo | Visit the cafeteria ;; « Just keep the receipt ». ;; détail
+
+@P3 entretien d'embauche
+W: Thank you for coming in, Mr. Silva. I see from your résumé that you spent five years in logistics.
+M: That's right. I managed a team of twelve at a distribution center, and I led a project that cut delivery times by 15 percent.
+W: Impressive. This position involves a lot of travel to our suppliers. Is that a problem for you?
+M: Not at all. In fact, I enjoy it. When would the position begin?
+W: We'd like someone to start on the first of next month. I'll talk with the director and let you know by Friday.
+Q: What is the purpose of the conversation? ;; A job interview | A performance review | A sales presentation | A training session ;; Entretien d'embauche : « Thank you for coming in… résumé ». ;; sujet principal
+Q: What was the man's accomplishment? ;; He shortened delivery times. | He opened a new center. | He hired twelve workers. | He reduced travel costs. ;; « cut delivery times by 15 percent ». ;; détail
+Q: What will the woman do by Friday? ;; Inform the man of a decision | Visit a supplier | Send a résumé | Start a project ;; « let you know by Friday ». ;; action future
+
+@P3 retard de livraison
+M: Hello, this is Tom Reyes. I ordered a standing desk two weeks ago, and it still hasn't arrived.
+W: I'm sorry about that, Mr. Reyes. Let me look up your order. It seems the desk was backordered, and it ships on Monday.
+M: Monday? My office is moving next week, so I really need it by Thursday.
+W: I can upgrade you to express shipping at no charge. That should get it to you by Wednesday.
+M: That would be perfect. Thank you.
+Q: Why is the man calling? ;; An order has not arrived. | A desk is damaged. | A price is incorrect. | An office is closing. ;; « it still hasn't arrived ». ;; sujet principal
+Q: What does the man say is happening next week? ;; His office is moving. | He is starting a job. | A sale is ending. | A desk is being repaired. ;; « My office is moving next week ». ;; détail
+Q: What does the woman offer to do? ;; Provide express shipping for free | Give a refund | Send a replacement | Extend a warranty ;; « upgrade you to express shipping at no charge ». ;; offre
+
+@P3 conférence : inscription
+W: Hi, I'm here to pick up my badge for the marketing conference. My name is Elena Rossi.
+M: Let me see… Rossi, yes. Here you are. Your registration includes lunch, but you'll need to select a workshop.
+W: Which workshops are still open?
+M: The social media session at ten is full, but there are seats left in the one on customer surveys at eleven.
+W: I'll take that one. Where is it held?
+M: Room 204, on the second floor. The elevator is just behind you.
+Q: Where most likely are the speakers? ;; At a registration desk | At a restaurant | At an airport | At a bank ;; « pick up my badge » → accueil d'une conférence. ;; lieu
+Q: What does the man say about the social media workshop? ;; It is full. | It was canceled. | It starts at eleven. | It is free. ;; « The social media session … is full ». ;; détail
+Q: What does the man tell the woman about the elevator? ;; It is behind her. | It is out of order. | It goes to the lobby. | It is for staff only. ;; « The elevator is just behind you ». ;; détail
+
+@P3 budget marketing
+M: Camila, have you seen the new budget for the marketing department? They've cut our advertising spending by ten percent.
+W: I saw it this morning. We'll have to rethink the spring campaign.
+M: Maybe we could focus on social media instead of television. It's cheaper and reaches a younger audience.
+W: That makes sense. Could you prepare a cost comparison before Thursday's meeting?
+M: Sure. I'll include last year's results too.
+Q: What are the speakers discussing? ;; A reduced advertising budget | A new product launch | A change in staff | An office renovation ;; « cut our advertising spending by ten percent ». ;; sujet principal
+Q: What does the man suggest? ;; Using social media | Hiring a designer | Delaying a campaign | Increasing prices ;; « focus on social media instead of television ». ;; suggestion
+Q: What will the man do before Thursday? ;; Prepare a cost comparison | Contact a client | Book a venue | Review a contract ;; Elle lui demande une comparaison de coûts. ;; action future
+
+@P3 voiture de location
+W: Welcome to Fast Wheels. Do you have a reservation?
+M: Yes, I booked a compact car for three days. The confirmation number is 48215.
+W: I see it. Would you like to add insurance? It's fifteen dollars a day.
+M: My credit card already covers rental insurance, so I'll skip that. Is there a charge for returning the car at the airport?
+W: No, but you must return it with a full tank, or we'll add a refueling fee.
+M: Understood. Where should I pick up the keys?
+Q: Where does the conversation take place? ;; At a car rental agency | At a gas station | At a hotel | At an airport shop ;; Réservation d'une voiture compacte. ;; lieu
+Q: Why does the man decline the insurance? ;; His credit card covers it. | It is too expensive. | He has his own car. | He already bought it. ;; « My credit card already covers rental insurance ». ;; raison
+Q: What must the man do when he returns the car? ;; Fill the gas tank | Pay a deposit | Clean the interior | Show his ID ;; « return it with a full tank ». ;; détail
+
+@P3 formation du personnel
+M: Did you get the e-mail about the mandatory customer service training?
+W: Yes, it's next Tuesday from nine to noon. I'm worried because that's when I'm supposed to send the monthly report.
+M: Maybe you can ask Mr. Hughes for an extension. He's usually flexible.
+W: Good idea. I'll talk to him this afternoon. Will we get a certificate at the end?
+M: I think so, and the best participants will receive a gift card.
+Q: What is the training about? ;; Customer service | Software | Safety | Finance ;; « customer service training ». ;; sujet principal
+Q: What is the woman concerned about? ;; Submitting a report on time | Arriving late | Losing a certificate | Finding a room ;; Elle doit envoyer le rapport mensuel le même jour. ;; inquiétude
+Q: What will some participants receive? ;; A gift card | A promotion | A free lunch | A day off ;; « the best participants will receive a gift card ». ;; détail
+
+@P3 menu du restaurant
+W: Good evening. Are you ready to order?
+M: I'd like the grilled salmon, but I have a question. Does it come with a salad?
+W: It comes with vegetables or rice. A salad is two dollars extra.
+M: Then I'll have the rice. And can I get a glass of sparkling water?
+W: Of course. By the way, we have a special dessert tonight: lemon cake made by our new pastry chef.
+M: That sounds good. I'll try it after the meal.
+Q: What does the man ask about? ;; What comes with a dish | The price of dessert | A reservation | A seating area ;; Il demande si le saumon vient avec une salade. ;; détail
+Q: How much does a salad cost? ;; Two dollars | Five dollars | It is free | Twelve dollars ;; « A salad is two dollars extra ». ;; chiffre
+Q: What does the woman mention about the lemon cake? ;; It was made by a new chef. | It is half price. | It is sold out. | It contains no sugar. ;; « made by our new pastry chef ». ;; détail
+
+@P3 nouveau logiciel
+W: Paul, how is the new accounting software working out?
+M: It's faster than the old one, but I'm still having trouble generating the monthly invoices.
+W: There's a short video tutorial on the intranet. It explains each step.
+M: Thanks. I'll watch it today. Is there anyone in IT who can help me if I get stuck?
+W: Yes, Maria Chen. Her extension is 305.
+Q: What is the man having difficulty with? ;; Creating invoices | Installing software | Logging in | Printing reports ;; « trouble generating the monthly invoices ». ;; problème
+Q: What does the woman recommend? ;; Watching a tutorial | Calling a client | Buying new software | Attending a seminar ;; « a short video tutorial on the intranet ». ;; suggestion
+Q: What information does the woman give the man? ;; A phone extension | An e-mail address | A room number | A password ;; « Her extension is 305 ». ;; détail
+
+@P3 changement de bureau
+M: Anna, I heard the sales team is moving to the fourth floor next month.
+W: That's right. The building manager says the renovation on the second floor will start on the fifteenth.
+M: Will we have to pack our own things?
+W: No, a moving company will do it. We only need to label the boxes with our names and department.
+M: Great. When will we get the labels?
+W: Facilities will hand them out on Monday.
+Q: What are the speakers discussing? ;; An office move | A new hire | A budget cut | A training course ;; Déménagement de l'équipe vers le 4e étage. ;; sujet principal
+Q: Why is the sales team moving? ;; A floor is being renovated. | The rent is too high. | The team is growing. | The building is closing. ;; « the renovation on the second floor will start ». ;; raison
+Q: What will happen on Monday? ;; Labels will be distributed. | The boxes will be moved. | The renovation will start. | A manager will arrive. ;; « Facilities will hand them out on Monday ». ;; action future
+
+@P3 billet de train
+M: Excuse me, I need to get to Boston by noon tomorrow. What's the earliest train?
+W: There's one at seven fifteen that arrives at ten forty. A one-way ticket is forty-five dollars.
+M: Is there a discount for seniors? I'm traveling with my mother.
+W: Yes, passengers over sixty-five get twenty percent off with a valid ID.
+M: Wonderful. Two tickets, please, and could we sit near the window?
+W: I'll do my best.
+Q: Where does the conversation most likely take place? ;; At a train station | At an airline counter | At a bus terminal | At a hotel ;; Billets de train. ;; lieu
+Q: What does the man ask about? ;; A senior discount | A baggage fee | A seat upgrade | A refund policy ;; « Is there a discount for seniors? ». ;; détail
+Q: What will the man most likely do next? ;; Buy two tickets | Call his mother | Check a timetable | Visit Boston ;; Il demande deux billets. ;; action future
+
+@P3 réunion reportée
+W: Hi Kevin, I'm afraid I have to reschedule our meeting. A client has just asked me to visit his factory this afternoon.
+M: That's no problem. We were only going to review the project timeline.
+W: Could we meet tomorrow morning instead? I'm free at nine.
+M: Nine is difficult because I have a dentist appointment. How about ten thirty?
+W: Ten thirty works. I'll send an updated invitation.
+Q: Why does the woman change the meeting? ;; She must visit a client. | She is ill. | She has a flight. | She is attending a class. ;; Un client lui demande de visiter son usine. ;; raison
+Q: Why can't the man meet at nine? ;; He has an appointment. | He is traveling. | He has another meeting. | He will be late. ;; « I have a dentist appointment ». ;; raison
+Q: What will the woman do? ;; Send a new invitation | Review a timeline | Call the client | Visit a dentist ;; « I'll send an updated invitation ». ;; action future
+
+@P3 retours en magasin
+M: Hi, I bought this jacket last week, but it's too small. Can I exchange it?
+W: Certainly. Do you have your receipt?
+M: I'm afraid I left it at home, but I paid by credit card.
+W: That's fine. I can look up the purchase with the card. Would you like the same style in a larger size?
+M: Yes, a large, please.
+W: I'm sorry, we're out of large in that color. We could order one for you, and it would arrive in three days.
+Q: What does the man want to do? ;; Exchange a jacket | Get a refund | Buy a gift | File a complaint ;; « Can I exchange it? ». ;; sujet principal
+Q: Why can't the man show a receipt? ;; He forgot it. | He lost it. | He paid in cash. | He threw it away. ;; « I left it at home ». ;; raison
+Q: What does the woman offer to do? ;; Order a different size | Refund his card | Call a manager | Give a discount ;; Elle propose de commander la taille. ;; offre
+
+@P3 stagiaires
+W: Mr. Evans, the three interns from the university start on Monday. Who will be supervising them?
+M: I was planning to assign them to the design team, but Ms. Chu is already handling a big project.
+W: What about Jorge? He mentored interns last summer, and they all gave him excellent reviews.
+M: Good thinking. I'll ask him today. Could you prepare their security badges?
+W: Of course. I'll need their full names and photos.
+Q: What are the speakers mainly discussing? ;; Supervising interns | Hiring designers | Installing security | Reviewing a project ;; Qui va encadrer les trois stagiaires. ;; sujet principal
+Q: Why does the woman recommend Jorge? ;; He has mentoring experience. | He is in the design team. | He is free on Monday. | He is a manager. ;; Il a encadré des stagiaires l'été dernier. ;; raison
+Q: What does the woman say she needs? ;; Names and photos | A signature | A budget | A schedule ;; « I'll need their full names and photos ». ;; détail
+
+@P3 panne d'électricité
+M: Did you hear? The power will be off in our building on Saturday morning.
+W: Really? I was planning to come in to finish the inventory report.
+M: The utility company is replacing some cables. Power should be back by two in the afternoon.
+W: Then I'll come in after lunch. Is the parking garage going to be open?
+M: I think so, but the elevators won't work until the power is restored.
+Q: What will happen on Saturday? ;; The power will be shut off. | The building will close permanently. | A report will be due. | The parking garage will open. ;; Coupure de courant. ;; sujet principal
+Q: Why will the power be off? ;; Cables are being replaced. | A storm is expected. | The building is being sold. | A machine is broken. ;; « replacing some cables ». ;; raison
+Q: What will the woman do? ;; Come in after lunch | Work from home | Cancel a report | Call the utility company ;; « I'll come in after lunch ». ;; action future
+
+@P3 abonnement salle de sport
+W: Welcome to Fit Zone. Are you interested in a membership?
+M: Yes. Do you have any special offers for students?
+W: We do. Students pay twenty-five dollars a month instead of forty, as long as they show a valid student card.
+M: That's great. Is there a contract, or can I cancel at any time?
+W: You can cancel with thirty days' notice. And this week only, the registration fee is waived.
+Q: What does the man ask about? ;; Offers for students | Opening hours | Personal trainers | Parking ;; « any special offers for students ». ;; détail
+Q: How much do students pay each month? ;; Twenty-five dollars | Forty dollars | Thirty dollars | Fifteen dollars ;; « twenty-five dollars a month instead of forty ». ;; chiffre
+Q: What is special about this week? ;; The registration fee is waived. | The gym is closed. | There is a free class. | Parking is free. ;; « the registration fee is waived ». ;; détail
+
+@P3 problème de facture
+M: Good morning, accounts department. How can I help you?
+W: Hello, this is Karen Ho from Bright Print. I'm calling about invoice 3307. We were charged for five hundred brochures, but we only received four hundred.
+M: Let me pull up the delivery record. You're right, only four hundred were shipped.
+W: So can you correct the invoice?
+M: Yes, I'll issue a revised one today and e-mail it to you within the hour.
+Q: Why is the woman calling? ;; To report an error on an invoice | To place a new order | To cancel a delivery | To request a price list ;; Facturé 500 brochures pour 400 reçues. ;; sujet principal
+Q: What does the man confirm? ;; Fewer brochures were shipped. | A payment was late. | A package was lost. | The invoice is correct. ;; « only four hundred were shipped ». ;; détail
+Q: What will the man do? ;; Send a corrected invoice | Ship more brochures | Visit the customer | Give a refund by check ;; « issue a revised one today ». ;; action future
+
+@P3 covoiturage
+W: Henry, are you still driving to the new headquarters every day? I heard the parking fees went up.
+M: They did, to ten dollars a day. I'm thinking about taking the train instead.
+W: Why don't you join our carpool? There are four of us, and we take turns driving.
+M: How much would that save me?
+W: About a hundred dollars a month, and the company gives a bonus to carpoolers.
+M: Sign me up.
+Q: What is the problem with driving to work? ;; Parking fees increased. | The traffic is heavy. | The car is old. | The road is closed. ;; « the parking fees went up ». ;; problème
+Q: What does the woman suggest? ;; Joining a carpool | Buying a train pass | Working from home | Moving closer ;; « join our carpool ». ;; suggestion
+Q: What will the company give to carpoolers? ;; A bonus | A parking space | A free meal | A car ;; « the company gives a bonus to carpoolers ». ;; détail
+
+@P3 visite d'usine
+M: Thank you for hosting us, Ms. Park. We're excited to see how your company makes its furniture.
+W: Welcome. Before we start, please put on safety glasses and a helmet. They're on the table by the door.
+M: Are we allowed to take photographs?
+W: Only in the showroom. In the production area, cameras are not permitted for security reasons.
+M: Understood. How long will the tour take?
+W: About an hour, and afterward we'll have lunch in the cafeteria.
+Q: Who most likely is the woman? ;; A factory manager | A delivery driver | A security guard | A restaurant owner ;; Elle accueille les visiteurs et présente l'usine. ;; identité
+Q: What are the visitors asked to wear? ;; Safety equipment | Name tags | Uniforms | Masks ;; « put on safety glasses and a helmet ». ;; détail
+Q: Where are photographs allowed? ;; In the showroom | In the cafeteria | In the production area | In the parking lot ;; « Only in the showroom ». ;; détail
+
+@P3 candidature interne
+W: Marcus, I noticed an opening for a project manager in the Chicago office. Have you thought about applying?
+M: I have, but I'm not sure I'm qualified. I've only been in the company for two years.
+W: The posting requires three years of experience in any department, and you have more than that from your previous job.
+M: That's true. Do you know when the deadline is?
+W: The twentieth of this month. I can introduce you to the director if you like.
+Q: What are the speakers mainly discussing? ;; A job opening | A relocation package | A client complaint | A training program ;; Poste de chef de projet à Chicago. ;; sujet principal
+Q: Why is the man unsure about applying? ;; He thinks he lacks experience. | He dislikes Chicago. | He missed a deadline. | He wants a raise. ;; Il est dans l'entreprise depuis seulement deux ans. ;; raison
+Q: What does the woman offer to do? ;; Introduce him to a director | Write a letter | Review his résumé | Reserve a ticket ;; « I can introduce you to the director ». ;; offre
+
+@P3 cantine
+M: Have you tried the new cafeteria menu?
+W: I had lunch there yesterday. The portions are bigger, and there are more vegetarian choices.
+M: I heard the prices went up, though.
+W: Only slightly. A main dish is now seven dollars instead of six fifty. But employees get a ten percent discount with their badge.
+M: That's not bad at all. Shall we go together at noon?
+W: Sure, I'll meet you in the lobby.
+Q: What are the speakers talking about? ;; The cafeteria menu | A new restaurant | A company party | A price list ;; Nouveau menu de la cantine. ;; sujet principal
+Q: What has changed? ;; Prices have risen slightly. | The cafeteria has moved. | The hours are longer. | The staff has changed. ;; « the prices went up… Only slightly ». ;; détail
+Q: What will the speakers probably do at noon? ;; Eat lunch together | Attend a meeting | Order food online | Visit a bank ;; « Shall we go together at noon? ». ;; action future
+
+@P3 annulation de vol
+W: Excuse me, my flight to Denver was just canceled. What are my options?
+M: I'm sorry about that. Because of the snowstorm, all flights this evening have been grounded. I can book you on the first flight tomorrow morning.
+W: I have an important presentation at nine. Is there any way to get there tonight?
+M: There's a train leaving in an hour, but you would have to pay for the ticket yourself.
+W: I'll take the train. Could you give me a letter confirming the cancellation, so I can request a refund?
+Q: Why was the flight canceled? ;; Because of bad weather | Because of a strike | Because of a technical problem | Because of a late crew ;; « Because of the snowstorm ». ;; raison
+Q: Why does the woman need to be in Denver tonight? ;; She has a presentation. | She has a wedding. | She has a flight home. | She has an interview. ;; « important presentation at nine ». ;; raison
+Q: What does the woman ask for? ;; A confirmation letter | A hotel voucher | A new seat | A discount ;; « a letter confirming the cancellation ». ;; demande
+
+@P3 nouveau produit
+W: Daniel, the prototype of our new water bottle is ready. Do you want to test it?
+M: Sure. How is it different from the old model?
+W: It keeps drinks cold for twenty-four hours, and it's made from recycled plastic.
+M: That's a strong selling point. What's the target launch date?
+W: We're aiming for early April, but we first need approval from the quality control team.
+M: I'll take it home this weekend and send you my comments on Monday.
+Q: What are the speakers discussing? ;; A new product | A delayed shipment | A client complaint | A factory closure ;; Prototype d'une nouvelle gourde. ;; sujet principal
+Q: What is a feature of the new product? ;; It is made from recycled material. | It is lighter than the old one. | It is cheaper. | It comes in three sizes. ;; « made from recycled plastic ». ;; détail
+Q: What will the man do on Monday? ;; Send comments | Launch the product | Meet quality control | Order materials ;; « send you my comments on Monday ». ;; action future
+
+@P3 réservation de salle
+W: Good morning. I'd like to reserve the large conference room for Wednesday afternoon.
+M: Let me check the calendar. The room is booked from one to three, but it's free after that.
+W: We need it for a client presentation at three thirty. Will there be a projector?
+M: Yes, and I can also have someone set up the video conferencing system if you tell me the number of participants.
+W: There will be eight people, including two joining by video.
+M: Perfect. I'll note that.
+Q: What does the woman want to do? ;; Reserve a room | Cancel a meeting | Order lunch | Move a desk ;; Réserver la grande salle. ;; sujet principal
+Q: What does the man say about the room? ;; It is available after three. | It is under repair. | It has no projector. | It is too small. ;; « it's free after that » (après 15h). ;; détail
+Q: What information does the man request? ;; The number of participants | A client's name | The meeting topic | A phone number ;; « tell me the number of participants ». ;; demande
+
+@P3 assistance clientèle
+W: Thank you for calling Tech Support. May I have your account number?
+M: Sure, it's 7-7-3-0-1. My laptop screen keeps flickering, and it's still under warranty.
+W: I see that. Have you installed any new programs lately?
+M: No, but I did drop it last week.
+W: I'm afraid accidental damage isn't covered by the warranty. However, we offer a repair service at a reduced price for customers.
+M: How much would that be?
+W: About sixty dollars, and it takes three days.
+Q: What problem does the man report? ;; His screen is flickering. | His battery is dead. | His keyboard is missing. | His password is lost. ;; « screen keeps flickering ». ;; problème
+Q: Why isn't the problem covered by the warranty? ;; It was caused by an accident. | The warranty expired. | The program is old. | The laptop is rented. ;; « I did drop it last week ». ;; raison
+Q: How long will the repair take? ;; Three days | One day | One week | Sixty minutes ;; « it takes three days ». ;; chiffre
+
+@P3 pot de départ
+M: Julia, are you coming to Mr. Nakamura's retirement party on Friday?
+W: Of course. I've worked with him for twelve years. Who is organizing it?
+M: The HR department. They're collecting money for a gift. Everyone is giving ten dollars.
+W: I'll give you the money now. Do we know what to buy?
+M: We were thinking of a nice camera, since he wants to take up photography.
+W: Perfect choice.
+Q: What event is being planned? ;; A retirement party | A product launch | A company picnic | A job interview ;; Pot de départ à la retraite. ;; sujet principal
+Q: What does the man ask the woman to do? ;; Contribute money | Plan a menu | Make a speech | Order a cake ;; Chacun donne dix dollars. ;; demande
+Q: What gift are the speakers considering? ;; A camera | A watch | A book | A painting ;; « a nice camera ». ;; détail
