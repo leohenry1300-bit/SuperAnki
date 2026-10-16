@@ -69,7 +69,7 @@ I'm afraid I disagree. ;; Je crains de ne pas être d'accord. ;;
 That's a good point. ;; C'est un bon argument. ;;
 Let's take a vote. ;; Passons au vote. ;;
 Could we reschedule? ;; Pourrions-nous reporter ? ;;
-Let's table this issue. ;; Mettons ce point de côté. ;;
+Let's table this issue. ;; Mettons ce point de côté (US) ;; Piège : en anglais britannique, « to table » veut dire l'inverse : mettre à l'ordre du jour.
 We need to reach a compromise. ;; Il faut trouver un compromis. ;;
 That's out of the question. ;; C'est hors de question. ;;
 It's a deal. ;; Marché conclu. ;;

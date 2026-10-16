@@ -60,7 +60,7 @@ Factoring (affacturage) ;; cession de créances clients à un organisme financie
 Escompte commercial ;; paiement anticipé d'un effet de commerce ;;
 Lettre de change ;; ordre écrit de payer une somme à une date donnée ;;
 Crédit fournisseur / crédit client ;; délai de paiement accordé par un fournisseur / à un client ;;
-Délai de paiement légal ;; 60 jours après la date de facture (ou 30 jours fin de mois) ;; 45 jours fin de mois possible par accord.
+Délai de paiement légal ;; 30 jours par défaut ; maximum 60 jours après la facture (ou 45 jours fin de mois) par accord ;; Au-delà : pénalités de retard.
 Pénalités de retard ;; intérêts dus en cas de paiement tardif ;; Taux minimal : 3 fois le taux d'intérêt légal.
 Indemnité forfaitaire de recouvrement ;; 40 € pour frais de recouvrement en cas de retard ;;
 
@@ -86,7 +86,7 @@ Clause de réserve de propriété ;; le vendeur reste propriétaire jusqu'au pai
 Contrat de vente ;; transfert de propriété d'un bien contre un prix ;;
 Transfert de propriété ;; se fait en principe à la conclusion du contrat ;;
 Transfert des risques ;; le risque passe à l'acheteur avec la propriété (ou la livraison) ;;
-Garantie légale de conformité ;; 2 ans à compter de la délivrance (2 ans pour biens neufs) ;; Présomption de défaut dans les 24 mois ; 12 mois pour l'occasion.
+Garantie légale de conformité ;; 2 ans à compter de la délivrance du bien ;; Le défaut est présumé existant à la livraison pendant 24 mois (neuf) ou 12 mois (occasion).
 Garantie des vices cachés ;; défaut caché rendant le bien impropre à l'usage ;; Action dans les 2 ans de la découverte du vice.
 Garantie commerciale ;; garantie supplémentaire, facultative, du vendeur ou du fabricant ;;
 Droit de rétractation ;; 14 jours pour renoncer à un achat à distance ou hors établissement ;; Sans motif ni pénalité.
@@ -180,7 +180,7 @@ Prélèvements obligatoires ;; impôts et cotisations sociales ;;
 Mondialisation ;; intensification des échanges mondiaux ;;
 Libre-échange / protectionnisme ;; ouverture des frontières / protection de l'économie nationale ;;
 Délocalisation ;; transfert d'une activité à l'étranger ;;
-Union européenne ;; union économique et politique de 27 pays ;; Marché unique, euro (20 pays).
+Union européenne ;; union économique et politique de 27 pays ;; Marché unique, euro (21 pays depuis l'arrivée de la Bulgarie en 2026).
 OMC ;; Organisation mondiale du commerce ;;
 Développement durable ;; répond aux besoins présents sans compromettre ceux des générations futures ;; 3 piliers : économique, social, environnemental.
 Économie circulaire ;; produire en réduisant les déchets et en recyclant ;;

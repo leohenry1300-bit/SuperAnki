@@ -92,7 +92,6 @@ C: The company {{c1::sold}} its old building. ;; sell → sold
 C: The price has {{c1::risen}} again. ;; rise → rose → risen
 
 ## Phrasal verbs courants | 🧩
-to carry out ;; réaliser, effectuer ;; The company carried out a survey.
 to set up ;; mettre en place, créer ;; They set up a new branch.
 to turn down ;; refuser (une offre) / baisser (son) ;; She turned down the job offer.
 to turn up ;; arriver / monter (le son) ;; He turned up late.
@@ -114,8 +113,6 @@ to hand in ;; remettre (un devoir, un dossier) ;; Hand in your report by 5.
 to hand out ;; distribuer ;; He handed out brochures.
 to pick up ;; récupérer, ramasser ;; I'll pick you up at the airport.
 to drop off ;; déposer ;; Drop off the package at the desk.
-to check in / to check out ;; s'enregistrer / quitter ;; Check out before noon.
-to log in ;; se connecter ;;
 to sign up for ;; s'inscrire à ;; Sign up for the newsletter.
 to run out of ;; manquer de, ne plus avoir de ;; We ran out of paper.
 to cut back on ;; réduire ;; The firm cut back on spending.
@@ -124,7 +121,6 @@ to keep up with ;; suivre le rythme ;; It's hard to keep up with technology.
 to get along with ;; s'entendre avec ;; She gets along with her colleagues.
 to get back to ;; rappeler / revenir vers ;; I'll get back to you tomorrow.
 to get over ;; surmonter ;; He got over the loss.
-to deal with ;; traiter, gérer ;; We must deal with the complaint.
 to rely on ;; compter sur ;; You can rely on me.
 to bring up ;; aborder (un sujet), élever ;; He brought up the budget.
 to bring about ;; provoquer ;; The change brought about growth.
@@ -146,7 +142,6 @@ to give up ;; abandonner ;; Never give up.
 to look up ;; chercher (dans un livre, en ligne) ;; Look up the word in a dictionary.
 to show up ;; se présenter ;; He didn't show up.
 to hold on ;; patienter ;; Hold on a second.
-to put through ;; passer qqn au téléphone ;; I'll put you through.
 to pass on ;; transmettre ;; Please pass on my regards.
 to follow up on ;; assurer le suivi ;; I'll follow up on that.
 to sort out ;; régler, résoudre ;; We'll sort out the problem.

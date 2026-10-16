@@ -26,7 +26,6 @@ to rest ;; se reposer (≠ rester) ;; → rester = to stay
 to stay ;; rester ;; Stay here.
 a car ;; une voiture (≠ car de transport) ;; → car = a coach / a bus
 a coach ;; un autocar ;;
-a chair ;; une chaise (≠ chair = flesh) ;;
 a location ;; un emplacement, un lieu (≠ location = rental) ;; → location = rental
 a rental ;; une location ;;
 a store ;; un magasin (≠ stock) ;; to store = stocker
@@ -43,25 +42,19 @@ a corner ;; un coin ;;
 a figure ;; un chiffre (≠ figure) ;; sales figures = chiffres de vente
 a fabric ;; un tissu (≠ fabrique) ;; → fabrique = factory
 a factory ;; une usine ;;
-a rumor ;; une rumeur ;;
 an issue ;; un problème, un sujet, un numéro (revue) ;; (≠ issue = sortie, exit)
 a conference ;; un congrès (≠ conférence = lecture) ;;
 to realize ;; se rendre compte (≠ réaliser = to carry out) ;; I realized I was wrong.
 to carry out ;; réaliser, mener à bien ;;
 to travel ;; voyager (≠ travailler) ;; to work = travailler
 a trade ;; un métier, un commerce ;;
-the ancient history ;; l'histoire ancienne ;; (ancien = former : my former boss)
 former ;; ancien (ex-) ;; the former CEO
-a user ;; un utilisateur ;;
 a pupil ;; un élève (≠ pupille) ;;
 a physician ;; un médecin (≠ physicien = physicist) ;;
-a physicist ;; un physicien ;;
-a grocery store ;; une épicerie ;;
 sympathetic ;; compatissant (≠ sympathique) ;; → sympathique = nice, friendly
 nice / friendly ;; sympathique ;;
 to assist ;; aider (≠ assister à) ;; She assists the manager.
 a preservative ;; un conservateur (≠ préservatif) ;;
-a luxury ;; un luxe ;;
 a delicate matter ;; une affaire délicate (≠ délicieux) ;; → délicieux = delicious
 
 ## Erreurs classiques des francophones | 🇫🇷
@@ -76,14 +69,11 @@ I look forward to see you ;; I look forward to seeing you ;; look forward to + -
 I have 2 sisters. Their are nice. ;; They are nice. ;; their = possessif ; they're = they are ; there = là.
 The informations are useful ;; The information is useful ;; information est indénombrable (pas de -s).
 Some advices ;; Some advice / a piece of advice ;; advice, news, furniture, luggage, equipment = indénombrables.
-I am agree with you ;; I agree with you ;;
 It depends of ;; It depends on ;;
 Married with ;; married to ;;
-Different than (FR) ;; different from ;;
 Since 3 years ;; for 3 years ;;
 Make a photo ;; take a photo ;;
 Take a decision ;; make a decision ;;
-My parents are agree ;; My parents agree ;;
 Hair are long ;; Hair is long ;; hair : singulier (une chevelure).
 People is / The people is ;; People are ;; people = pluriel.
 He work here ;; He works here ;; 3e personne du singulier : -s.

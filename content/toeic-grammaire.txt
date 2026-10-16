@@ -162,7 +162,7 @@ C: She is able {{c1::to speak}} three languages. ;; be able to + base
 C: It is important {{c1::to arrive}} on time. ;; it is + adjectif + to
 C: It's worth {{c1::visiting}}. ;; be worth + -ing
 C: He insisted {{c1::on paying}}. ;; insist on + -ing
-Verbes suivis de -ing ;; enjoy, avoid, suggest, consider, mind, finish, postpone, admit, deny, practice, risk, keep ;; Moyen mnémotechnique : EAS(Y) = enjoy, avoid, suggest...
+Verbes suivis de -ing ;; enjoy, avoid, suggest, consider, mind, finish, postpone, admit, deny, practice, risk, keep
 Verbes suivis de to ;; decide, plan, hope, expect, refuse, agree, manage, promise, afford, want, need, offer ;; I decided to leave.
 
 ## Pronoms relatifs et propositions | 🔗

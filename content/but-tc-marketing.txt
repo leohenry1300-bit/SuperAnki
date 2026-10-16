@@ -64,7 +64,6 @@ Moment de vérité ;; instant où le client juge la marque ;;
 Facteurs d'influence d'achat ;; facteurs personnels, sociaux, culturels, psychologiques ;;
 Dissonance cognitive ;; doute après un achat important ;; Réduite par un service après-vente rassurant.
 Motivations et freins ;; ce qui pousse à acheter / ce qui retient ;;
-SONCAS ;; Sécurité, Orgueil, Nouveauté, Confort, Argent, Sympathie ;; Mobiles d'achat.
 Achat d'impulsion ;; achat non prévu ;;
 Fidélité ;; attachement durable d'un client à une marque ;;
 Satisfaction client ;; écart entre l'attente et l'expérience vécue ;;
@@ -161,7 +160,6 @@ CPA / CPL ;; coût par acquisition / par lead ;;
 ROAS ;; Return On Ad Spend = chiffre d'affaires publicitaire ÷ dépense publicitaire ;;
 ROI marketing ;; (gain − coût) ÷ coût ;;
 Taux de conversion ;; part des visiteurs qui réalisent l'action souhaitée (achat, inscription) ;;
-Panier moyen ;; montant moyen dépensé par commande ;;
 Taux d'abandon de panier ;; part des paniers créés mais non achetés ;;
 Tunnel de conversion (funnel) ;; étapes de la découverte à l'achat ;; Visiteurs, leads, prospects, clients.
 Lead ;; contact commercial potentiel qui a montré de l'intérêt ;;
@@ -186,5 +184,4 @@ Big data ;; très grands volumes de données exploitées ;;
 E-commerce ;; vente de produits ou services en ligne ;; B2C, B2B, C2C.
 B2B / B2C / C2C ;; business to business / consumer / consumer to consumer ;;
 Mobile first ;; concevoir d'abord pour le mobile ;;
-Dropshipping et marketplace ;; modèles de vente sans stock ou via une plateforme ;;
 Dark social ;; partages privés (messageries) non mesurables ;;

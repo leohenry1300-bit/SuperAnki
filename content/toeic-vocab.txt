@@ -26,7 +26,6 @@ an internship ;; un stage ;; He did an internship in London.
 a probation period ;; une période d'essai ;; The probation period lasts three months.
 a shift ;; un poste (horaire), une équipe ;; She works the night shift.
 overtime ;; heures supplémentaires ;; Overtime is paid at a higher rate.
-a deadline ;; une date limite ;; The deadline is Friday at noon.
 to be in charge of ;; être responsable de ;; Mr. Lee is in charge of the budget.
 to be responsible for ;; être responsable de ;; She is responsible for training new staff.
 to supervise ;; superviser ;; He supervises a team of eight.
@@ -49,7 +48,6 @@ an acquisition ;; une acquisition, un rachat ;; The acquisition of the rival fir
 a meeting ;; une réunion ;; The meeting has been postponed.
 an agenda ;; un ordre du jour ;; Let's go through the agenda.
 minutes ;; un compte rendu ;; Who will take the minutes?
-to attend ;; assister à ;; Everyone must attend the training.
 to postpone ;; reporter (à plus tard) ;; The conference was postponed until May.
 to reschedule ;; reprogrammer ;; Can we reschedule for Tuesday?
 to cancel ;; annuler ;; The flight was canceled.
@@ -57,7 +55,6 @@ to arrange ;; organiser, prévoir ;; I'll arrange a meeting with the client.
 to hold ;; tenir (une réunion) ;; The conference will be held in Paris.
 to adjourn ;; lever la séance ;; The meeting was adjourned at noon.
 an appointment ;; un rendez-vous ;; I have a dentist appointment at four.
-a conference ;; une conférence ;; She will speak at an international conference.
 a presentation ;; une présentation ;; He gave a presentation on sales figures.
 a handout ;; un document distribué ;; Please take a handout.
 a projector ;; un projecteur ;; The projector isn't working.
@@ -192,7 +189,6 @@ a carry-on ;; un bagage à main ;; Only one carry-on is allowed.
 to board ;; embarquer ;; Passengers are now boarding.
 to check in / to check out ;; s'enregistrer / quitter l'hôtel ;; Check-out is at noon.
 a layover / a stopover ;; une escale ;; We have a two-hour layover in Dubai.
-a delay ;; un retard ;; A delay of one hour is expected.
 a departure / an arrival ;; un départ / une arrivée ;; The departure time is 8:15.
 an itinerary ;; un itinéraire, programme de voyage ;; The itinerary includes three cities.
 a reservation / a booking ;; une réservation ;; I'd like to make a reservation.
@@ -252,7 +248,6 @@ a quality control ;; un contrôle qualité ;; Quality control checks every unit.
 software / hardware ;; logiciel / matériel informatique ;; Install the latest software update.
 to install / to uninstall ;; installer / désinstaller ;;
 to upgrade ;; mettre à niveau ;; We upgraded our computers.
-to back up ;; sauvegarder ;; Back up your files regularly.
 a password ;; un mot de passe ;; Please change your password.
 to log in / to log out ;; se connecter / se déconnecter ;; Log in with your user name.
 a database ;; une base de données ;; The database stores customer records.
@@ -271,14 +266,9 @@ a switchboard ;; un standard téléphonique ;; Call the switchboard and ask for 
 an extension ;; un poste (téléphone) ;; Please dial extension 305.
 available / unavailable ;; disponible / indisponible ;; She is unavailable until Monday.
 to reach ;; joindre (qqn) ;; How can I reach you?
-a message ;; un message ;; Would you like to leave a message?
 a signal / reception ;; réseau, signal ;; The reception is poor.
 a device ;; un appareil ;; Turn off all electronic devices.
-a charger ;; un chargeur ;;
-a printer ;; une imprimante ;; The printer is jammed.
-a cable ;; un câble ;;
 a file ;; un fichier, un dossier ;; Save the file on the shared drive.
-a folder ;; un dossier ;;
 a template ;; un modèle ;; Use the company template.
 a spreadsheet ;; un tableur ;; The figures are in the spreadsheet.
 
@@ -296,30 +286,22 @@ a floor plan ;; un plan d'étage ;; See the floor plan.
 a lobby ;; un hall d'entrée ;; Meet me in the lobby.
 a parking lot ;; un parking ;; The parking lot is full.
 an elevator ;; un ascenseur ;; Take the elevator to the fifth floor.
-a stairway ;; un escalier ;;
 a conference room ;; une salle de conférence ;; The conference room is booked.
 premises ;; les locaux ;; No smoking on the premises.
 a neighborhood ;; un quartier ;; a quiet neighborhood
 a utility ;; un service public (eau, électricité) ;; Utilities are included in the rent.
-a furnished apartment ;; un appartement meublé ;;
 
 ## Restaurants, santé, services | 🍽️
 a menu ;; un menu, une carte ;; Could I see the menu?
-a waiter / a waitress ;; un serveur / une serveuse ;;
 a tip ;; un pourboire ;; The tip is included.
 a catering service ;; un service traiteur ;; We hired a catering service.
-a reservation for four ;; une réservation pour quatre ;;
 a prescription ;; une ordonnance ;; The doctor wrote a prescription.
-a pharmacy ;; une pharmacie ;;
 a check-up ;; un bilan de santé ;; an annual check-up
 an insurance policy ;; un contrat d'assurance ;; The policy covers accidents.
 a claim ;; une réclamation / déclaration de sinistre ;; She filed a claim.
-a coverage ;; une couverture (assurance) ;; The plan provides full coverage.
+coverage ;; la couverture (assurance) ;; The plan provides full coverage.
 a premium ;; une prime (assurance) ;; The monthly premium is $80.
 a deductible ;; une franchise (US) ;; The deductible is $500.
-a dentist's appointment ;; un rendez-vous chez le dentiste ;;
 a clinic ;; une clinique, un cabinet ;;
-a patient ;; un patient ;;
 an emergency ;; une urgence ;; In an emergency, dial 911.
-a gym membership ;; un abonnement à une salle de sport ;;
 a maintenance request ;; une demande d'intervention ;; Submit a maintenance request online.

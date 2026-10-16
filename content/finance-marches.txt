@@ -20,7 +20,7 @@ Indice boursier ;; panier de valeurs qui mesure l'évolution d'un marché ;;
 CAC 40 ;; indice des 40 plus grandes capitalisations de la Bourse de Paris ;;
 S&P 500 ;; indice des 500 grandes entreprises américaines ;;
 Nasdaq ;; indice / marché américain tourné vers la technologie ;;
-Dow Jones ;; indice de 30 grandes entreprises industrielles américaines ;;
+Dow Jones ;; indice de 30 grandes entreprises américaines (pondéré par les prix) ;;
 Euro Stoxx 50 ;; indice des 50 grandes valeurs de la zone euro ;;
 MSCI World ;; indice mondial des grandes et moyennes capitalisations des pays développés ;; Environ 1 500 entreprises, 23 pays.
 Bull market / bear market ;; marché haussier / marché baissier ;; Bear : baisse de 20 % ou plus.
@@ -62,13 +62,9 @@ Facilité de dépôt (BCE) ;; taux auquel les banques placent leurs excédents �
 Euribor ;; taux interbancaire offert en euros ;; Référence de nombreux prêts à taux variable.
 Courbe des taux ;; relation entre le taux et la durée d'un emprunt ;;
 Courbe inversée ;; taux courts supérieurs aux taux longs ;; Signal souvent associé à une récession.
-Inflation ;; hausse générale et durable des prix ;; Mesurée par l'IPC (indice des prix à la consommation).
 Déflation ;; baisse générale des prix ;; Dangereuse : les agents reportent leurs achats.
 Stagflation ;; faible croissance + forte inflation ;;
-Politique monétaire ;; actions de la banque centrale sur la monnaie et le crédit ;;
 Assouplissement quantitatif (QE) ;; la banque centrale rachète des titres pour injecter des liquidités ;;
-Politique budgétaire ;; dépenses publiques et impôts utilisés pour agir sur l'économie ;;
-Dette publique ;; dette cumulée de l'État ;; En % du PIB.
 Critère de Maastricht ;; déficit public ≤ 3 % du PIB, dette ≤ 60 % ;;
 Taux d'intérêt réel ;; taux nominal moins inflation ;;
 Prime de risque ;; rendement supplémentaire exigé pour supporter un risque ;;
@@ -158,7 +154,6 @@ Tracking error ;; écart de performance entre un fonds et son indice ;;
 Chiffre d'affaires (CA) ;; ventes de biens et services sur la période ;;
 EBITDA / EBE ;; excédent brut d'exploitation avant amortissements, intérêts et impôts ;;
 Résultat d'exploitation (EBIT) ;; résultat avant intérêts et impôts ;;
-Résultat net ;; bénéfice final après intérêts et impôts ;;
 Marge nette ;; résultat net ÷ chiffre d'affaires ;;
 ROE ;; Return on Equity = résultat net ÷ capitaux propres ;; Rentabilité des fonds apportés par les actionnaires.
 ROA ;; Return on Assets = résultat net ÷ total de l'actif ;;
@@ -181,10 +176,7 @@ Valeur temps de l'argent ;; 1 € aujourd'hui vaut plus que 1 € demain ;;
 Fusion-acquisition (M&A) ;; opérations de rapprochement ou de rachat d'entreprises ;;
 LBO ;; achat d'une société financé en grande partie par de la dette ;;
 Goodwill (écart d'acquisition) ;; différence entre le prix payé et la valeur comptable des actifs ;;
-Bilan ;; photographie du patrimoine : actif (ce qu'on possède) et passif (ce qu'on doit) ;;
-Compte de résultat ;; produits et charges sur une période ;;
 Tableau de flux de trésorerie ;; origine et utilisation de l'argent liquide ;;
 Normes IFRS ;; normes comptables internationales pour les sociétés cotées ;;
-Capitaux propres ;; apports des actionnaires + réserves + résultats ;;
 Covenant ;; engagement financier imposé par un prêteur ;; Ex. ne pas dépasser un ratio de dette.
 Mots-clés d'une introduction en bourse ;; prospectus, fourchette de prix, book building, cotation ;;

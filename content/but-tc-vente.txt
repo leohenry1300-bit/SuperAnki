@@ -5,7 +5,6 @@
 Les étapes de l'entretien de vente ;; prise de contact, découverte, reformulation, argumentation, traitement des objections, conclusion, prise de congé ;; Méthode classique « CRÉPAC » ou « PAPC ».
 PAPC ;; Prise de contact, Analyse (découverte), Proposition (argumentation), Conclusion ;;
 Prise de contact ;; créer un climat de confiance dans les premières secondes ;; Salutation, sourire, présentation, ouverture.
-Règle des « 4 × 20 » ;; 20 secondes pour faire une première impression : 4 premières minutes décisives ;;
 Découverte des besoins ;; poser des questions pour comprendre le client ;; Questions ouvertes, fermées, de relance.
 Question ouverte ;; appelle une réponse développée (qui, quoi, comment, pourquoi) ;;
 Question fermée ;; réponse oui / non ;; Sert à valider.
@@ -37,7 +36,7 @@ Pitch ;; présentation courte et percutante (30 s à 2 min) ;;
 Elevator pitch ;; présentation rapide en quelques phrases ;;
 Silence ;; savoir se taire après une question ou une proposition de prix ;; Celui qui parle le premier perd souvent.
 Écoute active ;; reformuler, relancer, montrer son intérêt ;;
-Communication non verbale ;; gestes, regard, posture, voix ;; Selon Mehrabian, souvent plus importante que les mots.
+Communication non verbale ;; gestes, regard, posture, voix ;; Étude de Mehrabian (7-38-55) souvent citée, mais mal interprétée : elle ne vaut que pour l'expression des émotions.
 Le client roi ;; le client est au centre de la démarche commerciale ;;
 Qualités du vendeur ;; écoute, empathie, persévérance, honnêteté, connaissance du produit ;;
 Savoir-être ;; qualités comportementales (ponctualité, tenue, courtoisie) ;;
@@ -47,7 +46,6 @@ Savoir-faire ;; compétences techniques et méthodes ;;
 Prospection ;; recherche de nouveaux clients ;;
 Prospect ;; client potentiel qui n'a pas encore acheté ;;
 Suspect ;; contact qui pourrait peut-être devenir prospect ;;
-Lead ;; contact qui a manifesté de l'intérêt ;;
 Entonnoir de vente ;; suspects, prospects, clients : le nombre diminue à chaque étape ;;
 Phoning ;; prospection par téléphone ;;
 Mailing / e-mailing ;; envoi de courriers ou e-mails en nombre ;;
@@ -65,7 +63,6 @@ Programme de fidélité ;; avantages pour les clients réguliers ;;
 Gestion de la relation client (GRC) ;; ensemble des outils et méthodes pour suivre les clients ;;
 Tableau de bord commercial ;; indicateurs de suivi : chiffre d'affaires, taux de transformation, marge ;;
 Taux de transformation ;; nombre de ventes ÷ nombre de prospects contactés ;;
-Panier moyen ;; chiffre d'affaires ÷ nombre de tickets ;;
 Taux de marge sur ventes ;; marge ÷ chiffre d'affaires ;;
 Objectif SMART ;; Spécifique, Mesurable, Atteignable, Réaliste, Temporel ;;
 Plan d'action commercial (PAC) ;; actions, ressources, responsables et échéances ;;
@@ -143,7 +140,6 @@ Valeur actuelle ;; valeur future ÷ (1 + taux)^n ;;
 Escompte ;; paiement d'un effet avant son échéance avec une réduction ;;
 Rentabilité ;; résultat ÷ capitaux investis ;;
 Productivité ;; production ÷ moyens utilisés ;;
-Panier moyen ;; chiffre d'affaires ÷ nombre de transactions ;;
 Coefficient de saisonnalité ;; mesure l'effet d'une période de l'année sur les ventes ;;
 Ratio d'écart ;; réalisé ÷ prévu ;; Mesure le respect d'un objectif.
 

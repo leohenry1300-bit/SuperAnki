@@ -38,7 +38,7 @@ Caution ;; engagement d'un tiers à payer si l'emprunteur ne paie pas ;; Ex. Cr�
 Nantissement ;; garantie portant sur un placement (assurance-vie, compte-titres) ;;
 Offre de prêt ;; document de la banque détaillant le prêt, valable au moins 30 jours ;; Délai de réflexion de 10 jours avant d'accepter.
 Remboursement anticipé ;; payer le prêt plus tôt que prévu ;; Indemnités possibles (IRA) : plafonnées à 3 % du CRD ou 6 mois d'intérêts.
-Renégociation de prêt ;; obtenir un taux plus bas auprès de sa banque ou d'une autre ;; Intéressant si l'écart de taux est d'au moins 0,7 point.
+Renégociation de prêt ;; obtenir un taux plus bas auprès de sa banque ou d'une autre ;; Règle courante : intéressant si l'écart de taux est d'environ 1 point (parfois 0,7).
 Rachat de crédit ;; remplacement d'un ou plusieurs prêts par un seul ;;
 Assurance de prêt immobilier ;; garanties décès, invalidité, incapacité ;; Délégation d'assurance possible (loi Lemoine).
 Délégation d'assurance ;; choisir une assurance emprunteur ailleurs que dans la banque ;;
@@ -82,7 +82,6 @@ Frais réels ;; option pour déduire ses frais professionnels réels au lieu de 
 Abattement de 10 % ;; déduction forfaitaire pour frais professionnels sur les salaires ;;
 Micro-BIC / micro-foncier ;; régime simplifié avec abattement forfaitaire sur les revenus de location ;; Micro-foncier : abattement de 30 %.
 Déclaration de revenus ;; document annuel adressé à l'administration fiscale (impots.gouv.fr) ;;
-Prélèvements sociaux ;; CSG, CRDS et autres contributions sociales ;; Taux global de 17,2 % sur les revenus du patrimoine jusqu'en 2025.
 CSG ;; Contribution Sociale Généralisée ;; Financement de la Sécurité sociale.
 CRDS ;; Contribution au Remboursement de la Dette Sociale ;; Taux de 0,5 %.
 TVA ;; taxe sur la valeur ajoutée, payée par le consommateur final ;; Taux normal 20 %, intermédiaire 10 %, réduit 5,5 %, particulier 2,1 %.
@@ -90,7 +89,6 @@ Impôt de solidarité sur la fortune immobilière (IFI) ;; impôt sur le patrimo
 Taxe foncière ;; impôt local payé par le propriétaire ;;
 Taxe d'habitation sur les résidences secondaires ;; maintenue ;; Supprimée pour les résidences principales.
 Contribution sur les hauts revenus ;; surtaxe pour les revenus très élevés ;;
-Tranche marginale ;; vocabulaire pour dire « mon taux le plus élevé » ;;
 Plus-value mobilière ;; gain sur la vente de titres ;; Soumise au PFU ou au barème.
 Plus-value immobilière ;; gain sur la vente d'un bien ;; Résidence principale exonérée ; abattements pour durée de détention.
 Exonération de plus-value immobilière ;; totale après 22 ans pour l'IR et 30 ans pour les prélèvements sociaux ;;

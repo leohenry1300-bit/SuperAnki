@@ -54,19 +54,18 @@ Règle de 72 ;; années pour doubler son capital ≈ 72 ÷ taux (en %) ;; À 6 %
 Fonds de garantie des dépôts (FGDR) ;; protège les dépôts jusqu'à 100 000 € par déposant et par établissement ;; Pour les titres : 70 000 €.
 Capital garanti ;; le montant investi ne peut pas baisser ;; Cas du Livret A, des fonds en euros d'une assurance-vie.
 Dépôt à terme (DAT) ;; somme bloquée pour une durée fixée, à un taux connu ;; Retrait anticipé possible avec pénalité.
-Compte à terme ;; autre nom du dépôt à terme ;;
 
 ## Bourse : PEA, compte-titres | 📊
 PEA ;; Plan d'Épargne en Actions ;; Plafond de versements 150 000 € ; avantage fiscal après 5 ans.
-Plafond du PEA-PME ;; 225 000 € (cumulé avec le PEA : 225 000 € max) ;; Pour des actions de PME et ETI européennes.
+Plafond du PEA-PME ;; 225 000 € ; PEA et PEA-PME cumulés ne peuvent pas dépasser 225 000 € ;; Pour des actions de PME et ETI européennes.
 Avantage fiscal du PEA ;; après 5 ans, gains exonérés d'impôt sur le revenu ;; Restent soumis aux prélèvements sociaux.
 Retrait du PEA avant 5 ans ;; entraîne en principe la clôture du plan ;; Exceptions : licenciement, invalidité, création d'entreprise...
 Actifs éligibles au PEA ;; actions de sociétés de l'UE/EEE, certains fonds et ETF ;; Pas d'actions américaines en direct.
 PEA jeune ;; PEA pour les 18-25 ans rattachés au foyer fiscal des parents ;; Plafond 20 000 €.
 CTO ;; Compte-Titres Ordinaire ;; Pas de plafond, tous les titres du monde, pas d'avantage fiscal spécifique.
-Fiscalité du CTO ;; prélèvement forfaitaire unique (PFU) ou barème de l'impôt sur option ;; PFU : 12,8 % d'impôt + prélèvements sociaux (17,2 % jusqu'en 2025 : à vérifier pour 2026).
-PFU / flat tax ;; prélèvement forfaitaire unique sur les revenus du capital ;; 30 % jusqu'en 2025 (12,8 % + 17,2 %).
-Prélèvements sociaux ;; CSG + CRDS + autres contributions sur les revenus du capital ;; 17,2 % jusqu'en 2025.
+Fiscalité du CTO ;; prélèvement forfaitaire unique (PFU) ou barème de l'impôt sur option ;; PFU : 12,8 % d'impôt + prélèvements sociaux (17,2 % jusqu'en 2025, relevés à 18,6 % en 2026 sur une partie des revenus : à vérifier selon le produit).
+PFU / flat tax ;; prélèvement forfaitaire unique sur les revenus du capital ;; 30 % jusqu'en 2025 (12,8 % + 17,2 %) ; 31,4 % en 2026 pour les revenus concernés par la hausse de la CSG. À vérifier.
+Prélèvements sociaux ;; CSG + CRDS + autres contributions sur les revenus du capital ;; 17,2 % jusqu'en 2025 ; 18,6 % en 2026 pour une partie des revenus (à vérifier).
 Courtier en ligne ;; intermédiaire pour acheter et vendre des titres en bourse ;; Frais souvent plus bas que ceux d'une banque traditionnelle.
 Frais de courtage ;; commissions prises à chaque achat ou vente de titres ;;
 Droits de garde ;; frais annuels de conservation des titres ;;
@@ -75,7 +74,6 @@ Ordre à cours limité ;; achat ou vente seulement à un prix fixé (ou meilleur
 Ordre à seuil de déclenchement ;; devient un ordre au marché si un cours est atteint ;; Utile pour un stop-loss.
 Stop-loss ;; ordre de vente automatique pour limiter la perte ;;
 SRD ;; Service de Règlement Différé : achat à crédit ou vente à découvert sur actions ;; Effet de levier.
-Dividende ;; part du bénéfice versée aux actionnaires ;; Imposé comme un revenu du capital.
 Plus-value ;; gain réalisé en vendant plus cher qu'on a acheté ;; Moins-value : perte.
 Valeur liquidative (VL) ;; prix d'une part d'un fonds ;; Calculée chaque jour de bourse.
 Carnet d'ordres ;; liste des ordres d'achat et de vente en attente sur un titre ;;
@@ -161,7 +159,6 @@ DIC (PRIIPs) ;; Document d'Informations Clés pour produits d'investissement pac
 DIPA ;; Document d'Information sur le Produit d'Assurance ;; Standard européen de présentation des garanties.
 Médiateur bancaire ;; recours gratuit en cas de litige avec la banque ;; Après réclamation écrite sans réponse satisfaisante.
 Secret bancaire ;; obligation de ne pas divulguer les informations du client ;; Levé dans certains cas (justice, fisc).
-RGPD ;; règlement européen sur la protection des données personnelles ;;
 Délit d'initié ;; utiliser une information privilégiée pour investir ;; Sanctionné pénalement.
 Manipulation de cours ;; fausser artificiellement le prix d'un titre ;;
 Surendettement ;; impossibilité de payer ses dettes ;; Dossier déposé à la Banque de France (commission).
