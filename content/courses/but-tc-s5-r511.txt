@@ -1,0 +1,227 @@
+@course r511 | R5.11 · Management de la créativité et de l'innovation | 💡 | Cours d'Axelle Faure-Ferlet (2026) : enjeux de l'innovation, développement d'innovations, commercialisation. Fiches faites à partir de tes supports pour l'évaluation du 22 octobre.
+@tags BUT TC, S5, R5.11, innovation, r511
+
+## Intro · Échec et succès d'une innovation | 📉
+Quel est le taux d'échec des nouveaux produits AVANT le lancement ? ;; 20 % des projets disparaissent avant d'être commercialisés, et 80 % enregistrent des résultats insuffisants lors des tests. ;; 20 % disparaissent · 80 % mauvais aux tests
+C: Avant le lancement, {{c1::20 %}} des projets disparaissent avant d'être commercialisés et {{c2::80 %}} enregistrent des résultats insuffisants lors des tests. ;; Taux d'échec avant lancement (phase de développement).
+Taux d'échec d'un nouveau produit APRÈS le lancement : secteur industriel ? ;; 20 à 25 %. ;; Les estimations dépendent du secteur.
+Taux d'échec d'un nouveau produit APRÈS le lancement : services ? ;; 30 %. ;; Industriel 20-25 % · Services 30 %
+Taux d'échec d'un nouveau produit APRÈS le lancement : high tech ? ;; 70 à 90 % (le plus élevé). ;; High tech = secteur où l'on échoue le plus
+Taux d'échec d'un nouveau produit APRÈS le lancement : grande consommation ? ;; 40 %. ;; Industriel 20-25 · Services 30 · Grande conso 40 · High tech 70-90
+C: Taux d'échec après lancement : industriel {{c1::20 à 25 %}} · services {{c2::30 %}} · grande consommation {{c3::40 %}} · high tech {{c4::70 à 90 %}}. ;; À classer du plus faible au plus élevé.
+Qu'est-ce qu'un « échec » pour une innovation ? (3 chiffres) ;; 45 à 48 % n'atteignent pas leurs objectifs de vente ; 44 % sont sous leurs objectifs de rentabilité ; 75 % ne survivent pas au-delà d'1 ou 2 ans. ;; Ventes · rentabilité · survie
+C: {{c1::75 %}} des innovations ne survivent pas au-delà d'{{c2::1 ou 2 ans}}. ;; Définition de l'échec (survie).
+C: {{c1::45 à 48 %}} des innovations n'atteignent pas leurs objectifs de {{c2::vente}}, et {{c3::44 %}} sont en dessous de leurs objectifs de {{c4::rentabilité}}. ;; Définition de l'échec (ventes / rentabilité).
+Quels facteurs de succès d'une innovation l'entreprise maîtrise-t-elle ? (3 familles) ;; Les caractéristiques de l'innovation, la stratégie de l'entreprise, le processus de développement du nouveau produit. ;; Innovation · stratégie · processus
+Facteur de succès « caractéristiques de l'innovation » : que faut-il ? ;; Un produit qui répond aux besoins des clients, un avantage distinctif par rapport aux concurrents, un prix cohérent avec la valeur perçue. ;; Besoins · avantage distinctif · prix/valeur perçue
+Facteur de succès « stratégie de l'entreprise » : que faut-il ? ;; Une équipe dédiée à l'innovation et la rapidité de prise de décision. ;; Équipe dédiée · rapidité de décision
+Facteur de succès « processus de développement » : que faut-il ? ;; Des compétences technologiques, marketing, commerciales… ; un processus formalisé avec des procédures définies ; l'intégration de plusieurs fonctions de l'entreprise. ;; Compétences · formalisation · pluridisciplinarité
+Quel facteur de succès l'entreprise ne maîtrise PAS vraiment ? ;; Les caractéristiques du marché : un large marché potentiel et une faible réactivité concurrentielle. ;; Marché = subi, pas maîtrisé
+Lien entre besoins et motivations dans l'adoption d'un produit nouveau ? ;; Les besoins créent des tensions → elles induisent des motivations (positives) ou des freins (négatives) qui permettent d'agir pour réduire ces tensions. Si les motivations positives l'emportent sur les freins, les individus achètent le produit. ;; Besoin → tension → motivations vs freins → achat
+C: Il faut que l'innovation {{c1::trouve son marché}} : qu'elle réponde à des besoins {{c2::fonctionnels ou symboliques}}, {{c3::conscients ou inconscients}}, d'une frange de la population. ;; Idée clé de l'intro.
+Sur quoi faut-il travailler pour faire adopter une innovation ? ;; À la fois sur les motivations (à renforcer) et sur les freins (à lever). ;; Motivations + freins
+
+## Intro · Comment innover | 🧭
+Quels sont les 2 types de processus d'innovation ? ;; Market push et technology pull. ;; Marché → idée / Technologie → idée
+Définis l'approche « market push ». ;; Le processus part d'une insatisfaction des clients sur le marché, à laquelle l'entreprise cherche à répondre. ;; Besoin client → solution
+Définis l'approche « technology pull ». ;; Le processus part d'une nouvelle technologie ou d'un nouveau procédé technique (une invention) ; on ne sait pas toujours à quoi elle servira ni si elle intéresse le marché. ;; Invention → recherche d'application
+Market push : rôle du marketing ? ;; Observer le marché pour faire émerger l'idée, suivre la conception pour que le produit corresponde, élaborer les conditions de commercialisation. ;; Observer · suivre · commercialiser
+Market push : rôle de la R&D ? ;; Concevoir le produit selon le cahier des charges établi au départ. ;; La R&D suit le cahier des charges
+Technology pull : rôle du marketing ? ;; Identifier une application qui réponde à une attente du marché, influencer la mise au point du produit, élaborer le plan de lancement et les conditions de commercialisation. ;; Trouver l'application
+Technology pull : rôle de la R&D ? ;; Rechercher / inventer, puis mettre au point le produit final à commercialiser. ;; Inventer puis finaliser
+Pourquoi le dialogue marketing / R&D doit-il être mis en place très tôt ? ;; Pour passer de l'invention à l'innovation. ;; Invention ≠ innovation
+Quelles sont les évolutions dans la manière d'innover (5) ? ;; Innovation ouverte (open innovation), co-innovation avec les clients, innovation frugale (jugaad), innovation inversée, stratégie océan bleu. ;; Ouverte · co-innover · frugale · inversée · océan bleu
+Qu'est-ce que l'open innovation ? ;; Innover avec des acteurs externes (laboratoires de recherche publique, fournisseurs, agences de design, partenaires…). ;; Innovation de plus en plus ouverte
+Qu'est-ce que la co-innovation avec les clients ? ;; Associer directement les clients au processus : en amont (idées de nouveaux produits, concepts) et en aval (évaluer les idées, élaborer les messages publicitaires). ;; Amont : idées · Aval : évaluation / pub
+Qu'est-ce que l'innovation frugale (jugaad innovation) ? ;; Imaginer des manières astucieuses et peu coûteuses en ressources de créer/produire de nouveaux produits et de renouveler l'expérience client. ;; Frugal = peu de ressources
+Qu'est-ce que l'innovation inversée ? ;; Des innovations développées pour les segments pauvres « du bas de la pyramide » (modèles économiques à repenser) : produits conçus pour les pays émergents puis déployés dans les pays développés. ;; Sud → Nord
+Qu'est-ce que la stratégie océan bleu ? ;; Chercher des espaces stratégiques inexploités et réinventer les contours des marchés saturés pour éviter la concurrence directe. ;; Océan rouge = concurrence · océan bleu = marché libre
+Quels sont les 4 leviers d'innovation ? ;; Les caractéristiques techniques du produit, l'usage du produit, le modèle économique (généralement low cost), le processus de fabrication ou de servuction. ;; Technique · usage · modèle économique · processus
+Qu'est-ce qu'une innovation holistique ? ;; Une innovation fondée sur plusieurs leviers à la fois. ;; Holistique = plusieurs leviers
+Un « processus de servuction » correspond à quel levier d'innovation ? ;; Le processus de fabrication ou de servuction (production du service). ;; Servuction = fabrication d'un service
+
+## Intro · Degrés d'innovation et diffusion | 📈
+Typologie d'Abell (1980) : sur quels deux axes repose-t-elle ? ;; Les usages et habitudes de consommation (nouveaux / anciens) et la technologie (nouvelle / ancienne). ;; Usages × technologie
+Abell : nouvelle technologie + nouveaux usages = ? ;; Innovation de rupture. ;; Tout est nouveau
+Abell : nouvelle technologie + anciens usages = ? ;; Innovation technologique. ;; Techno nouvelle, habitudes inchangées
+Abell : ancienne technologie + nouveaux usages = ? ;; Innovation comportementale. ;; Techno ancienne, usages nouveaux
+Abell : ancienne technologie + anciens usages = ? ;; Innovation incrémentale. ;; Rien de nouveau ou presque : amélioration
+C: Typologie d'Abell : technologie nouvelle + usages nouveaux = innovation de {{c1::rupture}} ; technologie nouvelle + usages anciens = innovation {{c2::technologique}} ; technologie ancienne + usages nouveaux = innovation {{c3::comportementale}} ; technologie ancienne + usages anciens = innovation {{c4::incrémentale}}. ;; Matrice 2 × 2.
+Typologie de Robertson (1971) : sur quoi repose-t-elle ? ;; L'intégration du produit dans les normes de consommation (proche ou éloignée des normes). ;; Distance aux normes
+Robertson : quels sont les 3 degrés d'innovation ? ;; Innovation de continuité (proche des normes), de semi-continuité, de discontinuité (éloignée des normes). ;; Continuité · semi-continuité · discontinuité
+Pourquoi évaluer le degré d'innovation ? ;; Il influence la rapidité de diffusion / d'adoption du nouveau produit. ;; Plus discontinue = adoption plus lente
+Cite les 5 catégories d'adopteurs du modèle de diffusion de l'innovation. ;; Innovateurs, adopteurs précoces, majorité précoce, majorité tardive, retardataires. ;; Courbe en cloche
+C: Modèle de diffusion : innovateurs {{c1::2,5 %}}, adopteurs précoces {{c2::13,5 %}}, majorité précoce {{c3::34 %}}, majorité tardive {{c4::34 %}}, retardataires {{c5::16 %}}. ;; Le marché précoce = 16 % · le marché de masse = 84 %.
+Que représentent le « marché précoce » et le « marché de masse » dans le modèle de diffusion ? ;; Marché précoce : 16 % (innovateurs + adopteurs précoces). Marché de masse : 84 %. ;; 16 % / 84 %
+Qu'est-ce que la faille de Moore ? ;; Le fossé entre le marché précoce (16 %) et le marché de masse (84 %). Une adaptation de l'offre est nécessaire pour la franchir, pénétrer le marché et atteindre la masse. ;; Entre adopteurs précoces et majorité précoce
+De quoi dépend la rapidité d'adoption d'une innovation ? ;; De la capacité des consommateurs à rattacher le produit à une catégorie (quel est ce produit ? quelle fonction ?), et du développement de produits concurrents qui étoffent la nouvelle catégorie et la différencient des autres. ;; Catégorisation + concurrents
+Plus l'innovation est discontinue / disruptive, plus… ;; … il est compliqué de la faire adopter par la masse. ;; Discontinuité = adoption difficile
+Quand intervient le marketing dans le processus d'innovation ? ;; Avant, pendant et après le lancement du produit ; son rôle varie selon le processus d'innovation, la manière d'innover, les leviers mobilisés et le degré d'innovation. ;; Conclusion de l'intro
+
+## Partie 1 · Vue d'ensemble du processus | 🗺️
+Quelles sont les 6 grandes étapes du processus d'innovation ? ;; 1) Émergence des idées (génération et filtrage) · 2) Concept (développement et test) · 3) Élaboration de l'offre (du prototype au produit définitif) · 4) Choix des conditions de mise en marché (marketing opérationnel) · 5) Préparation du lancement (prévision des ventes, marchés-tests) · 6) Production et lancement. ;; Idées → concept → offre → mise en marché → préparation → lancement
+Partie 1 du cours : quelles étapes couvre-t-elle ? ;; Le développement d'innovations : émergence des idées, filtrage, concept, élaboration de l'offre, conditions de mise sur le marché, dépôt de brevet. ;; Avant le lancement
+Partie 2 du cours : quelles étapes couvre-t-elle ? ;; La commercialisation d'innovations : préparation au lancement (prévision des ventes, marchés-tests), lancement, contrôle du lancement. ;; Autour du lancement
+
+## Partie 1 · Émergence des idées | 💡
+« La créativité ne suffit pas ! » : quelles étapes pour générer des idées ? ;; Énoncer le problème ; le reformuler de manière atypique ; collecter une masse d'informations ; oublier momentanément les solutions existantes ; laisser un travail mental inconscient (prendre du recul) ; avoir des moments de prise de conscience où les idées émergent. ;; Problème → reformuler → informations → oublier → recul → déclic
+Comment le problème à l'origine d'une idée peut-il émerger ? ;; Du marché (insatisfaction des clients : market push) ou de la R&D (nouvelle technologie à laquelle trouver une application : technology pull). ;; Marché ou R&D
+Qu'est-ce que l'idéation ? ;; La génération d'idées pour trouver une solution à un problème (passage obligé dans les deux cas). ;; Idéation = produire des idées
+Cite des sources d'informations qui favorisent la génération d'idées. ;; Évolutions technologiques, échanges avec distributeurs et force de vente, observation des marchés étrangers, évolution de la réglementation, évolutions sociétales, pratiques des concurrents, évolutions dans d'autres secteurs. ;; Multiples sources
+Qu'est-ce qu'un cabinet de tendances ? ;; Un cabinet qui développe des « cahiers de tendances » (couleurs, matières…) annonçant les tendances des prochaines années. ;; Suivi des tendances
+Quelles études de marché favorisent la génération d'idées auprès des consommateurs ? ;; Les études usages et attitudes, les approches ethnographiques ou netnographiques. ;; Netno = sur Internet
+Quelle méthode utiliser auprès d'experts pour repérer les grandes tendances d'évolution ? ;; La méthode Delphi. ;; Experts
+Qu'est-ce que la méthode Delphi ? ;; Une méthode itérative qui permet de converger vers de grandes tendances d'évolution sur lesquelles s'accordent différents experts. ;; Itérations → consensus d'experts
+Qui sont les lead users ? ;; Des innovateurs en avance sur les tendances du marché : ils éprouvent des besoins nouveaux plus tôt que le reste du marché, vivent « dans le futur » et attendent de l'innovation une solution à leurs besoins. ;; En avance sur le marché
+Qui sont les emergent-nature consumers ? ;; Des individus créatifs et optimistes, avec une forte capacité à imaginer et visualiser comment des concepts nouveaux pourraient être développés. ;; Créatifs et optimistes
+Lead users et emergent-nature consumers : à quoi servent-ils ? ;; À impliquer les clients dans la génération d'idées (échanges, co-innovation). ;; Clients impliqués
+Qu'est-ce que la créativité organisationnelle ? ;; La capacité de l'entreprise à organiser les choses pour favoriser la créativité (organisation des locaux pour la détente ou l'échange, temps libre…). ;; Organisation au service de la créativité
+La créativité : quelles deux dimensions à distinguer ? ;; Organisationnelle (cadre mis en place par l'entreprise) et individuelle (techniques de créativité). ;; Entreprise / individu
+Techniques de créativité à partir des CLIENTS ? ;; Méthode du design empathique ; méthode customer journey / scènes d'usages. ;; Se mettre à la place du client
+Techniques de créativité à partir du PRODUIT ? ;; Analyse morphologique, analyse de la valeur, méthode des scénarios, méthode Delphi. ;; Décortiquer le produit
+Techniques de créativité liées à la CRÉATIVITÉ elle-même ? ;; Brainstorming, matrice de découverte, méthode de la pensée analogique. ;; Brainstorming = le plus connu
+Techniques de créativité à partir des SALARIÉS ? ;; Méthode Teian, méthode de l'innovation participative. ;; Idées venues des salariés
+Autres techniques de créativité citées en complément ? ;; Mindmapping, concassage, méthode des 6 chapeaux… ;; + autres
+C: Quatre sources pour les techniques de créativité : les {{c1::clients}}, le {{c2::produit}}, la {{c3::créativité}} elle-même et les {{c4::salariés}}. ;; Chaque source a ses méthodes.
+
+## Partie 1 · Filtrage des idées | 🔍
+Pourquoi filtrer les idées ? ;; Une fois les (nombreuses) idées formulées, il faut les hiérarchiser et choisir lesquelles poursuivre. ;; Hiérarchiser et choisir
+Quelles sont les deux erreurs possibles lors du filtrage ? ;; Une erreur de sélection (retenir une mauvaise idée) et une erreur d'abandon (rejeter une bonne idée). ;; Sélection / abandon
+Quels sont les 4 critères de sélection des idées ? ;; La faisabilité technique, la probabilité de succès commercial (si développement réussi), la rentabilité espérée, le coût de développement. ;; Technique · commercial · rentabilité · coût
+Quelles sont les 2 méthodes de filtrage (interne / externe) ? ;; En interne : grille d'évaluation avec notation (scoring). En externe : évaluation par les clients (blogs de marque, marchés d'idées) ou par un institut d'études (screening d'idées). ;; Interne = grille · externe = clients ou institut
+Comment fonctionne le filtrage interne ? ;; Une grille d'évaluation à partir de plusieurs critères ; une note est attribuée à chaque idée pour les hiérarchiser. ;; Grille + notes
+Qu'est-ce que le scoring ? ;; La méthode de calcul la plus répandue : pondération des critères, évaluation des critères, puis évaluation pondérée. ;; Pondérer → évaluer → note pondérée
+C: Scoring : {{c1::pondération}} des critères, {{c2::évaluation}} des critères, puis {{c3::évaluation pondérée}} de chaque idée. ;; Méthode de filtrage interne.
+Comment les clients peuvent-ils évaluer les idées (filtrage externe) ? ;; Via les blogs de marque (ex. La Redoute, Leclerc) ou les marchés d'idées. ;; Évaluation par les clients
+Qu'est-ce qu'un marché d'idées ? ;; Une place de marché virtuelle où les internautes votent pour les idées qu'ils jugent les meilleures. ;; Vote d'internautes
+Qu'est-ce que le screening d'idées ? ;; L'évaluation des idées par un institut d'études. ;; Filtrage externe par un institut
+
+## Partie 1 · Le concept | 🎯
+Pourquoi la phase de formulation du concept est-elle essentielle ? ;; Elle impose de voir le produit avec la vision des clients, évite de nombreuses erreurs et fait gagner beaucoup de temps sur la suite du processus. ;; Point de vue client
+Qu'est-ce qu'un concept de nouveau produit ? ;; Une idée travaillée et approfondie sous un angle marketing, qui répond à : par qui, quand, comment et pourquoi le produit sera utilisé. ;; Par qui · quand · comment · pourquoi
+Quelles sont les deux méthodes pour écrire le concept ? ;; Partir de l'idée / du problème du consommateur et créer les concepts en interne, ou collaborer avec des clients pour intégrer leur opinion et définir avec eux les bénéfices du futur produit. ;; En interne ou avec les clients
+Comment tester le potentiel d'un concept ? ;; Auprès des consommateurs, grâce à une description verbale et/ou visuelle. ;; Description verbale / visuelle
+Test de concept : que faut-il faire de la cible interrogée ? ;; Reformuler le ou les concepts en enlevant la cible (celle qu'on interroge). ;; Reformulation sans la cible
+Test de concept : quand intégrer le nom de la marque ? ;; Si le produit s'inscrit dans une marque existante ou si on veut évaluer la cohérence entre la marque et le produit. ;; Cohérence marque / produit
+Test de concept : quand intégrer le nom du produit ? ;; S'il est déjà choisi et qu'il constitue un élément clé de la communication du bénéfice client. ;; Nom déjà choisi et clé
+Test de concept : quand ajouter un schéma d'usage ou un story-board ? ;; Quand le produit implique de nouveaux gestes ou appartient à une nouvelle catégorie de produits. ;; Nouveaux gestes / nouvelle catégorie
+Test de concept : quand donner un prix approximatif ? ;; S'il est fixé et qu'on souhaite réaliser une prévision des intentions d'achat. ;; Prévoir les intentions d'achat
+Quels sont les 3 objectifs du test de concept ? ;; Approfondir le concept et trouver des pistes d'amélioration ; évaluer son acceptabilité (freins et motivations) ; commencer à réfléchir aux modalités de lancement et aux caractéristiques du produit. ;; Améliorer · acceptabilité · lancement
+Quelle méthode d'étude pour tester un concept : qualitative ou quantitative ? ;; Généralement qualitative (freins, motivations, faire évoluer le concept ; en groupe ou individuel) ; quantitative pour arbitrer entre plusieurs concepts jugés acceptables. ;; Quali = comprendre · quanti = arbitrer
+À l'issue du test de concept, quelles décisions possibles ? ;; Anticiper un succès commercial, retravailler le concept, ou l'abandonner. ;; Succès · retravailler · abandonner
+Sur quels 3 axes mène-t-on l'étude de faisabilité (en parallèle du test) ? ;; Faisabilité technique, faisabilité de la production (et lieux de production), faisabilité financière (business plan prévisionnel selon coûts de fabrication et volumes de vente). ;; Technique · production · financière
+À quoi sert l'analyse des synergies avec les activités actuelles ? ;; À identifier les compétences et les outils à acquérir si nécessaire. ;; Compétences et outils manquants
+À l'issue des tests de concept et de faisabilité, que décide-t-on ? ;; De lancer ou non la conception de l'offre. ;; Go / no go
+
+## Partie 1 · Élaboration de l'offre | 🛠️
+Élaboration de l'offre : quelles sont les deux logiques complémentaires ? ;; Une logique d'élaboration (créativité des différents métiers internes) et une logique de tests (vérifier que l'offre correspond au concept et aux besoins). ;; Élaborer + tester
+Élaboration de l'offre : quelles sont les deux possibilités de démarche ? ;; Partir d'un cahier des charges qui guide la conception, ou une approche « design thinking » avec passage direct au prototypage. ;; Cahier des charges ou prototypage
+Que doit détailler le cahier des charges ? ;; Les éléments clés à faire figurer dans le produit, et ce que le consommateur devra ressentir en voyant, essayant, utilisant le produit. ;; Éléments clés + ressenti
+Quelle est l'idée du cahier des charges pour les concepteurs ? ;; Les briefer en leur laissant une grande marge de manœuvre. ;; Brief ouvert
+Que présente en général le cahier des charges ? ;; Les bénéfices stratégiques (et parfois les attributs qui en découlent), des indications sur les valeurs de la marque et la performance par rapport à la gamme/aux concurrents, le prix visé si on est avancé (ex. extension de gamme). ;; Bénéfices · valeurs de marque · prix visé
+Cahier des charges : rôle du marketing ? ;; Définir les bénéfices consommateurs. ;; Marketing = bénéfices
+Cahier des charges : rôle du design ? ;; Définir les attributs du produit. ;; Design = attributs
+Cahier des charges : rôle de la R&D ? ;; Traduire ces attributs en spécifications techniques. ;; R&D = spécifications techniques
+C: Cahier des charges : le {{c1::marketing}} définit les {{c2::bénéfices consommateurs}}, le {{c3::design}} définit les {{c4::attributs}} du produit, la {{c5::R&D}} les traduit en {{c6::spécifications techniques}}. ;; Chaque équipe joue son rôle.
+Phases de conception du cahier des charges (dans l'ordre) ? ;; Formulation du cahier des charges → design du produit et conception technique → tests techniques → tests sensoriels → tests marketing → pré-industrialisation. ;; Du cahier des charges à la pré-industrialisation
+Qu'est-ce que le prototypage (design thinking) ? ;; Une démarche itérative qui développe un prototype de l'offre dès la définition du concept : réfléchir en construisant et non réfléchir avant de construire. ;; Penser en construisant
+À quoi peut servir un prototype ? ;; Aux différents tests, aux échanges avec les fournisseurs et distributeurs, ou à faire parler de l'entreprise (ex. concept-cars). ;; Tests · partenaires · communication
+Quelle est la fonction du design ? ;; Concevoir des produits en intégrant la facilité d'utilisation et la perspective esthétique, sous des contraintes de faisabilité et de coûts. ;; Usage + esthétique sous contraintes
+Pourquoi le designer commence-t-il par le visuel ? ;; Le consommateur voit le produit avant toute autre interaction (toucher, sentir, goûter…). ;; Le visuel vient en premier
+Quels autres éléments sensoriels le design travaille-t-il ? ;; La couleur (peut influencer le goût), l'odeur (les émotions), le son (rassurant, impression de puissance), et l'ergonomie (facilité / confort d'utilisation). ;; Couleur · odeur · son · ergonomie
+Qu'est-ce que l'ergonomie ? ;; La facilité / le confort d'utilisation du produit (ex. utilisation d'une machine, prise en main d'un packaging). ;; Confort d'usage
+Quels 3 types de tests avant de finaliser le produit (quelle que soit la démarche) ? ;; Tests techniques, tests sensoriels, tests marketing. ;; Technique · sensoriel · marketing
+Test technique : définition ? ;; Évaluation objective des caractéristiques techniques (sécurité, résistance, durée de conservation…) = crash tests. ;; Crash tests
+Test sensoriel : définition ? ;; Évaluation objective menée par des experts pour vérifier que le produit correspond au concept, aux valeurs de la marque… ;; Experts
+Test marketing : définition ? ;; Tests auprès des consommateurs : tests à l'aveugle ou en identifié, évaluation globale hédonique, comparaison prototypes/produits. ;; Auprès des consommateurs
+Quelle est la particularité des services pour les tests ? ;; On ne peut pas séparer la partie « tests » du « déploiement sur le terrain ». ;; Tests = terrain
+Services : que peut-on tester avant et après le déploiement ? ;; Avant : le scénario. Après : le système de délivrance du service (temps, organisation et séquence des tâches, fiabilité des éléments tangibles, via jeux de rôle en interne) et les perceptions / comportements des consommateurs (interrogation). ;; Scénario avant · système et clients après
+
+## Partie 1 · Mise sur le marché et brevet | 🛡️
+Quelles décisions marketing fait-on pour la mise sur le marché ? ;; Les conditions de mise en marché : notamment distribution (place) et prix (price), dans la logique du marketing opérationnel. ;; Marketing mix
+Brevet, étape 1 ? ;; Intégrer une clause de confidentialité dans les contrats de travail et dans les conventions de partenariat (fournisseurs, prestataires, chercheurs). ;; Confidentialité
+Brevet, étape 2 ? ;; Vérifier que l'innovation en est vraiment une (rechercher les concurrents, vérifier les dépôts de brevets à l'INPI ; recherche possible directement par l'INPI). ;; Antériorité
+Brevet, étape 3 ? ;; Mettre en place une cession des droits de propriété intellectuelle à tout acteur qui a pris part à l'innovation. ;; Cession des droits
+Brevet, étape 4 ? ;; Se demander si un brevet est utile : l'innovation est-elle facilement reproductible ? va-t-elle bloquer le marché ? ;; Utilité du brevet
+Brevet, étape 5 ? ;; Une fois déposé, apporter des compléments au fil des évolutions du marché. ;; Compléments
+C: Les 5 étapes du dépôt de brevet : clause de {{c1::confidentialité}}, vérifier que c'est {{c2::vraiment une innovation}}, {{c3::cession des droits}} de propriété intellectuelle, se demander si le brevet est {{c4::utile}}, puis apporter des {{c5::compléments}}. ;; Dans l'ordre.
+Pourquoi déposer un brevet seulement pour quelques années ? ;; Le temps que les consommateurs associent la marque à l'innovation. ;; Ex. Evian : bouteille plastique écrasable, brevet 1993, échu en 1997
+Quel organisme dépose / vérifie les brevets en France ? ;; L'INPI (Institut national de la propriété industrielle). ;; Antériorités et dépôt
+Exemple du cours : brevet d'Evian ? ;; Brevet déposé en 1993 et échu en 1997 : « bouteille en matière plastique écrasable et outillage pour sa réalisation ». ;; 1993 → 1997
+
+## Partie 2 · Prévision des ventes | 🔮
+Pourquoi la prévision des ventes est-elle indispensable ? ;; Pour fabriquer des volumes adaptés et prévoir les capacités de fabrication adéquates (très difficiles à modifier en temps réel) ; il faut des chiffres et observations fiables. ;; Volumes et capacités
+Risque d'une sous-estimation des ventes ? ;; Ruptures de stock, refus de ventes immédiates qui poussent les clients vers les concurrents, listes d'attente et donc insatisfaction. ;; Clients perdus
+Risque d'une surestimation des ventes ? ;; Stocks d'invendus coûteux pour l'entreprise et le distributeur ; équilibre financier du projet (voire santé financière de l'entreprise) remis en cause. ;; Invendus
+C: Sous-estimation : {{c1::ruptures de stock}} et clients perdus. Surestimation : {{c2::stocks d'invendus}} coûteux. ;; Deux risques d'une prévision erronée.
+Sur quoi faut-il travailler pour prévoir les ventes ? ;; Une estimation de la part de marché (PDM) du nouveau produit et une estimation de la taille globale du marché. ;; PDM + taille du marché
+Pourquoi la prévision des ventes d'une innovation est-elle délicate ? ;; Différentes incertitudes se cumulent (comportement de la concurrence, évolutions structurelles ou conjoncturelles), d'autant plus que le degré d'innovation est élevé. ;; Incertitudes cumulées
+Comment décomposer le problème de la prévision ? ;; Évaluer le nombre de clients potentiels, la fréquence d'achat (ou occasions de consommation) et la vitesse de diffusion (capacité à passer la faille de Moore). ;; Clients · fréquence · vitesse de diffusion
+Qu'est-ce que la masse critique ? ;; Le niveau de pénétration satisfaisant à partir duquel l'innovation a toutes les chances de continuer à se diffuser : assez d'adopteurs pour influencer la majorité. ;; Effet d'entraînement
+Quelles données utiles pour prévoir les ventes ? ;; L'intention d'achat, les pré-commandes, l'accueil par le marché. ;; Intention · pré-commandes · accueil
+Qu'est-ce que l'intention d'achat et comment la mesurer ? ;; Mesures faites lors des tests d'idées, validation du concept ou commercialisation. Deux échelles : Juster (10 points) et échelle simplifiée (5 points). ;; Juster 10 · simplifiée 5
+Échelle de Juster ? ;; Échelle d'intention d'achat en 10 points progressifs, de « je suis absolument certain de ne pas acheter » à « je suis absolument certain d'acheter ». ;; 10 points
+Échelle d'intention d'achat simplifiée ? ;; Échelle en 5 points, de « je ne l'achèterai certainement pas » à « je l'achèterai sûrement ». ;; 5 points
+Pourquoi mettre en place des pré-commandes ? ;; Mieux calibrer le volume des ventes à venir et donc mieux gérer les lignes de production, les stocks… (ex. voitures, jeux vidéo). ;; Calibrer la production
+Qu'est-ce que l'« accueil par le marché » ? ;; Une veille sur les médias digitaux, réseaux sociaux ou sites de tests pour étudier les commentaires des internautes ; il faut évaluer la quantité de commentaires et leur valence. ;; Quantité + valence
+Que mesure la « valence » des commentaires ? ;; Leur tonalité positive ou négative. ;; Positif / négatif
+
+## Partie 2 · Marchés-tests | 🧪
+À quoi servent les marchés-tests ? ;; À aller plus loin que l'intention d'achat : prévisions de ventes fiables, vérification de la politique marketing dans sa globalité, test de plusieurs options du plan de lancement (prix, promotion, campagnes), validation de la décision de lancement et ajustement du business plan. ;; Prévoir, vérifier, comparer, valider
+Quels sont les 3 types de marchés-tests ? ;; Marchés-tests simulés, marchés-tests lancés sur des panels, marchés-témoins. ;; Simulés · panels · témoins
+Marchés-tests simulés : principe ? ;; Travailler hors contexte réel pour simuler le comportement d'achat et établir les prévisions, sur un échantillon de consommateurs de la cible. ;; Simulation
+Marchés-tests simulés : déroulement ? ;; On soumet le concept et/ou la publicité ; on demande une intention d'achat (déclarative ou par un achat dans un rayon reconstitué) ; si le produit existe, ils repartent avec pour le tester puis sont recontactés (perception après usage, intention de réachat). ;; Intention → achat → usage → réachat
+Quelles sont les deux formes de marchés-tests simulés ? ;; Monadiques et concurrentiels. ;; Seul ou face à la concurrence
+Marché-test simulé MONADIQUE ? ;; Le produit est présenté seul ; test en ligne ; données extrapolées à partir d'une base de tests réalisés sur des lancements de produits équivalents. ;; Seul · en ligne · base de données
+Marché-test simulé CONCURRENTIEL ? ;; Le produit est présenté au milieu de 4 concurrents (pour que les répondants ne se focalisent pas sur la nouveauté), dans un magasin reconstitué (réel ou virtuel) ; on mesure achat et réachat et on confronte les résultats. ;; 4 concurrents · magasin reconstitué
+C: Test simulé monadique : produit présenté {{c1::seul}}, test {{c2::en ligne}}. Test simulé concurrentiel : produit présenté parmi {{c3::4 concurrents}}, dans un {{c4::magasin reconstitué}}. ;; Deux formes.
+Marchés-tests lancés sur des panels ? ;; Commercialiser le produit dans une ville représentative du marché visé, avec une société de panel qui recueille des données de vente détaillées, en suivant le plan de lancement national envisagé (publicité locale possible). ;; Ville test + société de panel
+Que analyse-t-on lors d'un marché-test sur panel ? ;; Les ventes par rapport aux concurrents, le profil des acheteurs et les transferts de parts de marché, pour faire des projections en vue d'un lancement. ;; Ventes · acheteurs · transferts de PDM
+Marchés-témoins ? ;; Lancement du produit dans un pays pilote ou une zone géographique limitée ; selon les ventes, l'entreprise décide ou non d'un lancement élargi (national, autres pays, autres continents). ;; Pays pilote
+Marchés-témoins : intérêt pour un produit très innovant ? ;; Tester une première version du produit pour recueillir les réactions des clients et l'améliorer avant le lancement à grande échelle. ;; Version test
+Marché-témoin dans les services ? ;; On peut lancer un magasin test. ;; Magasin test
+Marché-test simulé / sur panel / témoin : lequel se déroule dans un contexte réel ? ;; Les marchés-tests sur panels (une ville) et les marchés-témoins (pays pilote / zone limitée) ; le simulé se fait hors contexte réel. ;; Simulé = hors réel
+
+## Partie 2 · Le lancement | 🚀
+Pourquoi le lancement est-il crucial ? ;; De nombreux échecs sont dus à un lancement mal orchestré ou insuffisamment porté par la communication ; un produit a rarement une seconde chance. ;; Pas de seconde chance
+Conséquences d'un lancement raté ? ;; Les concurrents s'engouffrent dans la brèche et l'entreprise perd en crédibilité auprès de ses distributeurs et de ses clients. ;; Concurrents + crédibilité
+De quoi dépendent les actions envisagées lors du lancement ? ;; De la situation financière de l'entreprise, du rôle de la nouvelle offre dans sa stratégie, de son degré d'innovation et de la situation concurrentielle. ;; 4 facteurs
+Que faut-il prendre en compte pour choisir la tactique de lancement ? ;; L'écosystème associé au nouveau produit et l'intensité du lancement. ;; Écosystème + intensité
+Qu'est-ce que l'écosystème d'un lancement ? ;; L'ensemble des acteurs qui participent à la commercialisation (distributeurs, logistique), à la communication (prescripteurs, leaders d'opinion) ainsi que les fabricants de produits et prestataires de services complémentaires. ;; Tous doivent être convaincus et se mobiliser
+Selon quelles rubriques classe-t-on les moyens d'un lancement ? ;; Le marketing mix : produit (largeur de gamme, nombre de références), prix (stratégie), communication (budget, cible, pression promotionnelle, date), distribution (canal, rayon). ;; 4P
+Quelles sont les deux grandes tactiques de lancement ? ;; Le lancement de masse et le lancement souple / montée en charge progressive. ;; Masse ou progressif
+Lancement de masse : principe ? ;; Créer l'événement autour de l'innovation : dépenses de communication concentrées au moment du lancement, prix très bas possible pour maximiser la vitesse de pénétration, fort investissement sans attendre les résultats pour établir des barrières à l'entrée. ;; Tout dès le départ
+Lancement de masse : quel prix ? ;; Un prix de pénétration (très bas) pour maximiser la vitesse de pénétration et favoriser le décollage des ventes. ;; Pénétration
+Lancement de masse : quelle production et communication ? ;; Production maximale dès le lancement et concentration des moyens au moment du lancement. ;; Maximum + concentré
+Montée en charge progressive : principe ? ;; Répartir les moyens sur une période assez longue et faire progresser en parallèle production et dépenses ; communication progressive ; prix assez élevé au départ, quitte à baisser ensuite. ;; Progressif
+Montée en charge progressive : quel prix ? ;; Un prix d'écrémage (assez élevé au départ). ;; Écrémage
+C: Lancement de masse = prix de {{c1::pénétration}} ; lancement progressif = prix d'{{c2::écrémage}}. ;; Lien tactique / prix.
+Quand privilégier un lancement souple / progressif (produit) ? ;; Quand le produit est très innovant ou difficile à imiter. ;; Très innovant · difficile à imiter
+Quand privilégier un lancement de masse (produit) ? ;; Quand le produit est affecté par des externalités de réseaux (effets d'imitation, communauté). ;; Externalités de réseau
+Quand privilégier un lancement souple (entreprise) ? ;; Quand l'entreprise dispose de moyens limités. ;; Moyens limités
+Quand privilégier un lancement de masse (entreprise) ? ;; Quand l'entreprise a des moyens importants à consacrer au lancement. ;; Gros moyens
+Quand privilégier un lancement souple (concurrence) ? ;; Quand la concurrence fait face à des barrières à l'entrée. ;; Barrières à l'entrée
+Quand privilégier un lancement de masse (concurrence) ? ;; Quand la concurrence va lancer prochainement un produit similaire. ;; Concurrent imminent
+Quelles dates distinguer dans le lancement d'une innovation ? ;; La date de communication, la date à laquelle les clients peuvent commander, la date de commercialisation (disponible en magasin ou en vente directe), la date de mise en œuvre effective du service. ;; 4 dates
+Quels 3 éléments entrent en compte pour fixer la date de lancement ? ;; Les concurrents (pionnier ou suiveur ?), la saisonnalité des marchés (climat, rentrée, Noël, Saint-Valentin, fête des mères…), les autres lancements de l'entreprise (attention des commerciaux et de la production). ;; Concurrents · saisonnalité · autres lancements
+Comment préparer le lancement en interne ? ;; Motiver la force de vente (ex. convention), établir la stratégie de référencement en point de vente et les recommandations d'implantation, mettre au point les outils d'aide à la vente (argumentaire, informations, PLV). ;; Force de vente · référencement · outils
+Qu'est-ce que la préannonce ? ;; Une annonce faite avant le lancement proprement dit ; son opportunité doit être étudiée dans la préparation du lancement. ;; Annonce avant lancement
+Quels éléments planifier dans une préannonce ? ;; L'échelonnement dans le temps (combien de semaines, mois ou années à l'avance), la nature et le détail des informations divulguées (teasing ou précisions, au fur et à mesure), les médias et supports (conférence de presse, événement, salon). ;; Quand · quoi · où
+Préannonce : exemples de pratiques citées ? ;; Annonces faites aux journalistes pour qu'ils les révèlent ; certaines entreprises organisent de fausses fuites pour donner plus d'intérêt à l'information. ;; Journalistes · fausses fuites
+Pourquoi une préannonce peut-elle améliorer les ventes et le décollage ? ;; Achat lointain : on se concentre sur les bénéfices (proche : sur les coûts d'apprentissage) ; le futur semble meilleur que le présent ; stimulation du bouche-à-oreille et de l'attente ; temps pour trouver un financement ; mais elle peut aussi inciter à différer l'achat pour avoir un modèle plus récent. ;; Bénéfices · futur idéalisé · bouche-à-oreille · financement
+Préannonce : effet sur les concurrents ? ;; Les dissuader d'entrer sur le marché, ou au contraire les entraîner pour développer le nouveau marché ou imposer un nouveau standard. ;; Dissuader ou entraîner
+Préannonce : effet sur les distributeurs ? ;; Améliorer les relations en paraissant plus dynamique et innovant ; les inciter à anticiper (autre organisation en rayon, meilleure formation des vendeurs). ;; Relations et anticipation
+Préannonce : pourquoi prévenir les partenaires ? ;; Certains (fournisseurs de produits et services complémentaires) conditionnent le succès du lancement par leur disponibilité (ex. jeux vidéo, logiciels). ;; Compléments
+Promouvoir une offre innovante : quelles décisions ? ;; Définir le message, choisir les cibles de communication, les moyens (médias / hors médias) et les supports. ;; Message · cibles · moyens · supports
+Pour la pré-annonce, quel risque pour les ventes de l'ancien modèle ? ;; Les clients peuvent différer leur achat pour attendre le nouveau produit (modèle plus récent). ;; Effet pervers
+
+## Partie 2 · Contrôle du lancement | 📊
+Pourquoi contrôler le lancement ? ;; Suivre étroitement les résultats après le lancement pour identifier les difficultés, comprendre les causes et réagir très vite. ;; Réagir vite
+Quand définit-on les indicateurs à suivre ? ;; Avant le lancement. ;; À prévoir en amont
+Quels sont les 5 familles d'indicateurs de suivi du lancement ? ;; Commerciaux, de communication, de distribution, consommateurs, concurrentiels. ;; Commerce · com · distribution · consommateurs · concurrence
+Indicateurs commerciaux : exemples ? ;; Ventes en volume ou en valeur, part de marché (PDM). ;; Ventes · PDM
+Indicateurs de communication : exemples ? ;; Notoriété de l'innovation, mémorisation de la publicité, taux de clic. ;; Notoriété · mémorisation · clic
+Indicateurs de distribution : exemples ? ;; Part de linéaire, prix de vente, niveaux des stocks. ;; Linéaire · prix · stocks
+Indicateurs relatifs aux consommateurs : exemples ? ;; Taux d'essai, taux de réachat, satisfaction. ;; Essai · réachat · satisfaction
+Indicateurs concurrentiels : exemples ? ;; Lancements des concurrents, baisses de prix, opérations promotionnelles, communication. ;; Réactions des concurrents
+C: Indicateurs de suivi : {{c1::commerciaux}}, de {{c2::communication}}, de {{c3::distribution}}, relatifs aux {{c4::consommateurs}} et {{c5::concurrentiels}}. ;; 5 familles.

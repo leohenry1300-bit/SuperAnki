@@ -696,6 +696,48 @@ class SuperAnki {
         this.save();
     }
 
+    /* One-time: course cards written from the user's own course material (content/courses) are added under
+       "Mes cours BUT TC > Semestre N", with a saved filter to revise the whole course in one go. */
+    migrateCourses() {
+        const st = this.data.settings;
+        (typeof COURSES === 'undefined' ? [] : COURSES).forEach(co => {
+            const flag = `course_${co.id}`;
+            if (st[flag]) return;
+            st[flag] = true;
+            const now = Date.now(), have = new Set(this.data.cards.map(c => c.id));
+            const ensure = (id, name, emoji, parent, description = '') => { if (!this.deck(id)) this.data.decks.push({ id, name, emoji, description, created: now, parent, opts: null, mod: 0, preset: null, limits: null }); return id; };
+            ensure('mes_but_tc', 'Mes cours BUT TC', '🎓', null, 'Tes propres cours, semestre par semestre.');
+            const sem = co.parent || 'mes_but_tc_s5';
+            ensure(sem, `Semestre ${sem.slice(-1)}`, '📘', 'mes_but_tc');
+            const root = ensure(`co_${co.id}`, co.title, co.emoji, sem, co.desc);
+            let n = 0;
+            co.decks.forEach((sd, si) => {
+                const did = ensure(`co_${co.id}_d${si}`, sd.name, sd.emoji, root);
+                sd.cards.forEach(c => {
+                    n++;
+                    const base = { ...freshCard(), deckId: did, tags: [...co.tags], hint: '', detail: '', created: now + n, nid: '', kind: 'basic', ord: 0, nf: null };
+                    if (c[0] === 'b') {
+                        const id = `co_${co.id}_${n}`;
+                        if (!have.has(id)) this.data.cards.push({ ...base, id, front: sanitizeHtml(c[1]), back: sanitizeHtml(c[2]), hint: sanitizeHtml(c[3] || '') });
+                    } else {
+                        const nid = `co_${co.id}_${n}n`;
+                        clozeNumbers(c[1]).forEach(k => {
+                            const id = `co_${co.id}_${n}_c${k}`;
+                            if (have.has(id)) return;
+                            const card = { ...base, id, nid, kind: 'cloze', ord: k, front: '', back: '', nf: { front: '', back: '', text: sanitizeHtml(c[1]), extra: sanitizeHtml(c[2] || '') } };
+                            materializeCard(card);
+                            this.data.cards.push(card);
+                        });
+                    }
+                });
+            });
+            const fid = `flt_${co.id}`;
+            if (!Array.isArray(st.filters)) st.filters = [];
+            if (!st.filters.some(f => f.id === fid)) st.filters.push({ id: fid, name: `${co.title.split(' · ')[0]} · révision complète`, query: `tag:${co.tags[co.tags.length - 1]}`, order: 'random', limit: 400 });
+        });
+        this.save();
+    }
+
     /* One-time: English / TOEIC decks use FSRS at 90 % retention (cards already reviewed with SM-2 are converted on the fly). */
     migrateTunedPreset() {
         const st = this.data.settings;
@@ -726,6 +768,7 @@ class SuperAnki {
         this.applySettings();
         this.initSigs();
         this.migrateButTc();
+        this.migrateCourses();
         this.migrateTunedPreset();
         this.checkStreak();
         this.writeNow();

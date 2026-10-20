@@ -75,6 +75,43 @@ print("packs:", sum(len(d["cards"]) for p in packs for d in p["decks"]), "cards 
 
 
 # ---------------------------------------------------------------
+# Courses: content/courses/*.txt -> src/courses-data.js
+#   @course id | title | emoji | description      (added once under "Mes cours BUT TC > Semestre N")
+#   @tags a, b ; ## Sub-deck | emoji ; front ;; back ;; hint  or  C: cloze ;; extra
+# ---------------------------------------------------------------
+courses = []
+for f in sorted((ROOT / "content" / "courses").glob("*.txt")):
+    course, deck = {"tags": [], "decks": [], "parent": "mes_but_tc_s5"}, None
+    for n, raw in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
+        line = raw.strip()
+        if not line:
+            continue
+        if line.startswith("@course"):
+            p = [x.strip() for x in line[7:].split("|")]
+            course.update(id=p[0], title=p[1], emoji=p[2], desc=p[3])
+        elif line.startswith("@tags"):
+            course["tags"] = [t.strip() for t in line[5:].split(",") if t.strip()]
+        elif line.startswith("## "):
+            p = [x.strip() for x in line[3:].split("|")]
+            deck = {"name": p[0], "emoji": p[1] if len(p) > 1 else "📁", "cards": []}
+            course["decks"].append(deck)
+        else:
+            parts = [x.strip() for x in re.split(r"\s*;;\s*", line)]
+            if line.startswith("C:"):
+                parts[0] = parts[0][2:].strip()
+                if "{{c" not in parts[0]:
+                    raise SystemExit(f"{f.name}:{n}: cloze without {{{{c1::}}}}")
+                deck["cards"].append(["c", parts[0], parts[1] if len(parts) > 1 else ""])
+            else:
+                if len(parts) < 2 or not parts[0] or not parts[1]:
+                    raise SystemExit(f"{f.name}:{n}: card needs 'front ;; back' -> {line[:60]}")
+                deck["cards"].append(["b", parts[0], parts[1], parts[2] if len(parts) > 2 else ""])
+    courses.append(course)
+(SRC / "courses-data.js").write_text("const COURSES = " + json.dumps(courses, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
+print("courses:", sum(len(d["cards"]) for c in courses for d in c["decks"]), "cards in", len(courses), "courses")
+
+
+# ---------------------------------------------------------------
 # TOEIC simulator bank: content/toeic/*.txt  ->  src/toeic-bank.js
 #   P1: emojis ;; background ;; correct | w | w | w ;; explanation ;; tag
 #   P2 / P5: question ;; correct | w | w(| w) ;; explanation ;; tag
@@ -239,6 +276,7 @@ html = f"""<!DOCTYPE html>
 <script>
 {read("seed-data.js").strip()}
 {read("packs-data.js").strip()}
+{read("courses-data.js").strip()}
 {read("toeic-bank.js").strip()}
 {read("toeic-photos.js").strip()}
 </script>
