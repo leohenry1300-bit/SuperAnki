@@ -183,8 +183,8 @@ function ambApply() {
         let s = E.srcs[id];
         const real = AMB_REAL.bufs[id];
         if (v > 0.001) {
-            if (!AMB_REAL.idx) ambRealIndex().then(() => { if (AMB_ENG.ac) ambApply(); });
-            else if (AMB_REAL.idx[id] && real === undefined) ambRealLoad(id);
+            if (!AMB_REAL.idxP) ambRealIndex().then(() => { if (AMB_ENG.ac) ambApply(); });   // once: if the index cannot be read, the generated sounds keep playing
+            else if (AMB_REAL.idx && AMB_REAL.idx[id] && real === undefined) ambRealLoad(id);
         }
         /* swap a synthesized source for the real recording as soon as it is ready */
         if (s && real && s.kind !== 'real') { s.g.gain.setTargetAtTime(0, t, 0.25); kill(s); delete E.srcs[id]; s = null; }
