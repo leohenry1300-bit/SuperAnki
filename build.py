@@ -257,6 +257,7 @@ html = f"""<!DOCTYPE html>
 {read("study.js")}
 {read("focus.js")}
 {read("extras.js")}
+{read("ambient.js")}
 {read("toeic.js")}
 {read("sync.js")}
 {read("boot.js")}

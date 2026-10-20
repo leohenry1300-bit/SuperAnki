@@ -735,6 +735,7 @@ class SuperAnki {
         if (source === 'legacy') this.toast('Tes cartes et ta progression ont été récupérées', 'success');
         this.focusInit();
         this.extrasInit();
+        this.ambInit();
         if (this.data.settings.cloudSync) Cloud.sync();
         else Cloud.setStatus('off');
     }
@@ -1571,6 +1572,7 @@ class SuperAnki {
             <div><h2 class="page-title">Paramètres</h2><p class="page-sub">Personnalise l'apparence et ta façon de réviser.</p></div>
 
             ${this.extrasSettingsHtml()}
+            ${this.ambientSettingsHtml()}
             <div class="panel panel-pad set-section">
                 <h3>${ic('palette')} Thème</h3>
                 <p class="small muted">Chaque thème change tout le design : couleurs, typographie, formes.</p>
