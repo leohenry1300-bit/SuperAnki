@@ -1903,6 +1903,7 @@ class SuperAnki {
                 <button class="icon-btn" title="Écouter" data-action="speak">${ic('volume')}</button>
                 <button class="icon-btn" title="Annuler la dernière réponse (Z)" data-action="undo" ${s.history.length ? '' : 'disabled style="opacity:.35"'}>${ic('undo')}</button>
                 <button class="icon-btn" title="Modifier la carte (E)" data-action="edit-current">${ic('pencil')}</button>
+                <button class="icon-btn" title="Minuteur de concentration" aria-label="Minuteur" data-action="focus-toggle">${ic('brain')}</button>
                 <button class="icon-btn" title="Plus d'actions" data-action="session-menu" aria-label="Plus d'actions">${ic('more')}</button>
             </div>
             <div class="pbar"><i style="width:${progress}%"></i></div>
@@ -2128,6 +2129,7 @@ class SuperAnki {
                 <button class="icon-btn" title="Quitter (Échap)" data-action="quit-session">${ic('x')}</button>
                 <div class="session-title"><h3>${esc(s.title)}</h3><p>${chrono ? 'Bonne réponse +1 · erreur -3 s' : 'Choisis la bonne réponse · sans impact sur le planning'}</p></div>
                 ${chrono ? '' : `<div class="session-counts"><span>${Math.min(s.done + 1, s.total)}<span class="faint">/${s.total}</span></span></div>`}
+                <button class="icon-btn" title="Minuteur de concentration" aria-label="Minuteur" data-action="focus-toggle">${ic('brain')}</button>
             </div>
             ${hud}
             <div class="panel flashcard" style="min-height:0">

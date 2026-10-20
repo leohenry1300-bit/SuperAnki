@@ -7,7 +7,7 @@
 Object.assign(ICONS, { bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>' });
 const FOCUS_KEY = 'superanki_focus';
 const FOCUS_PRESETS = [[20, 5], [25, 5], [45, 10], [50, 15]];
-const FOCUS_DEFAULT = { open: false, collapsed: false, phase: 'study', running: false, endsAt: 0, remaining: 25 * 60000, study: 25, brk: 5, laps: 0, sound: true };
+const FOCUS_DEFAULT = { open: false, collapsed: false, phase: 'study', running: false, endsAt: 0, remaining: 25 * 60000, study: 25, brk: 5, laps: 0, sound: true, pos: null };
 
 Object.assign(SuperAnki.prototype, {
     focusInit() {
@@ -18,12 +18,15 @@ Object.assign(SuperAnki.prototype, {
         f.phase = f.phase === 'break' ? 'break' : 'study';
         f.remaining = clamp(num(f.remaining, f.study * 60000), 0, 240 * 60000);
         f.laps = Math.max(0, Math.round(num(f.laps, 0)));
+        f.pos = f.pos && Number.isFinite(f.pos.x) && Number.isFinite(f.pos.y) ? f.pos : null;
         this.focus = f;
         const el = document.createElement('div');
         el.id = 'focus-w'; el.className = 'focus-w hidden'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Temps de concentration');
         document.body.appendChild(el);
         el.addEventListener('click', e => { const b = e.target.closest('[data-fw]'); if (b) this.focusAct(b.dataset.fw, b); });
         el.addEventListener('change', e => { const k = e.target.dataset && e.target.dataset.fwin; if (k) this.focusInput(k, e.target); if (e.target.id === 'fw-sound') this.focusSet({ sound: e.target.checked }); });
+        this.focusDragInit(el);
+        window.addEventListener('resize', () => this.focusPlace());
         this.focusTimer = setInterval(() => this.focusTick(), 500);
         document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') this.focusTick(); });
         this.focusRender();
@@ -40,6 +43,7 @@ Object.assign(SuperAnki.prototype, {
         else if (a === 'close') { if (f.running) { f.remaining = this.focusLeft(); f.running = false; } this.focusSet({ open: false }); }
         else if (a === 'skip') this.focusPhaseEnd(false);
         else if (a === 'reset') this.focusSet({ phase: 'study', running: false, endsAt: 0, remaining: f.study * 60000, laps: 0 });
+        else if (a === 'home') this.focusSet({ pos: null });
         else if (a === 'preset') { const [s, b] = el.dataset.v.split('/').map(Number); this.focusConfig(s, b); }
         else if (a === 'test') { this.focusUnlock(); this.focusRing('study'); }
     },
@@ -132,7 +136,7 @@ Object.assign(SuperAnki.prototype, {
         el.classList.toggle('hidden', !f.open);
         el.classList.toggle('collapsed', f.collapsed);
         el.dataset.phase = f.phase;
-        const btn = $('[data-action="focus-toggle"]'); if (btn) btn.classList.toggle('active', f.open);
+        $$('[data-action="focus-toggle"]').forEach(btn => btn.classList.toggle('active', f.open));
         const act = (f.phase === 'study' ? `${f.study}/${f.brk}` : '');
         el.innerHTML = `<div class="fw-head"><span class="fw-ico">${ic('brain')}</span>
             <div class="fw-title"><small>Temps de concentration</small><b id="fw-time">${this.focusFmt(this.focusLeft())}</b><span class="fw-phase">${f.phase === 'study' ? 'Étude' : 'Pause'}</span></div>
@@ -144,7 +148,42 @@ Object.assign(SuperAnki.prototype, {
                 <div class="fw-fields"><label>Étude (min)<input class="input" type="number" min="1" max="240" value="${f.study}" data-fwin="study" inputmode="numeric"></label>
                     <label>Pause (min)<input class="input" type="number" min="1" max="120" value="${f.brk}" data-fwin="brk" inputmode="numeric"></label></div>
                 <div class="fw-foot"><span class="fw-laps">Tours effectués : ${f.laps}</span><button class="btn btn-soft btn-sm" data-fw="skip">Sauter</button><button class="btn btn-soft btn-sm" data-fw="reset">${ic('reset')}Réinitialiser</button></div>
+                <div class="fw-sound"><button class="link" data-fw="home">Remettre en bas à droite</button></div>
                 <div class="fw-sound"><label class="check"><input type="checkbox" id="fw-sound" ${f.sound ? 'checked' : ''}> ${ic('bell', 'inl')} Sonnerie</label><button class="link" data-fw="test">Tester le son</button></div>
             </div>`;
+        this.focusPlace();
+    },
+    /* the widget can be dragged anywhere (kept on this device); a tap on the time folds / unfolds it */
+    focusPlace() {
+        const f = this.focus, el = $('#focus-w');
+        if (!f || !el) return;
+        if (!f.pos) { el.style.left = el.style.top = ''; el.style.right = el.style.bottom = ''; return; }
+        const w = el.offsetWidth || 160, h = el.offsetHeight || 50;
+        const x = clamp(f.pos.x, 6, Math.max(6, window.innerWidth - w - 6)), y = clamp(f.pos.y, 6, Math.max(6, window.innerHeight - h - 6));
+        Object.assign(el.style, { left: x + 'px', top: y + 'px', right: 'auto', bottom: 'auto' });
+    },
+    focusDragInit(el) {
+        let d = null;
+        el.addEventListener('pointerdown', e => {
+            if (e.button > 0 || e.target.closest('button,input,label,a')) return;
+            if (!e.target.closest('.fw-head')) return;
+            const r = el.getBoundingClientRect();
+            d = { id: e.pointerId, dx: e.clientX - r.left, dy: e.clientY - r.top, sx: e.clientX, sy: e.clientY, moved: false, title: !!e.target.closest('.fw-title') };
+            try { el.setPointerCapture(e.pointerId); } catch { /* ignore */ }
+        });
+        el.addEventListener('pointermove', e => {
+            if (!d || e.pointerId !== d.id) return;
+            if (!d.moved && Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < 6) return;
+            d.moved = true; el.classList.add('dragging');
+            this.focus.pos = { x: e.clientX - d.dx, y: e.clientY - d.dy };
+            this.focusPlace();
+        });
+        const end = e => {
+            if (!d || e.pointerId !== d.id) return;
+            const wasDrag = d.moved, was = d; d = null; el.classList.remove('dragging');
+            if (wasDrag) { this.focusSave(); }
+            else if (e.type === 'pointerup' && was.title) this.focusSet({ collapsed: !this.focus.collapsed });
+        };
+        el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
     }
 });

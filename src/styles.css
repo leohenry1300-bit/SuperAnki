@@ -1460,7 +1460,7 @@ button.tq-opt:hover:not(:disabled) { border-color: var(--primary); background: v
 .fw-sound { display: flex; align-items: center; justify-content: space-between; font-size: .85rem; }
 .nav-chip { font-size: .72rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--primary); }
 body.in-exam .focus-w { display: none; }
-@media (max-width: 767px) { .focus-w { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); right: 12px; } body.in-session .focus-w { bottom: 12px; } }
+@media (max-width: 767px) { .focus-w { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); right: 12px; } }
 @media (max-width: 430px) {
   .topbar-inner { gap: 6px; }
   .brand { gap: 8px; font-size: .92rem; min-width: 0; }
@@ -1475,7 +1475,6 @@ body.in-exam .focus-w { display: none; }
 .focus-w.collapsed .fw-ico, .focus-w.collapsed .fw-title small, .focus-w.collapsed .fw-phase { display: none; }
 .focus-w.collapsed .fw-title b { font-size: 1.15rem; }
 .focus-w.collapsed .fw-head { gap: 2px; }
-@media (max-width: 767px) { body.in-session .focus-w { top: 66px; bottom: auto; right: 10px; } body.in-session .focus-w.collapsed { display: none; } }
 @media (max-width: 480px) { .theme-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
 @media (pointer: coarse) {
   .link { min-height: 36px; padding: 6px 2px; }
@@ -1507,3 +1506,17 @@ input[type="date"].input::-webkit-datetime-edit { padding: 0; }
 
 .tq-wm { margin: 0 0 8px; font-size: .78rem; }
 .tq-doc p, .tq-doc li, .tq-doc .tq-chat-m { -webkit-touch-callout: none; }
+
+/* focus timer during a session: small pill above the answer buttons, draggable, never in the way */
+body.in-session .focus-w { bottom: calc(104px + env(safe-area-inset-bottom, 0px)); right: 12px; }
+body.in-session .focus-w.collapsed { opacity: .92; box-shadow: var(--shadow); }
+body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px)); }
+.focus-w .fw-head { touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
+.focus-w.dragging { opacity: .85; cursor: grabbing; transition: none; }
+.fw-title { cursor: pointer; }
+.focus-w, .focus-w * { box-sizing: border-box; }
+.fw-presets { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.fw-fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.fw-fields .input { width: 100%; min-width: 0; }
+.fw-foot { flex-wrap: wrap; }
+.fw-title small { white-space: nowrap; }
