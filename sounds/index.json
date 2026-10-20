@@ -1,0 +1,92 @@
+{
+ "rain": {
+  "f": "rain.mp3",
+  "len": 1234800,
+  "pad": 3000,
+  "sr": 44100,
+  "credit": "« AMB Rain Loop 1 » par Kresiek The Furry (OpenGameArt)",
+  "lic": "CC0",
+  "src": "https://opengameart.org/content/amb-rain-loop-1"
+ },
+ "fire": {
+  "f": "fire.mp3",
+  "len": 1014300,
+  "pad": 3000,
+  "sr": 44100,
+  "credit": "« Fireplace Sound loop » par StarNinjas (OpenGameArt)",
+  "lic": "CC0",
+  "src": "https://opengameart.org/content/fireplace-sound-loop"
+ },
+ "wind": {
+  "f": "wind.mp3",
+  "len": 158760,
+  "pad": 3000,
+  "sr": 44100,
+  "credit": "« wind whoosh loop » par SketchMan3 (OpenGameArt)",
+  "lic": "CC0",
+  "src": "https://opengameart.org/content/wind-whoosh-loop"
+ },
+ "birds": {
+  "f": "birds.mp3",
+  "len": 1102500,
+  "pad": 3000,
+  "sr": 44100,
+  "credit": "« Ambient Bird Sounds » par FacadeGaikan (OpenGameArt)",
+  "lic": "CC0",
+  "src": "https://opengameart.org/content/ambient-bird-sounds"
+ },
+ "crickets": {
+  "f": "crickets.mp3",
+  "len": 352800,
+  "pad": 3000,
+  "sr": 44100,
+  "credit": "« Crickets Ambient Noise - loopable » par 2DPIXX (OpenGameArt)",
+  "lic": "CC0",
+  "src": "https://opengameart.org/content/crickets-ambient-noise-loopable"
+ },
+ "train": {
+  "f": "train.mp3",
+  "len": 749700,
+  "pad": 3000,
+  "sr": 44100,
+  "credit": "« Background Rumble Noise » par gryc (OpenGameArt)",
+  "lic": "CC BY 3.0",
+  "src": "https://opengameart.org/content/background-rumble-noise"
+ },
+ "fan": {
+  "f": "fan.mp3",
+  "len": 308700,
+  "pad": 3000,
+  "sr": 44100,
+  "credit": "« Ventilation_variant1 » par Snabisch (OpenGameArt)",
+  "lic": "CC BY 3.0",
+  "src": "https://opengameart.org/content/ventilationvariant1"
+ },
+ "stream": {
+  "f": "stream.mp3",
+  "len": 617400,
+  "pad": 3000,
+  "sr": 44100,
+  "credit": "« Hemlock stream » par Dirtslayer (Wikimedia Commons)",
+  "lic": "Domaine public",
+  "src": "https://commons.wikimedia.org/wiki/File:Hemlock_stream.ogg"
+ },
+ "thunder": {
+  "f": "thunder.mp3",
+  "len": 1675800,
+  "pad": 3000,
+  "sr": 44100,
+  "credit": "« Rain + Long Thunder » par WuxiaScrub (OpenGameArt)",
+  "lic": "CC0",
+  "src": "https://opengameart.org/content/rain-long-thunder"
+ },
+ "waves": {
+  "f": "waves.mp3",
+  "len": 2425500,
+  "pad": 3000,
+  "sr": 44100,
+  "credit": "« Ocean waves crushing » par Luftrum (Wikimedia Commons)",
+  "lic": "CC BY 3.0",
+  "src": "https://commons.wikimedia.org/wiki/File:Oceanwavescrushing.ogg"
+ }
+}
