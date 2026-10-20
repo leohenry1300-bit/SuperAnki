@@ -734,6 +734,7 @@ class SuperAnki {
         this.go('dashboard');
         if (source === 'legacy') this.toast('Tes cartes et ta progression ont été récupérées', 'success');
         this.focusInit();
+        this.extrasInit();
         if (this.data.settings.cloudSync) Cloud.sync();
         else Cloud.setStatus('off');
     }
@@ -1276,6 +1277,7 @@ class SuperAnki {
                             .map(([v, l]) => `<option value="${v}" ${ui.sort === v ? 'selected' : ''}>${l}</option>`).join('')}
                     </select>
                 </label>
+                <div class="quick-q" id="quick-q">${this.quickQueryHtml()}</div>
                 <details class="search-help"><summary>Astuces de recherche</summary><p>Plusieurs mots = tous requis · <code>"mot exact"</code> · <code>-exclure</code> · <code>deck:nom</code> · <code>tag:x</code> · <code>is:due</code> <code>is:new</code> <code>is:suspended</code> <code>is:marked</code> <code>is:leech</code> · <code>flag:1</code> · <code>prop:ivl&gt;30</code> · <code>added:7</code> · <code>rated:1</code> · accents et petites fautes tolérés.</p></details>
             </div>
             <div class="manager">
@@ -1568,6 +1570,7 @@ class SuperAnki {
         <div class="stack settings">
             <div><h2 class="page-title">Paramètres</h2><p class="page-sub">Personnalise l'apparence et ta façon de réviser.</p></div>
 
+            ${this.extrasSettingsHtml()}
             <div class="panel panel-pad set-section">
                 <h3>${ic('palette')} Thème</h3>
                 <p class="small muted">Chaque thème change tout le design : couleurs, typographie, formes.</p>
@@ -2586,7 +2589,8 @@ class SuperAnki {
                 <div class="field hidden" id="im-newdeck-wrap"><label class="label" for="im-newdeck">Nom du nouveau paquet</label><input class="input" id="im-newdeck" placeholder="Ex : Vocabulaire anglais"></div>
                 <div class="field"><span class="label">Fichier</span><button class="btn btn-soft btn-block" id="im-file">${ic('file')}Choisir un fichier TXT / CSV</button></div>
                 <div class="field"><span class="label">Ou un paquet Anki</span><button class="btn btn-soft btn-block" id="im-apkg">${ic('layers')}Importer un fichier .apkg</button><p class="help">Anki : Fichier › Exporter › « Paquet Anki (.apkg) », en cochant « Prendre en charge les anciennes versions d'Anki ». Les cartes arrivent comme neuves.</p></div>
-                <div class="field"><label class="label" for="im-text">... ou colle tes fiches ici</label><textarea class="textarea" id="im-text" rows="6" placeholder="Capitale de l'Italie ; Rome&#10;H2O ; L'eau"></textarea></div>
+                <div class="field"><label class="label" for="im-text">... ou colle tes fiches ici</label><textarea class="textarea" id="im-text" rows="6" placeholder="Capitale de l'Italie ; Rome&#10;H2O ; L'eau"></textarea>
+                    <div class="im-tr"><button class="btn btn-soft btn-sm" id="im-translate" type="button">Traduire les mots seuls (anglais → français)</button><span class="help" id="im-tr-st">Colle une liste de mots anglais, un par ligne : les traductions proposées s'écrivent à côté. Vérifie-les avant d'importer.</span></div></div>
                 <label class="check hidden" id="im-usedecks-wrap" style="margin-bottom:10px"><input type="checkbox" id="im-usedecks" checked> Utiliser les paquets et tags indiqués dans le fichier</label>
                 <p class="help" id="im-preview">Aucune fiche détectée pour l'instant.</p>`,
             foot: `<button class="btn btn-soft" data-close>Annuler</button><button class="btn btn-primary" id="im-go" disabled>${ic('import')}Importer</button>`
@@ -2601,6 +2605,27 @@ class SuperAnki {
             return rows;
         };
         ta.addEventListener('input', refresh);
+        $('#im-translate', m).addEventListener('click', async () => {
+            const st = $('#im-tr-st', m), btn = $('#im-translate', m);
+            const lines = ta.value.split('\n'), todo = lines.map((l, i) => [i, l.trim()]).filter(([, l]) => l && !/[;\t]/.test(l) && !l.includes(','));
+            if (!todo.length) { st.textContent = 'Aucun mot seul à traduire (une ligne = un mot, sans « ; »).'; return; }
+            if (!navigator.onLine) { st.textContent = 'Pas de connexion : saisis les traductions à la main.'; return; }
+            btn.disabled = true;
+            const batch = todo.slice(0, 80); let done = 0, fail = 0;
+            const one = async ([i, w]) => {
+                try {
+                    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 6000);
+                    const r = await fetch(`https://api.mymemory.translated.net/get?langpair=en|fr&q=${encodeURIComponent(w)}`, { signal: ctl.signal }).then(x => x.json()); clearTimeout(to);
+                    const tr = r && r.responseData && r.responseData.translatedText;
+                    if (tr && !/MYMEMORY|INVALID|QUERY LENGTH/i.test(tr) && tr.toLowerCase() !== w.toLowerCase()) lines[i] = `${w} ; ${tr.toLowerCase().replace(/;/g, ',')}`; else fail++;
+                } catch { fail++; }
+                done++; st.textContent = `Traduction… ${done}/${batch.length}`;
+            };
+            const queue = [...batch];
+            await Promise.all(Array.from({ length: 4 }, async () => { while (queue.length) await one(queue.shift()); }));
+            ta.value = lines.join('\n'); refresh(); btn.disabled = false;
+            st.textContent = `${batch.length - fail} traduction${batch.length - fail > 1 ? 's' : ''} ajoutée${batch.length - fail > 1 ? 's' : ''}${fail ? ` · ${fail} à compléter à la main` : ''}${todo.length > batch.length ? ` · ${todo.length - batch.length} restantes (relance)` : ''}. Vérifie avant d'importer.`;
+        });
         sel.addEventListener('change', () => $('#im-newdeck-wrap', m).classList.toggle('hidden', sel.value !== '__new'));
         $('#im-file', m).addEventListener('click', () => {
             const input = $('#hidden-file');
@@ -2865,12 +2890,13 @@ class SuperAnki {
                 const f = el.closest('.search-field');
                 if (f) f.classList.toggle('has-value', !!el.value);
                 clearTimeout(this.searchTimer);
-                this.searchTimer = setTimeout(() => { this.renderDeckSidebar(); this.renderDeckPanel(); }, 110);
+                this.searchTimer = setTimeout(() => { this.renderDeckSidebar(); this.renderDeckPanel(); this.quickQueryRefresh(); }, 110);
             }
         });
         document.addEventListener('change', e => {
             const el = e.target, k = el.dataset && el.dataset.input;
             if (k === 'sort') { this.ui.sort = el.value; this.renderDeckPanel(); }
+            else if (k === 'quick-tag') this.quickQueryTag(el.value);
             else if (k === 'deck-sort') { this.setSetting('deckSort', el.value); this.renderDashboard(); }
             else if (k === 'stats-deck') { this.statsUi.deck = el.value; this.renderStats(); }
             else if (k === 'stats-check') { this.statsUi[el.dataset.key] = el.checked; this.renderStats(); }
@@ -3154,6 +3180,7 @@ class SuperAnki {
                 break;
             }
             case 'quiz-answer': this.quizAnswer(Number(ds.i), el); break;
+            case 'quick-q': this.quickQueryToggle(ds.q); break;
             case 'clear-search': {
                 this.ui.search = ''; this.ui.limit = 60;
                 const inp = $('#card-search');

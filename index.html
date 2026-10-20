@@ -1540,6 +1540,17 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .fw-foot { flex-wrap: wrap; }
 .fw-title small { white-space: nowrap; }
 
+.quick-q { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; width: 100%; }
+.quick-q .chip { padding: 5px 11px; font-size: .76rem; }
+.quick-tag .select { max-width: 160px; }
+
+.fw-rings { display: grid; gap: 8px; }
+.fw-rings label { display: grid; gap: 4px; font-size: .8rem; font-weight: 700; }
+.fw-ring { display: flex; gap: 8px; align-items: center; }
+.fw-ring .select { flex: 1; min-width: 0; }
+.upd-banner { position: fixed; left: 50%; transform: translateX(-50%); top: calc(10px + env(safe-area-inset-top, 0px)); z-index: 90; display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 14px; background: var(--surface); border: var(--border-w) solid var(--primary); border-radius: 999px; box-shadow: var(--shadow-lg); font-size: .85rem; font-weight: 700; max-width: calc(100vw - 20px); }
+.im-tr { display: grid; gap: 6px; margin-top: 8px; justify-items: start; }
+
 </style>
 </head>
 <body>
@@ -2380,6 +2391,7 @@ class SuperAnki {
         this.go('dashboard');
         if (source === 'legacy') this.toast('Tes cartes et ta progression ont été récupérées', 'success');
         this.focusInit();
+        this.extrasInit();
         if (this.data.settings.cloudSync) Cloud.sync();
         else Cloud.setStatus('off');
     }
@@ -2922,6 +2934,7 @@ class SuperAnki {
                             .map(([v, l]) => `<option value="${v}" ${ui.sort === v ? 'selected' : ''}>${l}</option>`).join('')}
                     </select>
                 </label>
+                <div class="quick-q" id="quick-q">${this.quickQueryHtml()}</div>
                 <details class="search-help"><summary>Astuces de recherche</summary><p>Plusieurs mots = tous requis · <code>"mot exact"</code> · <code>-exclure</code> · <code>deck:nom</code> · <code>tag:x</code> · <code>is:due</code> <code>is:new</code> <code>is:suspended</code> <code>is:marked</code> <code>is:leech</code> · <code>flag:1</code> · <code>prop:ivl&gt;30</code> · <code>added:7</code> · <code>rated:1</code> · accents et petites fautes tolérés.</p></details>
             </div>
             <div class="manager">
@@ -3214,6 +3227,7 @@ class SuperAnki {
         <div class="stack settings">
             <div><h2 class="page-title">Paramètres</h2><p class="page-sub">Personnalise l'apparence et ta façon de réviser.</p></div>
 
+            ${this.extrasSettingsHtml()}
             <div class="panel panel-pad set-section">
                 <h3>${ic('palette')} Thème</h3>
                 <p class="small muted">Chaque thème change tout le design : couleurs, typographie, formes.</p>
@@ -4232,7 +4246,8 @@ class SuperAnki {
                 <div class="field hidden" id="im-newdeck-wrap"><label class="label" for="im-newdeck">Nom du nouveau paquet</label><input class="input" id="im-newdeck" placeholder="Ex : Vocabulaire anglais"></div>
                 <div class="field"><span class="label">Fichier</span><button class="btn btn-soft btn-block" id="im-file">${ic('file')}Choisir un fichier TXT / CSV</button></div>
                 <div class="field"><span class="label">Ou un paquet Anki</span><button class="btn btn-soft btn-block" id="im-apkg">${ic('layers')}Importer un fichier .apkg</button><p class="help">Anki : Fichier › Exporter › « Paquet Anki (.apkg) », en cochant « Prendre en charge les anciennes versions d'Anki ». Les cartes arrivent comme neuves.</p></div>
-                <div class="field"><label class="label" for="im-text">... ou colle tes fiches ici</label><textarea class="textarea" id="im-text" rows="6" placeholder="Capitale de l'Italie ; Rome&#10;H2O ; L'eau"></textarea></div>
+                <div class="field"><label class="label" for="im-text">... ou colle tes fiches ici</label><textarea class="textarea" id="im-text" rows="6" placeholder="Capitale de l'Italie ; Rome&#10;H2O ; L'eau"></textarea>
+                    <div class="im-tr"><button class="btn btn-soft btn-sm" id="im-translate" type="button">Traduire les mots seuls (anglais → français)</button><span class="help" id="im-tr-st">Colle une liste de mots anglais, un par ligne : les traductions proposées s'écrivent à côté. Vérifie-les avant d'importer.</span></div></div>
                 <label class="check hidden" id="im-usedecks-wrap" style="margin-bottom:10px"><input type="checkbox" id="im-usedecks" checked> Utiliser les paquets et tags indiqués dans le fichier</label>
                 <p class="help" id="im-preview">Aucune fiche détectée pour l'instant.</p>`,
             foot: `<button class="btn btn-soft" data-close>Annuler</button><button class="btn btn-primary" id="im-go" disabled>${ic('import')}Importer</button>`
@@ -4247,6 +4262,27 @@ class SuperAnki {
             return rows;
         };
         ta.addEventListener('input', refresh);
+        $('#im-translate', m).addEventListener('click', async () => {
+            const st = $('#im-tr-st', m), btn = $('#im-translate', m);
+            const lines = ta.value.split('\n'), todo = lines.map((l, i) => [i, l.trim()]).filter(([, l]) => l && !/[;\t]/.test(l) && !l.includes(','));
+            if (!todo.length) { st.textContent = 'Aucun mot seul à traduire (une ligne = un mot, sans « ; »).'; return; }
+            if (!navigator.onLine) { st.textContent = 'Pas de connexion : saisis les traductions à la main.'; return; }
+            btn.disabled = true;
+            const batch = todo.slice(0, 80); let done = 0, fail = 0;
+            const one = async ([i, w]) => {
+                try {
+                    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 6000);
+                    const r = await fetch(`https://api.mymemory.translated.net/get?langpair=en|fr&q=${encodeURIComponent(w)}`, { signal: ctl.signal }).then(x => x.json()); clearTimeout(to);
+                    const tr = r && r.responseData && r.responseData.translatedText;
+                    if (tr && !/MYMEMORY|INVALID|QUERY LENGTH/i.test(tr) && tr.toLowerCase() !== w.toLowerCase()) lines[i] = `${w} ; ${tr.toLowerCase().replace(/;/g, ',')}`; else fail++;
+                } catch { fail++; }
+                done++; st.textContent = `Traduction… ${done}/${batch.length}`;
+            };
+            const queue = [...batch];
+            await Promise.all(Array.from({ length: 4 }, async () => { while (queue.length) await one(queue.shift()); }));
+            ta.value = lines.join('\n'); refresh(); btn.disabled = false;
+            st.textContent = `${batch.length - fail} traduction${batch.length - fail > 1 ? 's' : ''} ajoutée${batch.length - fail > 1 ? 's' : ''}${fail ? ` · ${fail} à compléter à la main` : ''}${todo.length > batch.length ? ` · ${todo.length - batch.length} restantes (relance)` : ''}. Vérifie avant d'importer.`;
+        });
         sel.addEventListener('change', () => $('#im-newdeck-wrap', m).classList.toggle('hidden', sel.value !== '__new'));
         $('#im-file', m).addEventListener('click', () => {
             const input = $('#hidden-file');
@@ -4511,12 +4547,13 @@ class SuperAnki {
                 const f = el.closest('.search-field');
                 if (f) f.classList.toggle('has-value', !!el.value);
                 clearTimeout(this.searchTimer);
-                this.searchTimer = setTimeout(() => { this.renderDeckSidebar(); this.renderDeckPanel(); }, 110);
+                this.searchTimer = setTimeout(() => { this.renderDeckSidebar(); this.renderDeckPanel(); this.quickQueryRefresh(); }, 110);
             }
         });
         document.addEventListener('change', e => {
             const el = e.target, k = el.dataset && el.dataset.input;
             if (k === 'sort') { this.ui.sort = el.value; this.renderDeckPanel(); }
+            else if (k === 'quick-tag') this.quickQueryTag(el.value);
             else if (k === 'deck-sort') { this.setSetting('deckSort', el.value); this.renderDashboard(); }
             else if (k === 'stats-deck') { this.statsUi.deck = el.value; this.renderStats(); }
             else if (k === 'stats-check') { this.statsUi[el.dataset.key] = el.checked; this.renderStats(); }
@@ -4800,6 +4837,7 @@ class SuperAnki {
                 break;
             }
             case 'quiz-answer': this.quizAnswer(Number(ds.i), el); break;
+            case 'quick-q': this.quickQueryToggle(ds.q); break;
             case 'clear-search': {
                 this.ui.search = ''; this.ui.limit = 60;
                 const inp = $('#card-search');
@@ -6343,6 +6381,37 @@ Object.assign(SuperAnki.prototype, {
         this.data.cards.forEach(c => lines.push([cell(c.front), cell(c.back), c.tags.map(t => t.replace(/\s+/g, '_')).join(' '), this.deckChain(c.deckId).map(d => d.name).join('::')].join('\t')));
         this.downloadFile(`superanki-cartes-${dayKey()}.txt`, lines.join('\n'), 'text/plain');
         this.toast(`${plural(this.data.cards.length, 'carte exportée', 'cartes exportées')} (importable dans Anki)`, 'success', ic('export'));
+    }
+});
+
+
+/* quick filters under the card search: no need to know the query syntax */
+Object.assign(SuperAnki.prototype, {
+    quickQueryTokens() { return (this.ui.search || '').match(/"[^"]*"|\S+/g) || []; },
+    quickQueryHtml() {
+        const tok = new Set(this.quickQueryTokens()), counts = {};
+        this.data.cards.forEach(c => c.tags.forEach(t => { counts[t] = (counts[t] || 0) + 1; }));
+        const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b)).slice(0, 60);
+        const cur = [...tok].find(t => /^tag:/i.test(t));
+        const chips = [['Difficiles', 'is:error'], ['Sangsues', 'is:leech'], ['À réviser', 'is:due'], ['Nouvelles', 'is:new'], ['Marquées', 'is:marked'], ['Ratées cette semaine', 'rated:7 prop:lapses>=1']];
+        return chips.map(([l, q]) => `<button class="chip ${q.split(' ').every(t => tok.has(t)) ? 'active' : ''}" data-action="quick-q" data-q="${esc(q)}">${esc(l)}</button>`).join('')
+            + (tags.length ? `<label class="quick-tag"><span class="sr-only">Étiquette</span><select class="select select-sm" data-input="quick-tag"><option value="">Étiquette…</option>${tags.map(t => `<option value="${esc(t)}" ${cur && cur.slice(4).toLowerCase() === t.toLowerCase() ? 'selected' : ''}>${esc(t)} (${counts[t]})</option>`).join('')}</select></label>` : '');
+    },
+    quickQueryRefresh() { const el = $('#quick-q'); if (el) el.innerHTML = this.quickQueryHtml(); },
+    quickQuerySet(tokens) {
+        this.ui.search = tokens.join(' '); this.ui.limit = 60;
+        const inp = $('#card-search');
+        if (inp) { inp.value = this.ui.search; inp.closest('.search-field').classList.toggle('has-value', !!this.ui.search); }
+        this.renderDeckSidebar(); this.renderDeckPanel(); this.quickQueryRefresh();
+    },
+    quickQueryToggle(q) {
+        const toks = this.quickQueryTokens(), add = q.split(' '), on = add.every(t => toks.includes(t));
+        this.quickQuerySet(on ? toks.filter(t => !add.includes(t)) : [...toks, ...add.filter(t => !toks.includes(t))]);
+    },
+    quickQueryTag(tag) {
+        const toks = this.quickQueryTokens().filter(t => !/^tag:/i.test(t));
+        if (tag) toks.push(/\s/.test(tag) ? `tag:"${tag}"` : `tag:${tag}`);
+        this.quickQuerySet(toks);
     }
 });
 
@@ -8164,7 +8233,7 @@ Object.assign(SuperAnki.prototype, {
 Object.assign(ICONS, { bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>' });
 const FOCUS_KEY = 'superanki_focus';
 const FOCUS_PRESETS = [[20, 5], [25, 5], [45, 10], [50, 15]];
-const FOCUS_DEFAULT = { open: false, collapsed: false, phase: 'study', running: false, endsAt: 0, remaining: 25 * 60000, study: 25, brk: 5, laps: 0, sound: true, pos: null };
+const FOCUS_DEFAULT = { open: false, collapsed: false, phase: 'study', running: false, endsAt: 0, remaining: 25 * 60000, study: 25, brk: 5, laps: 0, sound: true, pos: null, ringStudy: 'bell', ringBreak: 'soft' };
 
 Object.assign(SuperAnki.prototype, {
     focusInit() {
@@ -8175,13 +8244,15 @@ Object.assign(SuperAnki.prototype, {
         f.phase = f.phase === 'break' ? 'break' : 'study';
         f.remaining = clamp(num(f.remaining, f.study * 60000), 0, 240 * 60000);
         f.laps = Math.max(0, Math.round(num(f.laps, 0)));
+        if (!RINGTONES[f.ringStudy]) f.ringStudy = 'bell';
+        if (!RINGTONES[f.ringBreak]) f.ringBreak = 'soft';
         f.pos = f.pos && Number.isFinite(f.pos.x) && Number.isFinite(f.pos.y) ? f.pos : null;
         this.focus = f;
         const el = document.createElement('div');
         el.id = 'focus-w'; el.className = 'focus-w hidden'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Temps de concentration');
         document.body.appendChild(el);
         el.addEventListener('click', e => { const b = e.target.closest('[data-fw]'); if (b) this.focusAct(b.dataset.fw, b); });
-        el.addEventListener('change', e => { const k = e.target.dataset && e.target.dataset.fwin; if (k) this.focusInput(k, e.target); if (e.target.id === 'fw-sound') this.focusSet({ sound: e.target.checked }); });
+        el.addEventListener('change', e => { const k = e.target.dataset && e.target.dataset.fwin; if (k) this.focusInput(k, e.target); if (e.target.id === 'fw-sound') this.focusSet({ sound: e.target.checked }); const rk = e.target.dataset && e.target.dataset.fwring; if (rk) { this.focusSet(rk === 'study' ? { ringStudy: e.target.value } : { ringBreak: e.target.value }); this.focusUnlock(); ringPlay(e.target.value, false); } });
         this.focusDragInit(el);
         window.addEventListener('resize', () => this.focusPlace());
         this.focusTimer = setInterval(() => this.focusTick(), 500);
@@ -8202,7 +8273,7 @@ Object.assign(SuperAnki.prototype, {
         else if (a === 'reset') this.focusSet({ phase: 'study', running: false, endsAt: 0, remaining: f.study * 60000, laps: 0 });
         else if (a === 'home') this.focusSet({ pos: null });
         else if (a === 'preset') { const [s, b] = el.dataset.v.split('/').map(Number); this.focusConfig(s, b); }
-        else if (a === 'test') { this.focusUnlock(); this.focusRing('study'); }
+        else if (a === 'test') { this.focusUnlock(); ringPlay(el.dataset.kind === 'break' ? f.ringBreak : f.ringStudy, false); }
     },
     focusInput(k, el) {
         const f = this.focus;
@@ -8269,19 +8340,7 @@ Object.assign(SuperAnki.prototype, {
         try { if (navigator.vibrate) navigator.vibrate([250, 120, 250]); } catch { /* ignore */ }
         if (!f.sound) return;
         this.focusUnlock();
-        const ac = this.audioCtx;
-        if (!ac) return;
-        const notes = kind === 'study' ? [988, 1319, 1760] : [784, 988];
-        const t0 = ac.currentTime + 0.05;
-        [0, 1.6].forEach(rep => notes.forEach((hz, i) => {
-            const t = t0 + rep + i * 0.28;
-            [[1, 0.22], [2.76, 0.07], [5.4, 0.03]].forEach(([mul, vol]) => {
-                const o = ac.createOscillator(), g = ac.createGain();
-                o.type = 'sine'; o.frequency.value = hz * mul;
-                g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.1);
-                o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + 1.2);
-            });
-        }));
+        ringPlay(kind === 'study' ? f.ringStudy : f.ringBreak, true);
     },
     focusToggleOpen() {
         const f = this.focus;
@@ -8306,7 +8365,8 @@ Object.assign(SuperAnki.prototype, {
                     <label>Pause (min)<input class="input" type="number" min="1" max="120" value="${f.brk}" data-fwin="brk" inputmode="numeric"></label></div>
                 <div class="fw-foot"><span class="fw-laps">Tours effectués : ${f.laps}</span><button class="btn btn-soft btn-sm" data-fw="skip">Sauter</button><button class="btn btn-soft btn-sm" data-fw="reset">${ic('reset')}Réinitialiser</button></div>
                 <div class="fw-sound"><button class="link" data-fw="home">Remettre en bas à droite</button></div>
-                <div class="fw-sound"><label class="check"><input type="checkbox" id="fw-sound" ${f.sound ? 'checked' : ''}> ${ic('bell', 'inl')} Sonnerie</label><button class="link" data-fw="test">Tester le son</button></div>
+                <div class="fw-sound"><label class="check"><input type="checkbox" id="fw-sound" ${f.sound ? 'checked' : ''}> ${ic('bell', 'inl')} Sonnerie</label></div>
+                <div class="fw-rings">${[['study', 'Fin du travail', f.ringStudy], ['break', 'Fin de la pause', f.ringBreak]].map(([k, l, cur]) => `<label>${l}<span class="fw-ring"><select class="select select-sm" data-fwring="${k}">${Object.entries(RINGTONES).map(([id, r]) => `<option value="${id}" ${cur === id ? 'selected' : ''}>${r.name}</option>`).join('')}</select><button class="btn btn-soft btn-sm" data-fw="test" data-kind="${k}" aria-label="Écouter">${ic('play')}</button></span></label>`).join('')}</div>
             </div>`;
         this.focusPlace();
     },
@@ -8349,6 +8409,149 @@ Object.assign(SuperAnki.prototype, {
             if (e.target.closest('.fw-title') && !e.target.closest('button,input,label,a')) this.focusSet({ collapsed: !this.focus.collapsed });
         });
     }
+});
+
+/* ============================================================
+   Sounds (pleasant, synthesized with Web Audio: no file) + "update now" button.
+   - UI sounds: reveal, grades, quiz right/wrong, end of session. On/off + volume, kept on this device.
+   - Bell sounds for the focus timer: a list to choose from, one for the end of study and one for the end of the break.
+   ============================================================ */
+const SND_KEY = 'superanki_sound';
+const SND = (() => { let st = { on: true, vol: 0.5 }; try { const x = JSON.parse(localStorage.getItem(SND_KEY) || 'null'); if (x && typeof x === 'object') st = { on: x.on !== false, vol: Math.min(1, Math.max(0, Number(x.vol) || 0.5)) }; } catch { /* ignore */ } return st; })();
+function sndSave() { try { localStorage.setItem(SND_KEY, JSON.stringify(SND)); } catch { /* ignore */ } }
+function sndCtx() {
+    try {
+        const a = window.app; if (!a) return null;
+        if (!a.audioCtx) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) a.audioCtx = new AC(); }
+        if (a.audioCtx && a.audioCtx.state === 'suspended') a.audioCtx.resume();
+        return a.audioCtx || null;
+    } catch { return null; }
+}
+/* one soft note: sine/triangle with a quick attack and an exponential fade */
+function sndNote(ac, t, hz, dur, vol, type = 'sine', glideTo = 0) {
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.setValueAtTime(hz, t);
+    if (glideTo) o.frequency.exponentialRampToValueAtTime(glideTo, t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(Math.max(0.0002, vol), t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + dur + 0.05);
+}
+function sndBell(ac, t, hz, vol, len = 1.1) { [[1, 1], [2.76, 0.32], [5.4, 0.14]].forEach(([m, v]) => sndNote(ac, t, hz * m, len / Math.sqrt(m), vol * v)); }
+
+/* UI sounds (short, quiet) */
+const SFX = {
+    reveal: (ac, t, v) => { sndNote(ac, t, 520, 0.09, v * 0.5, 'triangle'); },
+    g1: (ac, t, v) => { sndNote(ac, t, 247, 0.16, v * 0.6, 'triangle', 196); },
+    g2: (ac, t, v) => { sndNote(ac, t, 392, 0.12, v * 0.55, 'triangle'); },
+    g3: (ac, t, v) => { sndNote(ac, t, 523, 0.14, v * 0.6); sndNote(ac, t + 0.08, 659, 0.2, v * 0.6); },
+    g4: (ac, t, v) => { [523, 659, 784].forEach((h, i) => sndNote(ac, t + i * 0.07, h, 0.22, v * 0.55)); },
+    right: (ac, t, v) => { sndNote(ac, t, 659, 0.12, v * 0.6); sndNote(ac, t + 0.09, 880, 0.24, v * 0.6); },
+    wrong: (ac, t, v) => { sndNote(ac, t, 220, 0.22, v * 0.6, 'triangle', 165); },
+    done: (ac, t, v) => { [523, 659, 784, 1047].forEach((h, i) => { sndNote(ac, t + i * 0.12, h, 0.5, v * 0.55); sndNote(ac, t + i * 0.12, h * 2, 0.3, v * 0.12); }); },
+    pop: (ac, t, v) => { sndNote(ac, t, 700, 0.1, v * 0.55, 'sine', 1000); }
+};
+function sfx(name) {
+    if (!SND.on || !SFX[name]) return;
+    const ac = sndCtx(); if (!ac) return;
+    try { SFX[name](ac, ac.currentTime + 0.01, SND.vol * 0.9); } catch { /* ignore */ }
+}
+
+/* focus timer bells: each plays a short phrase, repeated twice by the timer */
+const RINGTONES = {
+    bell: { name: 'Cloche', play: (ac, t, v) => { [988, 1319, 1760].forEach((h, i) => sndBell(ac, t + i * 0.28, h, v * 0.22)); } },
+    soft: { name: 'Doux', play: (ac, t, v) => { [784, 988].forEach((h, i) => sndBell(ac, t + i * 0.3, h, v * 0.22)); } },
+    chime: { name: 'Carillon', play: (ac, t, v) => { [1047, 1319, 1568, 2093].forEach((h, i) => sndNote(ac, t + i * 0.16, h, 0.9, v * 0.2)); } },
+    harp: { name: 'Harpe', play: (ac, t, v) => { [392, 494, 587, 784, 988].forEach((h, i) => { sndNote(ac, t + i * 0.12, h, 1.0, v * 0.2, 'triangle'); sndNote(ac, t + i * 0.12, h * 2, 0.5, v * 0.06); }); } },
+    marimba: { name: 'Marimba', play: (ac, t, v) => { [523, 659, 784, 659].forEach((h, i) => { sndNote(ac, t + i * 0.18, h, 0.35, v * 0.3, 'triangle'); sndNote(ac, t + i * 0.18, h * 4, 0.08, v * 0.1); }); } },
+    digital: { name: 'Digital', play: (ac, t, v) => { [0, 0.22, 0.44].forEach(d => sndNote(ac, t + d, 880, 0.12, v * 0.14, 'square')); } },
+    gong: { name: 'Gong', play: (ac, t, v) => { sndBell(ac, t, 196, v * 0.34, 2.6); sndNote(ac, t, 98, 2.2, v * 0.2); } },
+    birds: { name: 'Oiseaux', play: (ac, t, v) => { [0, 0.28, 0.5].forEach((d, i) => sndNote(ac, t + d, 1800 + i * 300, 0.14, v * 0.12, 'sine', 2800 + i * 300)); } }
+};
+function ringPlay(id, repeat = true) {
+    const ac = sndCtx(), r = RINGTONES[id] || RINGTONES.bell;
+    if (!ac) return;
+    const v = Math.max(0.35, SND.vol) * 1.2, t0 = ac.currentTime + 0.05;
+    try { [0, ...(repeat ? [1.9] : [])].forEach(d => r.play(ac, t0 + d, v)); } catch { /* ignore */ }
+}
+
+/* hook the sounds on the study actions (wrapping the existing methods: nothing duplicated) */
+(() => {
+    const P = SuperAnki.prototype, wrap = (name, fn) => { const o = P[name]; if (typeof o !== 'function') return; P[name] = function (...a) { const pre = fn.pre ? fn.pre.call(this, ...a) : null; const r = o.apply(this, a); try { fn.post.call(this, pre, ...a); } catch { /* ignore */ } return r; }; };
+    wrap('reveal', { pre() { const s = this.session; return !!(s && s.current && !s.revealed); }, post(was) { if (was && this.session && this.session.revealed) sfx('reveal'); } });
+    wrap('grade', { pre() { const s = this.session; return !!(s && s.kind === 'srs' && s.revealed); }, post(was, g) { if (was) sfx('g' + g); } });
+    wrap('practiceAnswer', { pre() { const s = this.session; return !!(s && s.kind === 'practice' && s.revealed); }, post(was, ok) { if (was) sfx(ok ? 'right' : 'wrong'); } });
+    wrap('quizAnswer', { pre(i) { const s = this.session; return s && !s.answered && s.options && s.options[i] ? s.options[i].ok : null; }, post(ok) { if (ok !== null) sfx(ok ? 'right' : 'wrong'); } });
+    wrap('showSummary', { post() { sfx('done'); } });
+})();
+
+/* ---------- "update now" ---------- */
+let APP_VER0 = null, APP_UPD_LAST = 0;
+function appFetchVer() {
+    return fetch('sw.js?v=' + Date.now(), { cache: 'no-store' }).then(r => (r.ok ? r.text() : '')).then(t => ((t.match(/Version:\s*(\S+)/) || [])[1] || null)).catch(() => null);
+}
+Object.assign(SuperAnki.prototype, {
+    extrasInit() {
+        if (!/^https?:/.test(location.protocol)) return;
+        appFetchVer().then(v => { APP_VER0 = v; this.updRefresh(); });
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && Date.now() - APP_UPD_LAST > 10 * 60000) this.updCheck(true); });
+        setInterval(() => { if (Date.now() - APP_UPD_LAST > 30 * 60000) this.updCheck(true); }, 5 * 60000);
+        document.addEventListener('click', e => {
+            const b = e.target.closest('[data-ex]'); if (!b) return;
+            const a = b.dataset.ex;
+            if (a === 'upd') this.updNow();
+            else if (a === 'snd-toggle') { SND.on = !SND.on; sndSave(); this.updRefresh(); this.extrasSoundRefresh(); if (SND.on) sfx('pop'); }
+            else if (a === 'snd-test') { sfx('g3'); setTimeout(() => sfx('right'), 450); }
+            else if (a === 'ring-test') ringPlay(b.dataset.id, false);
+        });
+        document.addEventListener('input', e => { if (e.target.id === 'snd-vol') { SND.vol = Number(e.target.value) / 100; sndSave(); } });
+        document.addEventListener('change', e => { if (e.target.id === 'snd-vol') sfx('pop'); });
+    },
+    /* quiet background check (adds a banner) or manual check (returns the state) */
+    async updCheck(quiet) {
+        APP_UPD_LAST = Date.now();
+        const v = await appFetchVer();
+        if (!v) return 'offline';
+        if (!APP_VER0) { APP_VER0 = v; this.updRefresh(); return 'same'; }
+        const fresh = v !== APP_VER0;
+        this.updRefresh(fresh);
+        return fresh ? 'new' : 'same';
+    },
+    updRefresh(fresh) {
+        const st = $('#upd-status'), ver = $('#upd-ver');
+        if (ver) ver.textContent = APP_VER0 ? APP_VER0.slice(0, 8) : '—';
+        if (st && fresh !== undefined) st.textContent = fresh ? 'Une nouvelle version est disponible.' : 'Tu as la dernière version ✓';
+        let bn = $('#upd-banner');
+        if (fresh) {
+            if (!bn) { bn = document.createElement('div'); bn.id = 'upd-banner'; bn.className = 'upd-banner'; document.body.appendChild(bn); }
+            bn.innerHTML = `<span>Nouvelle version disponible</span><button class="btn btn-primary btn-sm" data-ex="upd">Mettre à jour</button><button class="icon-btn icon-btn-sm" aria-label="Plus tard" onclick="this.parentNode.remove()">${ic('x')}</button>`;
+        } else if (bn && fresh === false) bn.remove();
+    },
+    async updNow() {
+        const st = $('#upd-status'), say = t => { if (st) st.textContent = t; };
+        this.toast('Recherche de mise à jour…', 'info');
+        say('Recherche…');
+        const r = await this.updCheck(false);
+        if (r === 'offline') { this.toast('Impossible de vérifier : pas de connexion.', 'warning'); say('Pas de connexion.'); return; }
+        if (r === 'same') { this.toast('Tu as déjà la dernière version ✓', 'success'); return; }
+        say('Installation…');
+        try {
+            const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
+            if (reg) await reg.update();
+            if (window.caches) { const ks = await caches.keys(); await Promise.all(ks.filter(k => k.startsWith('superanki-')).map(k => caches.delete(k))); }
+        } catch { /* ignore */ }
+        this.toast('Mise à jour installée : rechargement…', 'success');
+        setTimeout(() => location.reload(), 500);
+    },
+    extrasSettingsHtml() {
+        return `<div class="panel panel-pad set-section" id="ex-settings">
+            <h3>${ic('volume')} Sons et mises à jour</h3>
+            <div class="set-row"><div class="txt"><b>Sons de l'application</b><span>Petits sons doux quand tu retournes une carte, réponds ou termines une session. Réglage propre à cet appareil.</span></div>
+                <span style="display:flex;gap:10px;align-items:center"><label class="switch"><input type="checkbox" ${SND.on ? 'checked' : ''} data-ex="snd-toggle" aria-label="Sons de l'application"><span></span></label><button class="btn btn-soft btn-sm" data-ex="snd-test">Tester</button></span></div>
+            <div class="set-row"><div class="txt"><b>Volume</b></div><input type="range" id="snd-vol" min="5" max="100" value="${Math.round(SND.vol * 100)}" style="width:160px" aria-label="Volume"></div>
+            <div class="set-row"><div class="txt"><b>Mise à jour</b><span id="upd-status">Version <code id="upd-ver">${APP_VER0 ? APP_VER0.slice(0, 8) : '—'}</code></span></div>
+                <button class="btn btn-primary btn-sm" data-ex="upd">${ic('reset')}Mettre à jour maintenant</button></div>
+        </div>`;
+    },
+    extrasSoundRefresh() { const cb = $('#ex-settings input[data-ex="snd-toggle"]'); if (cb) cb.checked = SND.on; }
 });
 
 /* ============================================================
@@ -9584,6 +9787,7 @@ Object.assign(SuperAnki.prototype, {
             return this.createNote({ type: 'basic', deckId, front: plain(word), back: plain(fr), hint: plain(sent), detail: '', tags: ['toeic', 'mot-inconnu'] });
         }, { decks: true });
         this.closeModal(m); this._tw = null;
+        if (typeof sfx === 'function') sfx('pop');
         this.toast(`« ${word} » ajouté à « TOEIC : mots inconnus »`, 'success');
     }
 });

@@ -1520,3 +1520,14 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .fw-fields .input { width: 100%; min-width: 0; }
 .fw-foot { flex-wrap: wrap; }
 .fw-title small { white-space: nowrap; }
+
+.quick-q { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; width: 100%; }
+.quick-q .chip { padding: 5px 11px; font-size: .76rem; }
+.quick-tag .select { max-width: 160px; }
+
+.fw-rings { display: grid; gap: 8px; }
+.fw-rings label { display: grid; gap: 4px; font-size: .8rem; font-weight: 700; }
+.fw-ring { display: flex; gap: 8px; align-items: center; }
+.fw-ring .select { flex: 1; min-width: 0; }
+.upd-banner { position: fixed; left: 50%; transform: translateX(-50%); top: calc(10px + env(safe-area-inset-top, 0px)); z-index: 90; display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 14px; background: var(--surface); border: var(--border-w) solid var(--primary); border-radius: 999px; box-shadow: var(--shadow-lg); font-size: .85rem; font-weight: 700; max-width: calc(100vw - 20px); }
+.im-tr { display: grid; gap: 6px; margin-top: 8px; justify-items: start; }

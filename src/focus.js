@@ -7,7 +7,7 @@
 Object.assign(ICONS, { bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>' });
 const FOCUS_KEY = 'superanki_focus';
 const FOCUS_PRESETS = [[20, 5], [25, 5], [45, 10], [50, 15]];
-const FOCUS_DEFAULT = { open: false, collapsed: false, phase: 'study', running: false, endsAt: 0, remaining: 25 * 60000, study: 25, brk: 5, laps: 0, sound: true, pos: null };
+const FOCUS_DEFAULT = { open: false, collapsed: false, phase: 'study', running: false, endsAt: 0, remaining: 25 * 60000, study: 25, brk: 5, laps: 0, sound: true, pos: null, ringStudy: 'bell', ringBreak: 'soft' };
 
 Object.assign(SuperAnki.prototype, {
     focusInit() {
@@ -18,13 +18,15 @@ Object.assign(SuperAnki.prototype, {
         f.phase = f.phase === 'break' ? 'break' : 'study';
         f.remaining = clamp(num(f.remaining, f.study * 60000), 0, 240 * 60000);
         f.laps = Math.max(0, Math.round(num(f.laps, 0)));
+        if (!RINGTONES[f.ringStudy]) f.ringStudy = 'bell';
+        if (!RINGTONES[f.ringBreak]) f.ringBreak = 'soft';
         f.pos = f.pos && Number.isFinite(f.pos.x) && Number.isFinite(f.pos.y) ? f.pos : null;
         this.focus = f;
         const el = document.createElement('div');
         el.id = 'focus-w'; el.className = 'focus-w hidden'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Temps de concentration');
         document.body.appendChild(el);
         el.addEventListener('click', e => { const b = e.target.closest('[data-fw]'); if (b) this.focusAct(b.dataset.fw, b); });
-        el.addEventListener('change', e => { const k = e.target.dataset && e.target.dataset.fwin; if (k) this.focusInput(k, e.target); if (e.target.id === 'fw-sound') this.focusSet({ sound: e.target.checked }); });
+        el.addEventListener('change', e => { const k = e.target.dataset && e.target.dataset.fwin; if (k) this.focusInput(k, e.target); if (e.target.id === 'fw-sound') this.focusSet({ sound: e.target.checked }); const rk = e.target.dataset && e.target.dataset.fwring; if (rk) { this.focusSet(rk === 'study' ? { ringStudy: e.target.value } : { ringBreak: e.target.value }); this.focusUnlock(); ringPlay(e.target.value, false); } });
         this.focusDragInit(el);
         window.addEventListener('resize', () => this.focusPlace());
         this.focusTimer = setInterval(() => this.focusTick(), 500);
@@ -45,7 +47,7 @@ Object.assign(SuperAnki.prototype, {
         else if (a === 'reset') this.focusSet({ phase: 'study', running: false, endsAt: 0, remaining: f.study * 60000, laps: 0 });
         else if (a === 'home') this.focusSet({ pos: null });
         else if (a === 'preset') { const [s, b] = el.dataset.v.split('/').map(Number); this.focusConfig(s, b); }
-        else if (a === 'test') { this.focusUnlock(); this.focusRing('study'); }
+        else if (a === 'test') { this.focusUnlock(); ringPlay(el.dataset.kind === 'break' ? f.ringBreak : f.ringStudy, false); }
     },
     focusInput(k, el) {
         const f = this.focus;
@@ -112,19 +114,7 @@ Object.assign(SuperAnki.prototype, {
         try { if (navigator.vibrate) navigator.vibrate([250, 120, 250]); } catch { /* ignore */ }
         if (!f.sound) return;
         this.focusUnlock();
-        const ac = this.audioCtx;
-        if (!ac) return;
-        const notes = kind === 'study' ? [988, 1319, 1760] : [784, 988];
-        const t0 = ac.currentTime + 0.05;
-        [0, 1.6].forEach(rep => notes.forEach((hz, i) => {
-            const t = t0 + rep + i * 0.28;
-            [[1, 0.22], [2.76, 0.07], [5.4, 0.03]].forEach(([mul, vol]) => {
-                const o = ac.createOscillator(), g = ac.createGain();
-                o.type = 'sine'; o.frequency.value = hz * mul;
-                g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.1);
-                o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + 1.2);
-            });
-        }));
+        ringPlay(kind === 'study' ? f.ringStudy : f.ringBreak, true);
     },
     focusToggleOpen() {
         const f = this.focus;
@@ -149,7 +139,8 @@ Object.assign(SuperAnki.prototype, {
                     <label>Pause (min)<input class="input" type="number" min="1" max="120" value="${f.brk}" data-fwin="brk" inputmode="numeric"></label></div>
                 <div class="fw-foot"><span class="fw-laps">Tours effectués : ${f.laps}</span><button class="btn btn-soft btn-sm" data-fw="skip">Sauter</button><button class="btn btn-soft btn-sm" data-fw="reset">${ic('reset')}Réinitialiser</button></div>
                 <div class="fw-sound"><button class="link" data-fw="home">Remettre en bas à droite</button></div>
-                <div class="fw-sound"><label class="check"><input type="checkbox" id="fw-sound" ${f.sound ? 'checked' : ''}> ${ic('bell', 'inl')} Sonnerie</label><button class="link" data-fw="test">Tester le son</button></div>
+                <div class="fw-sound"><label class="check"><input type="checkbox" id="fw-sound" ${f.sound ? 'checked' : ''}> ${ic('bell', 'inl')} Sonnerie</label></div>
+                <div class="fw-rings">${[['study', 'Fin du travail', f.ringStudy], ['break', 'Fin de la pause', f.ringBreak]].map(([k, l, cur]) => `<label>${l}<span class="fw-ring"><select class="select select-sm" data-fwring="${k}">${Object.entries(RINGTONES).map(([id, r]) => `<option value="${id}" ${cur === id ? 'selected' : ''}>${r.name}</option>`).join('')}</select><button class="btn btn-soft btn-sm" data-fw="test" data-kind="${k}" aria-label="Écouter">${ic('play')}</button></span></label>`).join('')}</div>
             </div>`;
         this.focusPlace();
     },

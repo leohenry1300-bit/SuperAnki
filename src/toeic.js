@@ -1231,6 +1231,7 @@ Object.assign(SuperAnki.prototype, {
             return this.createNote({ type: 'basic', deckId, front: plain(word), back: plain(fr), hint: plain(sent), detail: '', tags: ['toeic', 'mot-inconnu'] });
         }, { decks: true });
         this.closeModal(m); this._tw = null;
+        if (typeof sfx === 'function') sfx('pop');
         this.toast(`« ${word} » ajouté à « TOEIC : mots inconnus »`, 'success');
     }
 });

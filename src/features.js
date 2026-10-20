@@ -847,3 +847,34 @@ Object.assign(SuperAnki.prototype, {
         this.toast(`${plural(this.data.cards.length, 'carte exportée', 'cartes exportées')} (importable dans Anki)`, 'success', ic('export'));
     }
 });
+
+
+/* quick filters under the card search: no need to know the query syntax */
+Object.assign(SuperAnki.prototype, {
+    quickQueryTokens() { return (this.ui.search || '').match(/"[^"]*"|\S+/g) || []; },
+    quickQueryHtml() {
+        const tok = new Set(this.quickQueryTokens()), counts = {};
+        this.data.cards.forEach(c => c.tags.forEach(t => { counts[t] = (counts[t] || 0) + 1; }));
+        const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b)).slice(0, 60);
+        const cur = [...tok].find(t => /^tag:/i.test(t));
+        const chips = [['Difficiles', 'is:error'], ['Sangsues', 'is:leech'], ['À réviser', 'is:due'], ['Nouvelles', 'is:new'], ['Marquées', 'is:marked'], ['Ratées cette semaine', 'rated:7 prop:lapses>=1']];
+        return chips.map(([l, q]) => `<button class="chip ${q.split(' ').every(t => tok.has(t)) ? 'active' : ''}" data-action="quick-q" data-q="${esc(q)}">${esc(l)}</button>`).join('')
+            + (tags.length ? `<label class="quick-tag"><span class="sr-only">Étiquette</span><select class="select select-sm" data-input="quick-tag"><option value="">Étiquette…</option>${tags.map(t => `<option value="${esc(t)}" ${cur && cur.slice(4).toLowerCase() === t.toLowerCase() ? 'selected' : ''}>${esc(t)} (${counts[t]})</option>`).join('')}</select></label>` : '');
+    },
+    quickQueryRefresh() { const el = $('#quick-q'); if (el) el.innerHTML = this.quickQueryHtml(); },
+    quickQuerySet(tokens) {
+        this.ui.search = tokens.join(' '); this.ui.limit = 60;
+        const inp = $('#card-search');
+        if (inp) { inp.value = this.ui.search; inp.closest('.search-field').classList.toggle('has-value', !!this.ui.search); }
+        this.renderDeckSidebar(); this.renderDeckPanel(); this.quickQueryRefresh();
+    },
+    quickQueryToggle(q) {
+        const toks = this.quickQueryTokens(), add = q.split(' '), on = add.every(t => toks.includes(t));
+        this.quickQuerySet(on ? toks.filter(t => !add.includes(t)) : [...toks, ...add.filter(t => !toks.includes(t))]);
+    },
+    quickQueryTag(tag) {
+        const toks = this.quickQueryTokens().filter(t => !/^tag:/i.test(t));
+        if (tag) toks.push(/\s/.test(tag) ? `tag:"${tag}"` : `tag:${tag}`);
+        this.quickQuerySet(toks);
+    }
+});

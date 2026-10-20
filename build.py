@@ -256,6 +256,7 @@ html = f"""<!DOCTYPE html>
 {read("export-apkg.js")}
 {read("study.js")}
 {read("focus.js")}
+{read("extras.js")}
 {read("toeic.js")}
 {read("sync.js")}
 {read("boot.js")}

@@ -13,6 +13,8 @@ self.addEventListener('fetch', e => {
     if (req.method !== 'GET') return;
     const url = new URL(req.url);
     if (url.hostname.endsWith('supabase.co')) return;           // sync always goes to the network
+    if (url.origin === location.origin && url.pathname.endsWith('/sw.js')) return;   // the update check reads the live file
+    if (url.hostname === 'api.mymemory.translated.net') return;            // translations: always live, never cached
     const sameOrigin = url.origin === location.origin;
     if (sameOrigin && (req.mode === 'navigate' || url.pathname.endsWith('index.html'))) {
         // newest version when online, cached copy when offline
