@@ -1557,3 +1557,7 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .amb-name { display: flex; gap: 6px; align-items: center; font-size: .82rem; font-weight: 700; }
 .amb-tile input[type="range"] { width: 100%; }
 .amb-presets { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+.amb-credits { margin: 10px 0; font-size: .82rem; }
+.amb-credits summary { cursor: pointer; font-weight: 700; color: var(--text-muted); }
+.amb-credit-list { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 4px; }

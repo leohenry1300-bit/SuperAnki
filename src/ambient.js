@@ -158,20 +158,48 @@ function ambEnsure() {
     return true;
 }
 function ambCurve(v) { return Math.pow(Math.max(0, Math.min(1, v)), 1.7); }
+/* real recordings (sounds/*.mp3, listed in sounds/index.json): loaded on demand, cached by the service worker.
+   While a recording is not available (first use offline, file missing), the synthesized version plays instead. */
+const AMB_REAL = { idx: null, idxP: null, bufs: {}, loading: {} };
+function ambRealIndex() {
+    if (!AMB_REAL.idxP) AMB_REAL.idxP = fetch('sounds/index.json').then(r => (r.ok ? r.json() : null)).catch(() => null).then(j => { AMB_REAL.idx = j; return j; });
+    return AMB_REAL.idxP;
+}
+function ambRealLoad(id) {
+    const E = AMB_ENG, info = AMB_REAL.idx && AMB_REAL.idx[id];
+    if (!info || !E.ac || AMB_REAL.bufs[id] || AMB_REAL.loading[id]) return;
+    AMB_REAL.loading[id] = true;
+    fetch('sounds/' + info.f).then(r => (r.ok ? r.arrayBuffer() : Promise.reject(new Error('http')))).then(ab => new Promise((ok, ko) => E.ac.decodeAudioData(ab, ok, ko)))
+        .then(buf => { AMB_REAL.bufs[id] = { buf, ls: info.pad / info.sr, le: (info.pad + info.len) / info.sr }; if (E.ac) ambApply(); })
+        .catch(() => { AMB_REAL.bufs[id] = null; }).finally(() => { delete AMB_REAL.loading[id]; });
+}
 function ambApply() {
     const E = AMB_ENG; if (!E.ac) return;
     const t = E.ac.currentTime;
     E.master.gain.setTargetAtTime(ambCurve(AMB.master) * 1.3, t, 0.08);
+    const kill = s => { setTimeout(() => { try { s.src.stop(); s.src.disconnect(); s.g.disconnect(); } catch { /* ignore */ } }, 700); };
     AMB_SOUNDS.forEach(([id]) => {
         const v = AMB.vols[id] || 0;
         let s = E.srcs[id];
-        if (v > 0.001 && !s) {
-            if (!E.bufs[id]) E.bufs[id] = ambBuffer(E.ac, id);
-            const src = E.ac.createBufferSource(), g = E.ac.createGain();
-            src.buffer = E.bufs[id]; src.loop = true; g.gain.value = 0; src.connect(g); g.connect(E.master); src.start(0, Math.random() * AMB_LEN);
-            s = E.srcs[id] = { src, g };
+        const real = AMB_REAL.bufs[id];
+        if (v > 0.001) {
+            if (!AMB_REAL.idx) ambRealIndex().then(() => { if (AMB_ENG.ac) ambApply(); });
+            else if (AMB_REAL.idx[id] && real === undefined) ambRealLoad(id);
         }
-        if (s) { s.g.gain.setTargetAtTime(ambCurve(v), t, 0.12); if (v <= 0.001) { const dead = s; delete E.srcs[id]; setTimeout(() => { try { dead.src.stop(); dead.src.disconnect(); dead.g.disconnect(); } catch { /* ignore */ } }, 600); } }
+        /* swap a synthesized source for the real recording as soon as it is ready */
+        if (s && real && s.kind !== 'real') { s.g.gain.setTargetAtTime(0, t, 0.25); kill(s); delete E.srcs[id]; s = null; }
+        if (v > 0.001 && !s) {
+            const src = E.ac.createBufferSource(), g = E.ac.createGain();
+            let kind = 'synth';
+            if (real) { src.buffer = real.buf; src.loopStart = real.ls; src.loopEnd = real.le; kind = 'real'; src.loop = true; g.gain.value = 0; src.connect(g); g.connect(E.master); src.start(0, real.ls + Math.random() * (real.le - real.ls)); }
+            else {
+                if (AMB_REAL.idx && AMB_REAL.idx[id] && real === undefined) { /* real file on its way: stay silent for a moment rather than play the synthetic one twice */ }
+                if (!E.bufs[id]) E.bufs[id] = ambBuffer(E.ac, id);
+                src.buffer = E.bufs[id]; src.loop = true; g.gain.value = 0; src.connect(g); g.connect(E.master); src.start(0, Math.random() * AMB_LEN);
+            }
+            s = E.srcs[id] = { src, g, kind };
+        }
+        if (s) { s.g.gain.setTargetAtTime(ambCurve(v), t, 0.12); if (v <= 0.001) { const dead = s; delete E.srcs[id]; kill(dead); } }
     });
 }
 function ambPlay() {
@@ -228,9 +256,17 @@ Object.assign(SuperAnki.prototype, {
             <div class="amb-row"><label for="amb-master">Volume général</label><input type="range" id="amb-master" min="0" max="100" value="${Math.round(AMB.master * 100)}"></div>
             <div class="amb-grid">${AMB_SOUNDS.map(([id, em, name]) => `<label class="amb-tile ${(AMB.vols[id] || 0) > 0 ? 'on' : ''}" data-s="${id}"><span class="amb-name"><span aria-hidden="true">${em}</span>${name}</span><input type="range" class="amb-range" data-s="${id}" min="0" max="100" value="${Math.round((AMB.vols[id] || 0) * 100)}" aria-label="${name}"></label>`).join('')}</div>
             <div class="amb-row"><span class="label">Mélanges</span><span class="amb-presets">${presets.map(p => `<button class="chip" data-amb="preset" data-n="${esc(p.n)}">${esc(p.n)}</button>${p.user ? `<button class="icon-btn icon-btn-sm" data-amb="del" data-n="${esc(p.n)}" aria-label="Supprimer ${esc(p.n)}">${ic('x')}</button>` : ''}`).join('')}<button class="chip" data-amb="save">${ic('plus')}Enregistrer le mien</button></span></div>
+            <details class="amb-credits"><summary>Crédits des enregistrements</summary><div id="amb-credits-body">${this.ambCreditsHtml()}</div></details>
             <div class="amb-row"><label for="amb-timer">Arrêt automatique</label><select class="select select-sm" id="amb-timer">${[[0, 'Jamais'], [15, '15 min'], [30, '30 min'], [45, '45 min'], [60, '1 h'], [90, '1 h 30'], [120, '2 h']].map(([v, l]) => `<option value="${v}" ${AMB.timer === v ? 'selected' : ''}>${l}</option>`).join('')}</select><span class="small faint" id="amb-left">${on && left ? `encore ~${left} min` : ''}</span></div>
             <div class="set-row"><div class="txt"><b>Suivre le minuteur de concentration</b><span>L'ambiance joue pendant le temps de travail et se met en pause pendant les pauses.</span></div><label class="switch"><input type="checkbox" id="amb-link" ${AMB.link ? 'checked' : ''} aria-label="Suivre le minuteur"><span></span></label></div>
         </div>`;
+    },
+    ambCreditsHtml() {
+        const idx = AMB_REAL.idx;
+        if (!idx) { ambRealIndex().then(() => { const b = $('#amb-credits-body'); if (b) b.innerHTML = this.ambCreditsHtml(); }); return '<p class="small muted">Chargement…</p>'; }
+        const rows = AMB_SOUNDS.filter(([id]) => idx[id]).map(([id, em, name]) => { const c = idx[id]; return `<li><b>${em} ${name}</b> — ${esc(c.credit || '')}${c.lic ? ` · ${esc(c.lic)}` : ''}${c.src ? ` · <a href="${esc(c.src)}" target="_blank" rel="noopener">source</a>` : ''}</li>`; });
+        const synth = AMB_SOUNDS.filter(([id]) => !idx[id]).map(x => x[2]).join(', ');
+        return `<p class="small muted">Vrais enregistrements libres de droits (domaine public, CC0 ou CC BY), recoupés et mis en boucle pour l'appli.${synth ? ` Sons générés par l'appli : ${esc(synth)}.` : ''}</p><ul class="amb-credit-list">${rows.join('')}</ul>`;
     },
     ambRefresh(light) {
         const b = $('#amb-toggle'); if (!b) return;
