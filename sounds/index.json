@@ -118,11 +118,11 @@
  },
  "bowl": {
   "f": "bowl.mp3",
-  "len": 1852200,
+  "len": 1675800,
   "pad": 3000,
   "sr": 44100,
-  "credit": "« Crystal Singing Bowl – Root Note C » par Amy Sikarskie (Internet Archive)",
-  "lic": "CC BY 3.0",
-  "src": "https://archive.org/details/1CrystalSingingBowlRootNoteCAmySikarskieEnergyHealing"
+  "credit": "« Singing Bowl 1 » par BambooBeast (Wikimedia Commons), 4 frappes à hauteurs légèrement différentes",
+  "lic": "Domaine public",
+  "src": "https://commons.wikimedia.org/wiki/File:SingingBowl1.ogg"
  }
 }
