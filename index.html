@@ -2213,7 +2213,9 @@ function schedule(card, grade, now = Date.now(), useFuzz = false, cfg = buildCfg
             else { fs.s = fsrsShortS(fs.s, grade, cfg.w); fs.d = fsrsNextD(fs.d, grade, cfg.w); }
             keepFs();
         }
-        const grad = g => finish(fsr ? Math.max(g === 4 ? cfg.easyIvl : 1, fsrsIvl(fs.s, cfg.retention)) : (g === 4 ? cfg.easyIvl : cfg.gradIvl));
+        /* FSRS would jump straight to ~4 days (Good) or ~16 days (Easy) on a card seen for the first time: the first interval is
+           capped by the preset's "graduating" (Good) / "easy" intervals (1 and 4 days by default). The memory state is kept as is. */
+        const grad = g => finish(fsr ? Math.max(1, Math.min(fsrsIvl(fs.s, cfg.retention), g === 4 ? cfg.easyIvl : cfg.gradIvl)) : (g === 4 ? cfg.easyIvl : cfg.gradIvl));
         if (grade === 1) { r.state = 'learning'; r.step = 0; r.due = inMin(steps[0]); }
         else if (grade === 2) { r.state = 'learning'; r.due = inMin(r.step === 0 && steps[1] ? (steps[0] + steps[1]) / 2 : cur); }
         else if (grade === 3) {
