@@ -10,11 +10,14 @@ const AMB_KEY = 'superanki_ambient';
 const AMB_LEN = 12;                       // seconds per loop
 const AMB_SOUNDS = [
     ['rain', '🌧️', 'Pluie'], ['thunder', '⛈️', 'Orage'], ['wind', '🍃', 'Vent'], ['waves', '🌊', 'Vagues'],
-    ['waterfall', '💧', 'Cascade'], ['fire', '🔥', 'Feu de bois'], ['birds', '🐦', 'Oiseaux'], ['crickets', '🦗', 'Grillons'],
+    ['waterfall', '💧', 'Cascade'], ['fire', '🔥', 'Feu de bois'], ['birds', '🐦', 'Oiseaux'], ['crickets', '🦗', 'Grillons'], ['cicadas', '☀️', 'Cigales'],
     ['stream', '🏞️', 'Ruisseau'], ['cafe', '☕', 'Café'], ['bowl', '🔔', 'Bol chantant'], ['train', '🚆', 'Train'],
     ['fan', '🌀', 'Ventilateur'], ['leaves', '🍂', 'Feuilles'], ['white', '⚪', 'Bruit blanc'], ['brown', '🟤', 'Bruit brun']
 ];
-const AMB_DEFAULT = { vols: {}, master: 0.7, timer: 0, link: false, presets: [] };
+const AMB_DEFAULT = { vols: {}, master: 0.7, timer: 0, link: false, presets: [], bowl: 'strike' };
+const AMB_BOWLS = [['strike', 'Frappé doux'], ['deep', 'Frappé grave'], ['rub', 'Frotté (chantant)'], ['crystal', 'Cristal']];
+/* the sound file used for a mixer slot (the singing bowl has several styles) */
+function ambKey(id) { return id === 'bowl' ? 'bowl_' + (AMB_BOWLS.some(b => b[0] === AMB.bowl) ? AMB.bowl : 'strike') : id; }
 const AMB = (() => { let st = { ...AMB_DEFAULT, vols: {}, presets: [] }; try { const x = JSON.parse(localStorage.getItem(AMB_KEY) || 'null'); if (x && typeof x === 'object') st = { ...st, ...x, vols: { ...(x.vols || {}) }, presets: Array.isArray(x.presets) ? x.presets.slice(0, 12) : [] }; } catch { /* ignore */ } st.master = Math.min(1, Math.max(0, Number(st.master) || 0.7)); return st; })();
 function ambSave() { try { localStorage.setItem(AMB_KEY, JSON.stringify(AMB)); } catch { /* ignore */ } }
 
@@ -113,6 +116,14 @@ const AMB_GEN = {
         for (let s = 0; s < 2; s++) { const start = Math.floor(s * period + 0.05 * sr), len = Math.floor(period * 0.97), ev = new Float32Array(len); for (let i = 0; i < len; i++) { const t = i / sr, env = Math.min(1, t / 0.04) * Math.exp(-t / 2.6); ev[i] = (Math.sin(2 * Math.PI * f0 * t) + 0.55 * Math.sin(2 * Math.PI * (f0 * 2.76 + 1.1) * t) * Math.exp(-t / 1.2) + 0.3 * Math.sin(2 * Math.PI * (f0 * 5.4) * t) * Math.exp(-t / 0.6) + 0.35 * Math.sin(2 * Math.PI * (f0 + 0.7) * t)) * env; } ambAdd(o, ev, start); }
         return ambNorm(o, 0.05);
     },
+    cicadas(sr, L, fade, rnd) {
+        const n = L + fade, o = new Float32Array(n);
+        [[4600, 71, 0.31], [5300, 83, 0.23], [6100, 64, 0.17]].forEach(([f, pulse, slow], k) => {
+            const x = ambBP(ambNoise(n, rnd), f - 700, f + 900, sr), ph = rnd() * 6;
+            for (let i = 0; i < n; i++) { const t = i / sr, gate = 0.5 + 0.5 * Math.sin(2 * Math.PI * t * pulse + 2 * Math.sin(t * 2.1 + ph)), swell = 0.35 + 0.65 * Math.max(0, Math.sin(2 * Math.PI * t * slow + ph + k)); o[i] += x[i] * gate * swell; }
+        });
+        return ambNorm(ambLoop(o, L, fade), 0.07);
+    },
     train(sr, L, fade, rnd) {
         const n = L, o = ambNorm(ambLP(ambLoop(ambBrown(n + fade, rnd), n, fade), 220, sr), 0.05), beat = 0.42, hits = Math.floor(L / sr / beat);
         for (let h = 0; h < hits; h++) { const p = Math.floor((h * beat + (h % 2 ? 0.07 : 0)) * sr), len = Math.floor(sr * 0.12), ev = new Float32Array(len); for (let k = 0; k < len; k++) ev[k] = (rnd() * 2 - 1) * Math.exp(-k / (sr * 0.018)) * (h % 4 < 2 ? 0.5 : 0.35); ambAdd(o, ambBP(ev, 120, 1800, sr), p); }
@@ -181,23 +192,22 @@ function ambApply() {
     AMB_SOUNDS.forEach(([id]) => {
         const v = AMB.vols[id] || 0;
         let s = E.srcs[id];
-        const real = AMB_REAL.bufs[id];
+        const key = ambKey(id), real = AMB_REAL.bufs[key];
         if (v > 0.001) {
             if (!AMB_REAL.idxP) ambRealIndex().then(() => { if (AMB_ENG.ac) ambApply(); });   // once: if the index cannot be read, the generated sounds keep playing
-            else if (AMB_REAL.idx && AMB_REAL.idx[id] && real === undefined) ambRealLoad(id);
+            else if (AMB_REAL.idx && AMB_REAL.idx[key] && real === undefined) ambRealLoad(key);
         }
-        /* swap a synthesized source for the real recording as soon as it is ready */
-        if (s && real && s.kind !== 'real') { s.g.gain.setTargetAtTime(0, t, 0.25); kill(s); delete E.srcs[id]; s = null; }
+        /* swap a synthesized source for the real recording as soon as it is ready, or change the singing-bowl style */
+        if (s && ((real && s.kind !== 'real') || (s.key && s.key !== key))) { s.g.gain.setTargetAtTime(0, t, 0.25); kill(s); delete E.srcs[id]; s = null; }
         if (v > 0.001 && !s) {
             const src = E.ac.createBufferSource(), g = E.ac.createGain();
             let kind = 'synth';
             if (real) { src.buffer = real.buf; src.loopStart = real.ls; src.loopEnd = real.le; kind = 'real'; src.loop = true; g.gain.value = 0; src.connect(g); g.connect(E.master); src.start(0, real.ls + Math.random() * (real.le - real.ls)); }
             else {
-                if (AMB_REAL.idx && AMB_REAL.idx[id] && real === undefined) { /* real file on its way: stay silent for a moment rather than play the synthetic one twice */ }
                 if (!E.bufs[id]) E.bufs[id] = ambBuffer(E.ac, id);
                 src.buffer = E.bufs[id]; src.loop = true; g.gain.value = 0; src.connect(g); g.connect(E.master); src.start(0, Math.random() * AMB_LEN);
             }
-            s = E.srcs[id] = { src, g, kind };
+            s = E.srcs[id] = { src, g, kind, key };
         }
         if (s) { s.g.gain.setTargetAtTime(ambCurve(v), t, 0.12); if (v <= 0.001) { const dead = s; delete E.srcs[id]; kill(dead); } }
     });
@@ -241,7 +251,7 @@ function ambTimerArm() {
 const AMB_PRESETS = {
     'Pluie douce': { rain: 0.6, wind: 0.15 }, 'Orage': { rain: 0.55, thunder: 0.6, wind: 0.3 }, 'Plage': { waves: 0.7, wind: 0.25, birds: 0.15 },
     'Forêt': { birds: 0.45, stream: 0.4, leaves: 0.25, wind: 0.15 }, 'Cheminée': { fire: 0.7, rain: 0.2 }, 'Café': { cafe: 0.7, rain: 0.15 },
-    'Nuit': { crickets: 0.5, wind: 0.2, stream: 0.25 }, 'Concentration': { brown: 0.5, rain: 0.25 }
+    'Nuit': { crickets: 0.5, wind: 0.2, stream: 0.25 }, 'Provence': { cicadas: 0.6, wind: 0.15, birds: 0.1 }, 'Concentration': { brown: 0.5, rain: 0.25 }
 };
 
 Object.assign(SuperAnki.prototype, {
@@ -255,6 +265,7 @@ Object.assign(SuperAnki.prototype, {
                 <button class="btn btn-soft btn-sm" data-amb="random">Mélange au hasard</button><button class="btn btn-soft btn-sm" data-amb="zero">Tout à zéro</button></div>
             <div class="amb-row"><label for="amb-master">Volume général</label><input type="range" id="amb-master" min="0" max="100" value="${Math.round(AMB.master * 100)}"></div>
             <div class="amb-grid">${AMB_SOUNDS.map(([id, em, name]) => `<label class="amb-tile ${(AMB.vols[id] || 0) > 0 ? 'on' : ''}" data-s="${id}"><span class="amb-name"><span aria-hidden="true">${em}</span>${name}</span><input type="range" class="amb-range" data-s="${id}" min="0" max="100" value="${Math.round((AMB.vols[id] || 0) * 100)}" aria-label="${name}"></label>`).join('')}</div>
+            <div class="amb-row"><label for="amb-bowl">🔔 Style du bol chantant</label><select class="select select-sm" id="amb-bowl">${AMB_BOWLS.map(([v, l]) => `<option value="${v}" ${AMB.bowl === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
             <div class="amb-row"><span class="label">Mélanges</span><span class="amb-presets">${presets.map(p => `<button class="chip" data-amb="preset" data-n="${esc(p.n)}">${esc(p.n)}</button>${p.user ? `<button class="icon-btn icon-btn-sm" data-amb="del" data-n="${esc(p.n)}" aria-label="Supprimer ${esc(p.n)}">${ic('x')}</button>` : ''}`).join('')}<button class="chip" data-amb="save">${ic('plus')}Enregistrer le mien</button></span></div>
             <details class="amb-credits"><summary>Crédits des enregistrements</summary><div id="amb-credits-body">${this.ambCreditsHtml()}</div></details>
             <div class="amb-row"><label for="amb-timer">Arrêt automatique</label><select class="select select-sm" id="amb-timer">${[[0, 'Jamais'], [15, '15 min'], [30, '30 min'], [45, '45 min'], [60, '1 h'], [90, '1 h 30'], [120, '2 h']].map(([v, l]) => `<option value="${v}" ${AMB.timer === v ? 'selected' : ''}>${l}</option>`).join('')}</select><span class="small faint" id="amb-left">${on && left ? `encore ~${left} min` : ''}</span></div>
@@ -268,8 +279,9 @@ Object.assign(SuperAnki.prototype, {
             ambRealIndex().then(() => { const b = $('#amb-credits-body'); if (b) b.innerHTML = this.ambCreditsHtml(); });
             return '<p class="small muted">Chargement…</p>';
         }
-        const rows = AMB_SOUNDS.filter(([id]) => idx[id]).map(([id, em, name]) => { const c = idx[id]; return `<li><b>${em} ${name}</b> — ${esc(c.credit || '')}${c.lic ? ` · ${esc(c.lic)}` : ''}${c.src ? ` · <a href="${esc(c.src)}" target="_blank" rel="noopener">source</a>` : ''}</li>`; });
-        const synth = AMB_SOUNDS.filter(([id]) => !idx[id]).map(x => x[2]).join(', ');
+        const item = (em, name, c) => `<li><b>${em} ${name}</b> — ${esc(c.credit || '')}${c.lic ? ` · ${esc(c.lic)}` : ''}${c.src ? ` · <a href="${esc(c.src)}" target="_blank" rel="noopener">source</a>` : ''}</li>`;
+        const rows = AMB_SOUNDS.flatMap(([id, em, name]) => (id === 'bowl' ? AMB_BOWLS.filter(b => idx['bowl_' + b[0]]).map(b => item(em, name, idx['bowl_' + b[0]])) : idx[id] ? [item(em, name, idx[id])] : []));
+        const synth = AMB_SOUNDS.filter(([id]) => (id === 'bowl' ? !AMB_BOWLS.some(b => idx['bowl_' + b[0]]) : !idx[id])).map(x => x[2]).join(', ');
         return `<p class="small muted">Vrais enregistrements libres de droits (domaine public, CC0 ou CC BY), recoupés et mis en boucle pour l'appli.${synth ? ` Sons générés par l'appli : ${esc(synth)}.` : ''}</p><ul class="amb-credit-list">${rows.join('')}</ul>`;
     },
     ambRefresh(light) {
@@ -292,6 +304,7 @@ Object.assign(SuperAnki.prototype, {
             const t = e.target;
             if (t.id === 'amb-timer') { AMB.timer = Number(t.value); ambSave(); if (AMB_ENG.playing) ambTimerArm(); this.ambRefresh(); }
             else if (t.id === 'amb-link') { AMB.link = t.checked; ambSave(); this.ambSyncFocus(); }
+            else if (t.id === 'amb-bowl') { AMB.bowl = t.value; ambSave(); if (AMB_ENG.ac && (AMB.vols.bowl || 0) > 0.001) ambApply(); else if (!AMB_ENG.playing) { AMB.vols.bowl = Math.max(AMB.vols.bowl || 0, 0.55); ambSave(); const r = $('.amb-range[data-s="bowl"]'); if (r) r.value = 55; const tl = $('.amb-tile[data-s="bowl"]'); if (tl) tl.classList.add('on'); } }
         });
         document.addEventListener('click', async e => {
             const b = e.target.closest('[data-amb]'); if (!b) return;
