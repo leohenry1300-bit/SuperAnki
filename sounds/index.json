@@ -19,12 +19,12 @@
  },
  "wind": {
   "f": "wind.mp3",
-  "len": 158760,
+  "len": 2425500,
   "pad": 3000,
   "sr": 44100,
-  "credit": "« wind whoosh loop » par SketchMan3 (OpenGameArt)",
-  "lic": "CC0",
-  "src": "https://opengameart.org/content/wind-whoosh-loop"
+  "credit": "« Wind in the trees » (Trégastel) par Yponomeutaneko, Radio Aporee",
+  "lic": "Domaine public (PDM 1.0)",
+  "src": "https://archive.org/details/aporee_45007_51137"
  },
  "birds": {
   "f": "birds.mp3",
@@ -106,5 +106,23 @@
   "credit": "« Swindale – Waterfall » par Justin Bennett, Radio Aporee",
   "lic": "Domaine public (PDM 1.0)",
   "src": "https://archive.org/details/aporee_64815_74846"
+ },
+ "leaves": {
+  "f": "leaves.mp3",
+  "len": 2205000,
+  "pad": 3000,
+  "sr": 44100,
+  "credit": "« Rustling leaves, ambience » (Šlavantai) par Marius Paulikas, Radio Aporee",
+  "lic": "Domaine public (PDM 1.0)",
+  "src": "https://archive.org/details/aporee_53085_60665"
+ },
+ "bowl": {
+  "f": "bowl.mp3",
+  "len": 238140,
+  "pad": 3000,
+  "sr": 44100,
+  "credit": "« Singing Bowl 2 » par BambooBeast (Wikimedia Commons)",
+  "lic": "Domaine public",
+  "src": "https://commons.wikimedia.org/wiki/File:SingingBowl2.ogg"
  }
 }
