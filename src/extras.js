@@ -4,7 +4,7 @@
    - Bell sounds for the focus timer: a list to choose from, one for the end of study and one for the end of the break.
    ============================================================ */
 const SND_KEY = 'superanki_sound';
-const SND = (() => { let st = { on: true, vol: 0.5 }; try { const x = JSON.parse(localStorage.getItem(SND_KEY) || 'null'); if (x && typeof x === 'object') st = { on: x.on !== false, vol: Math.min(1, Math.max(0, Number(x.vol) || 0.5)) }; } catch { /* ignore */ } return st; })();
+const SND = (() => { let st = { on: true, ui: true, vol: 0.5 }; try { const x = JSON.parse(localStorage.getItem(SND_KEY) || 'null'); if (x && typeof x === 'object') st = { on: x.on !== false, ui: x.ui !== false, vol: Math.min(1, Math.max(0, Number(x.vol) || 0.5)) }; } catch { /* ignore */ } return st; })();
 function sndSave() { try { localStorage.setItem(SND_KEY, JSON.stringify(SND)); } catch { /* ignore */ } }
 function sndCtx() {
     try {
@@ -127,9 +127,30 @@ const SFX = {
     done: (ac, o, t, v) => { [NOTE.C5, NOTE.E5, NOTE.G5, NOTE.C6].forEach((h, i) => iPluck(ac, o, t + i * 0.12, h, v * 0.4, 1.2)); iBell(ac, o, t + 0.5, NOTE.G6, v * 0.18, 1.6); iPad(ac, o, t + 0.45, NOTE.C5, v * 0.3, 1.2); },
     pop: (ac, o, t, v) => { const x = sndOsc(ac, sndLP(ac, o, 3800), 'sine', 420, t, 0.18, v * 0.4, 0.004, 0.05); x.o.frequency.exponentialRampToValueAtTime(980, t + 0.09); }
 };
+/* tiny interface sounds: very short and quiet, in the same scale */
+Object.assign(SFX, {
+    tab: (ac, o, t, v) => { iMarimba(ac, o, t, NOTE.G5, v * 0.2, 0.18); iMarimba(ac, o, t + 0.055, NOTE.C6, v * 0.16, 0.2); },
+    tap: (ac, o, t, v) => { iMarimba(ac, o, t, NOTE.E5, v * 0.15, 0.12); },
+    on: (ac, o, t, v) => { iGlass(ac, o, t, NOTE.C6, v * 0.16, 0.35); iGlass(ac, o, t + 0.06, NOTE.G6, v * 0.16, 0.4); },
+    off: (ac, o, t, v) => { iGlass(ac, o, t, NOTE.G6, v * 0.12, 0.3); iGlass(ac, o, t + 0.06, NOTE.C6, v * 0.12, 0.35); },
+    select: (ac, o, t, v) => { iPluck(ac, o, t, NOTE.A5, v * 0.18, 0.3); },
+    tick: (ac, o, t, v) => { iMarimba(ac, o, t, NOTE.D5, v * 0.13, 0.12); },
+    open: (ac, o, t, v) => { iPuff(ac, o, t, 0.08, v * 0.22, 1800); iGlass(ac, o, t + 0.02, NOTE.E6, v * 0.11, 0.3); },
+    close: (ac, o, t, v) => { iPuff(ac, o, t, 0.06, v * 0.16, 1400); iGlass(ac, o, t + 0.01, NOTE.A5, v * 0.09, 0.25); },
+    success: (ac, o, t, v) => { iPluck(ac, o, t, NOTE.G5, v * 0.2, 0.4); iPluck(ac, o, t + 0.07, NOTE.D6, v * 0.2, 0.5); },
+    error: (ac, o, t, v) => { iPad(ac, o, t, NOTE.A4, v * 0.14, 0.25); iMarimba(ac, o, t + 0.07, NOTE.E4, v * 0.14, 0.3); }
+});
+let SND_LAST = 0, SND_LAST_NAME = '';
+function sfxUi(name) {
+    if (!SND.on || !SND.ui) return;
+    const now = performance.now();
+    if (now - SND_LAST < 110) return;            // a bigger sound just played (or another tiny one): stay quiet
+    sfx(name);
+}
 function sfx(name) {
     if (!SND.on || !SFX[name]) return;
     const ac = sndCtx(); if (!ac) return;
+    SND_LAST = performance.now(); SND_LAST_NAME = name;
     try { SFX[name](ac, sndChain(ac).bus, ac.currentTime + 0.02, SND.vol); } catch { /* ignore */ }
 }
 
@@ -159,6 +180,9 @@ function ringPlay(id, repeat = true) {
     wrap('practiceAnswer', { pre() { const s = this.session; return !!(s && s.kind === 'practice' && s.revealed); }, post(was, ok) { if (was) sfx(ok ? 'right' : 'wrong'); } });
     wrap('quizAnswer', { pre(i) { const s = this.session; return s && !s.answered && s.options && s.options[i] ? s.options[i].ok : null; }, post(ok) { if (ok !== null) sfx(ok ? 'right' : 'wrong'); } });
     wrap('showSummary', { post() { sfx('done'); } });
+    wrap('openModal', { post() { sfxUi('open'); } });
+    wrap('closeModal', { pre() { return !!(this.modals && this.modals.length); }, post(had) { if (had) sfxUi('close'); } });
+    wrap('toast', { post(_, msg, type) { if (type === 'success') sfxUi('success'); else if (type === 'error' || type === 'warning') sfxUi('error'); } });
 })();
 
 /* ---------- "update now" ---------- */
@@ -168,18 +192,34 @@ function appFetchVer() {
 }
 Object.assign(SuperAnki.prototype, {
     extrasInit() {
-        if (!/^https?:/.test(location.protocol)) return;
-        appFetchVer().then(v => { APP_VER0 = v; this.updRefresh(); });
-        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && Date.now() - APP_UPD_LAST > 10 * 60000) this.updCheck(true); });
-        setInterval(() => { if (Date.now() - APP_UPD_LAST > 30 * 60000) this.updCheck(true); }, 5 * 60000);
+        if (/^https?:/.test(location.protocol)) {
+            appFetchVer().then(v => { APP_VER0 = v; this.updRefresh(); });
+            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && Date.now() - APP_UPD_LAST > 10 * 60000) this.updCheck(true); });
+            setInterval(() => { if (Date.now() - APP_UPD_LAST > 30 * 60000) this.updCheck(true); }, 5 * 60000);
+        }
         document.addEventListener('click', e => {
             const b = e.target.closest('[data-ex]'); if (!b) return;
             const a = b.dataset.ex;
             if (a === 'upd') this.updNow();
             else if (a === 'snd-toggle') { SND.on = !SND.on; sndSave(); this.updRefresh(); this.extrasSoundRefresh(); if (SND.on) sfx('pop'); }
+            else if (a === 'ui-toggle') { SND.ui = !SND.ui; sndSave(); if (SND.ui) sfx('on'); }
             else if (a === 'snd-test') { sfx('g3'); setTimeout(() => sfx('right'), 450); }
             else if (a === 'snd-play') { const was = SND.on; SND.on = true; sfx(b.dataset.n); SND.on = was; }
             else if (a === 'ring-test') ringPlay(b.dataset.id, false);
+        });
+        /* tiny interface sounds: tabs, switches, choices, buttons */
+        document.addEventListener('click', e => {
+            const t = e.target;
+            if (!t.closest || t.closest('.modal-back [data-close]')) return;
+            if (t.closest('[data-nav]')) sfxUi('tab');
+            else if (t.closest('.segmented button, .chip, .theme-opt, [data-action="set"], [data-action="filter"]')) sfxUi('select');
+            else if (t.closest('.btn, .icon-btn, .mode-tile, .deck-card button')) sfxUi('tap');
+        });
+        document.addEventListener('change', e => {
+            const t = e.target;
+            if (t.type === 'checkbox' && !t.closest('#fw-sound-x')) sfxUi(t.checked ? 'on' : 'off');
+            else if (t.type === 'range') sfxUi('tick');
+            else if (t.tagName === 'SELECT') sfxUi('select');
         });
         document.addEventListener('input', e => { if (e.target.id === 'snd-vol') { SND.vol = Number(e.target.value) / 100; sndSave(); } });
         document.addEventListener('change', e => { if (e.target.id === 'snd-vol') sfx('pop'); });
@@ -226,6 +266,8 @@ Object.assign(SuperAnki.prototype, {
             <div class="set-row"><div class="txt"><b>Sons de l'application</b><span>Petits sons doux quand tu retournes une carte, réponds ou termines une session. Réglage propre à cet appareil.</span></div>
                 <span style="display:flex;gap:10px;align-items:center"><label class="switch"><input type="checkbox" ${SND.on ? 'checked' : ''} data-ex="snd-toggle" aria-label="Sons de l'application"><span></span></label><button class="btn btn-soft btn-sm" data-ex="snd-test">Tester</button></span></div>
             <div class="set-row" style="flex-wrap:wrap"><div class="txt"><b>Écouter chaque son</b></div><span style="display:flex;gap:6px;flex-wrap:wrap">${[['reveal', 'Retourner'], ['g1', 'Raté'], ['g2', 'Difficile'], ['g3', 'Bien'], ['g4', 'Facile'], ['wrong', 'Faux'], ['right', 'Juste'], ['done', 'Fin de session']].map(([n, l]) => `<button class="chip" data-ex="snd-play" data-n="${n}">${l}</button>`).join('')}</span></div>
+            <div class="set-row"><div class="txt"><b>Petits sons d'interface</b><span>Un tout petit son discret quand tu changes d'onglet, actives un réglage, ouvres une fenêtre…</span></div>
+                <label class="switch"><input type="checkbox" ${SND.ui ? 'checked' : ''} data-ex="ui-toggle" aria-label="Petits sons d'interface"><span></span></label></div>
             <div class="set-row"><div class="txt"><b>Volume</b></div><input type="range" id="snd-vol" min="5" max="100" value="${Math.round(SND.vol * 100)}" style="width:160px" aria-label="Volume"></div>
             <div class="set-row"><div class="txt"><b>Mise à jour</b><span id="upd-status">Version <code id="upd-ver">${APP_VER0 ? APP_VER0.slice(0, 8) : '—'}</code></span></div>
                 <button class="btn btn-primary btn-sm" data-ex="upd">${ic('reset')}Mettre à jour maintenant</button></div>
