@@ -163,12 +163,12 @@ Object.assign(SuperAnki.prototype, {
         Object.assign(el.style, { left: x + 'px', top: y + 'px', right: 'auto', bottom: 'auto' });
     },
     focusDragInit(el) {
-        let d = null;
+        let d = null, swallow = 0;
         el.addEventListener('pointerdown', e => {
             if (e.button > 0 || e.target.closest('button,input,label,a')) return;
             if (!e.target.closest('.fw-head')) return;
             const r = el.getBoundingClientRect();
-            d = { id: e.pointerId, dx: e.clientX - r.left, dy: e.clientY - r.top, sx: e.clientX, sy: e.clientY, moved: false, title: !!e.target.closest('.fw-title') };
+            d = { id: e.pointerId, dx: e.clientX - r.left, dy: e.clientY - r.top, sx: e.clientX, sy: e.clientY, moved: false };
             try { el.setPointerCapture(e.pointerId); } catch { /* ignore */ }
         });
         el.addEventListener('pointermove', e => {
@@ -180,10 +180,16 @@ Object.assign(SuperAnki.prototype, {
         });
         const end = e => {
             if (!d || e.pointerId !== d.id) return;
-            const wasDrag = d.moved, was = d; d = null; el.classList.remove('dragging');
-            if (wasDrag) { this.focusSave(); }
-            else if (e.type === 'pointerup' && was.title) this.focusSet({ collapsed: !this.focus.collapsed });
+            const wasDrag = d.moved; d = null; el.classList.remove('dragging');
+            if (wasDrag) { this.focusSave(); swallow = Date.now() + 400; }
         };
         el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+        /* the fold / unfold is done on the real click (not on pointerup): redrawing the widget before the browser sends
+           its click made that click land on whatever was underneath. Clicks on the widget never go further down. */
+        el.addEventListener('click', e => {
+            e.stopPropagation();
+            if (Date.now() < swallow) { e.preventDefault(); return; }
+            if (e.target.closest('.fw-title') && !e.target.closest('button,input,label,a')) this.focusSet({ collapsed: !this.focus.collapsed });
+        });
     }
 });
