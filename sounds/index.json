@@ -1,12 +1,12 @@
 {
  "rain": {
   "f": "rain.mp3",
-  "len": 1234800,
+  "len": 2646000,
   "pad": 3000,
   "sr": 44100,
-  "credit": "« AMB Rain Loop 1 » par Kresiek The Furry (OpenGameArt)",
-  "lic": "CC0",
-  "src": "https://opengameart.org/content/amb-rain-loop-1"
+  "credit": "« Šmiti, Latvia, balcony, heavy rain » par alas23/sala, Radio Aporee",
+  "lic": "Domaine public (PDM 1.0)",
+  "src": "https://archive.org/details/aporee_61123_70270"
  },
  "fire": {
   "f": "fire.mp3",
