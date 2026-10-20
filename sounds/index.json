@@ -88,5 +88,23 @@
   "credit": "« Ocean waves crushing » par Luftrum (Wikimedia Commons)",
   "lic": "CC BY 3.0",
   "src": "https://commons.wikimedia.org/wiki/File:Oceanwavescrushing.ogg"
+ },
+ "cafe": {
+  "f": "cafe.mp3",
+  "len": 2425500,
+  "pad": 3000,
+  "sr": 44100,
+  "credit": "« Portland coffee shop » (Moscou) par dokmwc, Radio Aporee",
+  "lic": "Domaine public (PDM 1.0)",
+  "src": "https://archive.org/details/aporee_70303_81915"
+ },
+ "waterfall": {
+  "f": "waterfall.mp3",
+  "len": 1852200,
+  "pad": 3000,
+  "sr": 44100,
+  "credit": "« Swindale – Waterfall » par Justin Bennett, Radio Aporee",
+  "lic": "Domaine public (PDM 1.0)",
+  "src": "https://archive.org/details/aporee_64815_74846"
  }
 }
