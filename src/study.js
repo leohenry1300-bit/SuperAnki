@@ -32,23 +32,41 @@ function guessLang(text) {
     return en > fr ? 'en-US' : 'fr-FR';
 }
 
-/* ---------- voice commands (French; a few English words too) ---------- */
+/* ---------- voice commands (French; a few English words too) ----------
+   Matching is tolerant: accents, plurals, small recognition mistakes (1-2 letters) and the usual mis-hearings are accepted. */
 const VOICE_CMDS = [
-    ['stop', ['stop', 'arrete', 'arreter', 'quitter', 'termine', 'terminer', 'fin du mode']],
-    ['repeat', ['repete', 'repeter', 'repetez', 'relis', 'relire', 'encore une fois', 'rejoue']],
-    ['undo', ['annule', 'annuler']],
-    [1, ['rate', 'rater', 'oublie', 'oublier', 'encore', 'non', 'faux', 'pas su', 'pas bien', 'pas correct', 'je ne savais pas', 'je savais pas', 'again']],
-    [4, ['facile', 'evident', 'trop facile', 'easy', 'parfait']],
-    [2, ['difficile', 'dur', 'moyen', 'hesite', 'hard']],
-    [3, ['bien', 'ok', 'okay', 'correct', 'oui', 'juste', 'vrai', 'je savais', 'bonne reponse', 'good', 'bon']],
-    ['reveal', ['reponse', 'montre', 'montrer', 'voir', 'affiche', 'afficher', 'retourne', 'retourner', 'suite', 'je ne sais pas', 'aucune idee', 'show']]
+    ['stop', ['stop', 'arrete', 'arreter', 'arretes', 'quitter', 'termine', 'terminer', 'fin du mode', 'pause']],
+    ['repeat', ['repete', 'repeter', 'repetez', 'relis', 'relire', 'encore une fois', 'rejoue', 'rejouer']],
+    ['undo', ['annule', 'annuler', 'retour', 'precedent']],
+    [1, ['rate', 'ratee', 'rater', 'rates', 'oublie', 'oublier', 'encore', 'non', 'faux', 'pas su', 'pas bien', 'pas correct', 'je ne savais pas', 'je savais pas', 'again', 'rate pas', 'ra te']],
+    [4, ['facile', 'faciles', 'evident', 'evidente', 'trop facile', 'easy', 'parfait', 'fastile']],
+    [2, ['difficile', 'difficiles', 'dur', 'dure', 'moyen', 'hesite', 'hard', 'difficil']],
+    [3, ['bien', 'bienne', 'bian', 'ok', 'okay', 'correct', 'oui', 'juste', 'vrai', 'je savais', 'bonne reponse', 'good', 'bon', 'ouais']],
+    ['next', ['suivant', 'suivante', 'suivants', 'next', 'passe', 'passer', 'continue', 'continuer', 'question suivante', 'on continue']],
+    ['reveal', ['reponse', 'reponses', 'montre', 'montrer', 'voir', 'affiche', 'afficher', 'retourne', 'retourner', 'suite', 'je ne sais pas', 'aucune idee', 'show', 'la reponse', 'reponds']]
 ];
+const VOICE_DIGITS = { 1: ['un', '1', 'une'], 2: ['deux', '2'], 3: ['trois', '3'], 4: ['quatre', '4'] };
+function vEdit(a, b) {
+    if (Math.abs(a.length - b.length) > 2) return 9;
+    const d = Array.from({ length: b.length + 1 }, (_, j) => j);
+    for (let i = 1; i <= a.length; i++) { let prev = d[0]; d[0] = i; for (let j = 1; j <= b.length; j++) { const t = d[j]; d[j] = Math.min(d[j] + 1, d[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = t; } }
+    return d[b.length];
+}
 function parseVoice(heard) {
-    const t = ` ${fold(heard).replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim()} `;
-    for (const [cmd, words] of VOICE_CMDS) {
-        if (words.some(w => t.includes(` ${w} `))) return cmd;
+    const clean = fold(heard).replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!clean) return null;
+    const t = ` ${clean} `, toks = clean.split(' ');
+    for (const [cmd, words] of VOICE_CMDS) if (words.some(w => t.includes(` ${w} `))) return cmd;
+    /* a single short word that is a digit: 1 raté · 2 difficile · 3 bien · 4 facile */
+    if (toks.length <= 2) for (const [n, ws] of Object.entries(VOICE_DIGITS)) if (toks.some(x => ws.includes(x))) return Number(n);
+    /* tolerant match: one-word commands of 5+ letters, up to 1 mistake (2 above 8 letters) */
+    let best = null, bd = 9;
+    for (const [cmd, words] of VOICE_CMDS) for (const w of words) {
+        if (w.length < 5 || w.includes(' ')) continue;
+        const lim = w.length >= 9 ? 2 : 1;
+        for (const x of toks) { if (x.length < 4) continue; const e = vEdit(x, w); if (e <= lim && e < bd) { bd = e; best = cmd; } }
     }
-    return null;
+    return best;
 }
 
 Object.assign(SuperAnki.prototype, {
@@ -125,101 +143,101 @@ Object.assign(SuperAnki.prototype, {
         if (!s || !s.current || !$('#view-session .session-top')) return;
         const top = $('#view-session .session-top'), usable = s.kind === 'srs' || s.kind === 'practice';
         if (!s.focusSeen) { s.focusSeen = true; if (this.focus && this.focus.open && !this.focus.collapsed) this.focusSet({ collapsed: true }); }
-        const speak = top.querySelector('[data-action="speak"]');
-        if (usable && speak && !top.querySelector('[data-action="voice-toggle"]')) speak.insertAdjacentHTML('beforebegin', `<button class="icon-btn ${this.voice && this.voice.on ? 'voice-on' : ''}" data-action="voice-toggle" title="Étudier à la voix" aria-label="Étudier à la voix">${ic('mic')}</button>`);
-        if (this.voice && this.voice.on && !$('#voice-bar')) { const pb = $('#view-session .pbar'); if (pb) pb.insertAdjacentHTML('afterend', `<div class="voice-bar" id="voice-bar"><span class="rec-dot"></span><span id="voice-msg">…</span></div>`); }
-        if (usable && this.voice && this.voice.on) {
-            const key = `${s.current}:${s.revealed}`;
-            if (s.voiceKey !== key) { s.voiceKey = key; this.voiceTurn(); }
-        }
+        this.audioBarSync(usable);
+        if (usable && this.voice && this.voice.on && !this.voice.rec && !this.voice.starting) this.voiceRun();
+    },
+    /* two separate switches under the progress bar: reading aloud (speaker) and voice commands (microphone) */
+    audioBarSync(usable) {
+        let bar = $('#audio-bar');
+        if (!usable) { if (bar) bar.remove(); return; }
+        const set = this.data.settings, on = !!(this.voice && this.voice.on);
+        const html = `<button class="chip ${set.autoSpeak ? 'active' : ''}" data-action="autospeak-toggle" aria-pressed="${!!set.autoSpeak}" title="Lit la question puis la réponse à voix haute">${ic('volume')}Lecture : ${set.autoSpeak ? 'oui' : 'non'}</button>
+            <button class="chip ${on ? 'active' : ''}" data-action="voice-toggle" aria-pressed="${on}" title="Dire « réponse », « bien », « suivant »… pour avancer sans toucher l'écran">${ic('mic')}Voix : ${on ? 'oui' : 'non'}</button>`;
+        if (!bar) { const pb = $('#view-session .pbar'); if (!pb) return; pb.insertAdjacentHTML('afterend', `<div class="audio-bar" id="audio-bar">${html}</div>`); }
+        else if (bar.dataset.h !== html) bar.innerHTML = html;
+        const cur = $('#audio-bar'); if (cur) cur.dataset.h = html;
+        if (on && !$('#voice-bar')) cur.insertAdjacentHTML('afterend', `<div class="voice-bar" id="voice-bar"><span class="rec-dot"></span><span id="voice-msg">🎤 Dis : « réponse », puis « bien », « difficile », « raté », « facile » ou « suivant »</span></div>`);
+        if (!on) { const vb = $('#voice-bar'); if (vb) vb.remove(); }
     },
     sessionCleanup() {
         this.voiceStop(true);
     },
 
-    /* ============ voice study ============ */
+    /* ============ voice commands (the microphone only: reading aloud is a separate switch) ============
+       One recognition runs for the whole time the mode is on (no restart between cards, so no repeated beep and nothing
+       missed), reacts as soon as a command is recognized even before the end of the sentence, shows what it hears live,
+       and checks every alternative the recogniser proposes. */
     voiceSupported() { return !!(window.SpeechRecognition || window.webkitSpeechRecognition); },
     voiceToggle() {
-        if (!this.voice) this.voice = { on: false, tok: 0, rec: null };
+        if (!this.voice) this.voice = { on: false, rec: null, starting: false, fails: 0, last: 0 };
         if (!this.voiceSupported()) { this.toast('La reconnaissance vocale n\'est pas disponible ici (essaie Chrome, Edge ou Safari récent, en https).', 'warning', ic('mic')); return; }
         const v = this.voice;
-        if (v.on) { this.voiceStop(true); this.toast('Mode voix désactivé', 'success', ic('mic')); this.syncVoiceUi(); return; }
-        v.on = true;
-        const s = this.session; if (s) s.voiceKey = null;
+        if (v.on) { this.voiceStop(true); this.toast('Commande vocale désactivée', 'success', ic('mic')); this.syncVoiceUi(); return; }
+        v.on = true; v.fails = 0;
         this.syncVoiceUi();
-        if (s && s.current) this.sessionDecor();
+        this.voiceRun();
     },
-    syncVoiceUi() {
-        const b = $('[data-action="voice-toggle"]');
-        if (b) b.classList.toggle('voice-on', !!(this.voice && this.voice.on));
-        const bar = $('#voice-bar');
-        if (this.voice && this.voice.on && !bar) { const pb = $('#view-session .pbar'); if (pb) pb.insertAdjacentHTML('afterend', `<div class="voice-bar" id="voice-bar"><span class="rec-dot"></span><span id="voice-msg">…</span></div>`); }
-        if ((!this.voice || !this.voice.on) && bar) bar.remove();
-    },
+    syncVoiceUi() { const s = this.session; this.audioBarSync(!!(s && s.current && (s.kind === 'srs' || s.kind === 'practice'))); },
     voiceStop(off) {
         const v = this.voice;
         if (!v) return;
-        v.tok++;
+        if (off) v.on = false;
+        v.starting = false;
+        clearTimeout(v.timer);
         try { if (v.rec) { v.rec.onresult = v.rec.onerror = v.rec.onend = null; v.rec.abort(); } } catch { /* ignore */ }
         v.rec = null;
-        if ('speechSynthesis' in window) { try { speechSynthesis.cancel(); } catch { /* ignore */ } }
-        if (off) v.on = false;
     },
     voiceMsg(t) { const el = $('#voice-msg'); if (el) el.textContent = t; },
-    voiceSay(text, lang, tok) {
-        return new Promise(resolve => {
-            if (!('speechSynthesis' in window) || !text) { resolve(); return; }
-            let done = false;
-            const fin = () => { if (!done) { done = true; clearTimeout(g); resolve(); } };
-            const u = new SpeechSynthesisUtterance(text.slice(0, 600));
-            u.lang = lang; u.onend = fin; u.onerror = fin;
-            const g = setTimeout(fin, 2500 + text.length * 90);
-            try { speechSynthesis.cancel(); speechSynthesis.speak(u); } catch { fin(); }
-        });
-    },
-    voiceListen(tok) {
+    voiceRun() {
         const v = this.voice, SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        return new Promise((resolve, reject) => {
-            let rec;
-            try { rec = new SR(); } catch (e) { reject(e); return; }
-            v.rec = rec;
-            rec.lang = 'fr-FR'; rec.interimResults = false; rec.maxAlternatives = 3; rec.continuous = false;
-            let done = false;
-            const fin = r => { if (done) return; done = true; clearTimeout(guard); resolve(r); };
-            rec.onresult = e => { const out = []; for (const res of e.results) for (let i = 0; i < res.length; i++) out.push(res[i].transcript); fin(out); };
-            rec.onerror = e => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { done = true; clearTimeout(guard); reject(new Error('denied')); } else fin(null); };
-            rec.onend = () => fin(null);
-            const guard = setTimeout(() => { try { rec.stop(); } catch { /* ignore */ } fin(null); }, 9000);
-            try { rec.start(); } catch (e) { fin(null); }
-        });
-    },
-    async voiceTurn() {
-        const v = this.voice, s = this.session;
-        if (!v || !v.on || !s || !s.current) return;
-        const tok = ++v.tok, id = s.current, revealed = s.revealed, card = this.card(id);
-        const alive = () => this.voice && this.voice.on && this.voice.tok === tok && this.session === s && s.current === id && s.revealed === revealed;
-        const text = stripHtml(revealed ? card.back : card.front);
-        this.voiceMsg(revealed ? '🔊 Je lis la réponse…' : '🔊 Je lis la question…');
-        await this.voiceSay(text, guessLang(text), tok);
-        for (let attempt = 0; attempt < 4 && alive(); attempt++) {
-            this.voiceMsg(revealed ? '🎤 Dis : raté · difficile · bien · facile' : '🎤 Dis : « réponse »');
-            let heard;
-            try { heard = await this.voiceListen(tok); } catch { this.voiceStop(true); this.syncVoiceUi(); this.toast('Micro refusé : autorise-le dans ton navigateur.', 'error', ic('mic')); return; }
-            if (!alive()) return;
-            if (!heard) continue;
-            const cmds = heard.map(parseVoice), cmd = cmds.find(c => c !== null);
-            if (cmd == null) { this.voiceMsg(`Entendu : « ${heard[0]} ». Je n'ai pas compris.`); await new Promise(r => setTimeout(r, 900)); continue; }
-            if (cmd === 'stop') { this.voiceStop(true); this.syncVoiceUi(); return; }
-            if (cmd === 'repeat') { s.voiceKey = null; this.voiceTurn(); return; }
-            if (cmd === 'undo') { this.undo(); return; }
-            if (cmd === 'reveal' || (!revealed && typeof cmd === 'number')) { this.voiceMsg('✔ Réponse'); this.reveal(); return; }
-            if (typeof cmd === 'number' && revealed) {
-                this.voiceMsg(`✔ ${['', 'Raté', 'Difficile', 'Bien', 'Facile'][cmd]}`);
-                if (s.kind === 'srs') this.grade(cmd); else this.practiceAnswer(cmd >= 3);
-                return;
+        if (!v || !v.on || !SR || v.rec) return;
+        let rec;
+        try { rec = new SR(); } catch { return; }
+        v.rec = rec; v.starting = true;
+        rec.lang = 'fr-FR'; rec.continuous = true; rec.interimResults = true; rec.maxAlternatives = 5;
+        try { const G = window.SpeechGrammarList || window.webkitSpeechGrammarList; if (G) { const g = new G(); g.addFromString('#JSGF V1.0; grammar c; public <c> = réponse | bien | difficile | raté | facile | suivant | répète | annule | stop ;', 1); rec.grammars = g; } } catch { /* optional */ }
+        let handled = -1;
+        rec.onstart = () => { v.starting = false; v.fails = 0; };
+        rec.onresult = e => {
+            const s = this.session;
+            if (!s || !s.current || (s.kind !== 'srs' && s.kind !== 'practice')) return;
+            for (let i = e.resultIndex; i < e.results.length; i++) {
+                if (i <= handled) continue;
+                const res = e.results[i], alts = [];
+                for (let k = 0; k < res.length; k++) alts.push(res[k].transcript);
+                if (alts[0]) this.voiceMsg(`🎤 ${alts[0].trim()}${res.isFinal ? '' : '…'}`);
+                if (Date.now() - v.last < 800) continue;
+                const cmd = alts.map(parseVoice).find(c => c !== null && c !== undefined);
+                if (cmd !== undefined && cmd !== null) { handled = i; v.last = Date.now(); this.voiceAct(cmd, alts[0]); try { rec.abort(); } catch { /* restart clears the buffer */ } return; }
+                if (res.isFinal) { handled = i; this.voiceMsg(`« ${alts[0].trim()} » : pas compris. Dis « réponse », « bien », « suivant »…`); }
             }
+        };
+        rec.onerror = e => {
+            if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { this.voiceStop(true); this.syncVoiceUi(); this.toast('Micro refusé : autorise-le dans ton navigateur.', 'error', ic('mic')); }
+            else if (e.error !== 'no-speech' && e.error !== 'aborted') v.fails++;
+        };
+        rec.onend = () => {
+            v.rec = null; v.starting = false;
+            if (!v.on) return;
+            if (v.fails >= 4) { this.voiceStop(true); this.syncVoiceUi(); this.toast('La reconnaissance vocale s\'est arrêtée (micro indisponible). Touche « Commande vocale » pour relancer.', 'warning', ic('mic')); return; }
+            v.timer = setTimeout(() => this.voiceRun(), 200 + v.fails * 400);
+        };
+        try { rec.start(); } catch { v.rec = null; v.starting = false; v.fails++; v.timer = setTimeout(() => this.voiceRun(), 600); }
+    },
+    /* what a recognized command does, depending on the card state */
+    voiceAct(cmd, heard) {
+        const s = this.session;
+        if (!s || !s.current) return;
+        const grades = ['', 'Raté', 'Difficile', 'Bien', 'Facile'];
+        if (cmd === 'stop') { this.voiceStop(true); this.syncVoiceUi(); this.toast('Commande vocale désactivée', 'success', ic('mic')); return; }
+        if (cmd === 'repeat') { this.voiceMsg('🔊 Je relis'); this.speak(); return; }
+        if (cmd === 'undo') { this.voiceMsg('↩ Annulé'); this.undo(); return; }
+        if (cmd === 'reveal' || (!s.revealed && (typeof cmd === 'number' || cmd === 'next'))) { if (!s.revealed) { this.voiceMsg('✔ Réponse'); this.reveal(); } return; }
+        if (s.revealed && (typeof cmd === 'number' || cmd === 'next')) {
+            const g = cmd === 'next' ? 3 : cmd;
+            this.voiceMsg(`✔ ${grades[g]}${cmd === 'next' ? ' · suivante' : ''}`);
+            if (s.kind === 'srs') this.grade(g); else this.practiceAnswer(g >= 3);
         }
-        if (alive()) { this.voiceMsg('⏸ En pause : touche le micro pour reprendre.'); this.voiceStop(true); this.syncVoiceUi(); }
     }
 });
 /* the session decorations (timer, mic, voice bar) are added after every render of a card */

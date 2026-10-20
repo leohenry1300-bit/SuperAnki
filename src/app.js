@@ -3222,6 +3222,7 @@ class SuperAnki {
             case 'focus-toggle': this.focusToggleOpen(); break;
             case 'study-next-group': this.startStudy(ds.deck || null); break;
             case 'voice-toggle': this.voiceToggle(); break;
+            case 'autospeak-toggle': { const on = !this.data.settings.autoSpeak; this.setSetting('autoSpeak', on); this.audioBarSync(true); if (on) this.speak(); else if ('speechSynthesis' in window) speechSynthesis.cancel(); break; }
             case 'tool-trash': this.openTrash(); break;
             case 'tool-types': this.openNoteTypes(); break;
             case 'tool-sim': this.openLoadSim(); break;
