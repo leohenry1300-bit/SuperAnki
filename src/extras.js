@@ -4,7 +4,7 @@
    - Bell sounds for the focus timer: a list to choose from, one for the end of study and one for the end of the break.
    ============================================================ */
 const SND_KEY = 'superanki_sound';
-const SND = (() => { let st = { on: true, ui: true, vol: 0.5 }; try { const x = JSON.parse(localStorage.getItem(SND_KEY) || 'null'); if (x && typeof x === 'object') st = { on: x.on !== false, ui: x.ui !== false, vol: Math.min(1, Math.max(0, Number(x.vol) || 0.5)) }; } catch { /* ignore */ } return st; })();
+const SND = (() => { let st = { on: true, ui: true, tab: 'swipe', vol: 0.5 }; try { const x = JSON.parse(localStorage.getItem(SND_KEY) || 'null'); if (x && typeof x === 'object') st = { on: x.on !== false, ui: x.ui !== false, tab: ['swipe', 'bubble', 'click', 'none'].includes(x.tab) ? x.tab : 'swipe', vol: Math.min(1, Math.max(0, Number(x.vol) || 0.5)) }; } catch { /* ignore */ } return st; })();
 function sndSave() { try { localStorage.setItem(SND_KEY, JSON.stringify(SND)); } catch { /* ignore */ } }
 function sndCtx() {
     try {
@@ -129,7 +129,10 @@ const SFX = {
 };
 /* tiny interface sounds: very short and quiet, in the same scale */
 Object.assign(SFX, {
-    tab: (ac, o, t, v) => { iMarimba(ac, o, t, NOTE.G5, v * 0.2, 0.18); iMarimba(ac, o, t + 0.055, NOTE.C6, v * 0.16, 0.2); },
+    /* tab change: choose in the settings (soft swipe by default) */
+    tabswipe: (ac, o, t, v) => { const n = Math.floor(ac.sampleRate * 0.16), b = ac.createBuffer(1, n, ac.sampleRate), d = b.getChannelData(0); for (let k = 0; k < n; k++) { const x = k / n; d[k] = (Math.random() * 2 - 1) * Math.sin(Math.PI * x) * Math.sin(Math.PI * x); } const s = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain(); f.type = 'bandpass'; f.Q.value = 0.8; f.frequency.setValueAtTime(700, t); f.frequency.exponentialRampToValueAtTime(2600, t + 0.15); g.gain.value = v * 0.34; s.buffer = b; s.connect(f); f.connect(g); g.connect(o); s.start(t); },
+    tabbubble: (ac, o, t, v) => { const x = sndOsc(ac, sndLP(ac, o, 2600), 'sine', 380, t, 0.2, v * 0.17, 0.006, 0.05); x.o.frequency.exponentialRampToValueAtTime(620, t + 0.08); },
+    tabclick: (ac, o, t, v) => { iMarimba(ac, o, t, NOTE.C5, v * 0.12, 0.09); },
     tap: (ac, o, t, v) => { iMarimba(ac, o, t, NOTE.E5, v * 0.15, 0.12); },
     on: (ac, o, t, v) => { iGlass(ac, o, t, NOTE.C6, v * 0.16, 0.35); iGlass(ac, o, t + 0.06, NOTE.G6, v * 0.16, 0.4); },
     off: (ac, o, t, v) => { iGlass(ac, o, t, NOTE.G6, v * 0.12, 0.3); iGlass(ac, o, t + 0.06, NOTE.C6, v * 0.12, 0.35); },
@@ -211,7 +214,7 @@ Object.assign(SuperAnki.prototype, {
         document.addEventListener('click', e => {
             const t = e.target;
             if (!t.closest || t.closest('.modal-back [data-close]')) return;
-            if (t.closest('[data-nav]')) sfxUi('tab');
+            if (t.closest('[data-nav]')) { if (SND.tab !== 'none') sfxUi('tab' + SND.tab); }
             else if (t.closest('.segmented button, .chip, .theme-opt, [data-action="set"], [data-action="filter"]')) sfxUi('select');
             else if (t.closest('.btn, .icon-btn, .mode-tile, .deck-card button')) sfxUi('tap');
         });
@@ -222,7 +225,10 @@ Object.assign(SuperAnki.prototype, {
             else if (t.tagName === 'SELECT') sfxUi('select');
         });
         document.addEventListener('input', e => { if (e.target.id === 'snd-vol') { SND.vol = Number(e.target.value) / 100; sndSave(); } });
-        document.addEventListener('change', e => { if (e.target.id === 'snd-vol') sfx('pop'); });
+        document.addEventListener('change', e => {
+            if (e.target.id === 'snd-vol') sfx('pop');
+            else if (e.target.id === 'snd-tab') { SND.tab = e.target.value; sndSave(); if (SND.tab !== 'none') setTimeout(() => { if (SND.on) sfx('tab' + SND.tab); }, 160); }
+        });
     },
     /* quiet background check (adds a banner) or manual check (returns the state) */
     async updCheck(quiet) {
@@ -268,6 +274,8 @@ Object.assign(SuperAnki.prototype, {
             <div class="set-row" style="flex-wrap:wrap"><div class="txt"><b>Écouter chaque son</b></div><span style="display:flex;gap:6px;flex-wrap:wrap">${[['reveal', 'Retourner'], ['g1', 'Raté'], ['g2', 'Difficile'], ['g3', 'Bien'], ['g4', 'Facile'], ['wrong', 'Faux'], ['right', 'Juste'], ['done', 'Fin de session']].map(([n, l]) => `<button class="chip" data-ex="snd-play" data-n="${n}">${l}</button>`).join('')}</span></div>
             <div class="set-row"><div class="txt"><b>Petits sons d'interface</b><span>Un tout petit son discret quand tu changes d'onglet, actives un réglage, ouvres une fenêtre…</span></div>
                 <label class="switch"><input type="checkbox" ${SND.ui ? 'checked' : ''} data-ex="ui-toggle" aria-label="Petits sons d'interface"><span></span></label></div>
+            <div class="set-row"><div class="txt"><b>Son du changement d'onglet</b></div>
+                <select class="select select-sm" id="snd-tab" aria-label="Son du changement d'onglet">${[['swipe', 'Souffle doux'], ['bubble', 'Bulle'], ['click', 'Petit clic'], ['none', 'Aucun']].map(([v, l]) => `<option value="${v}" ${SND.tab === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
             <div class="set-row"><div class="txt"><b>Volume</b></div><input type="range" id="snd-vol" min="5" max="100" value="${Math.round(SND.vol * 100)}" style="width:160px" aria-label="Volume"></div>
             <div class="set-row"><div class="txt"><b>Mise à jour</b><span id="upd-status">Version <code id="upd-ver">${APP_VER0 ? APP_VER0.slice(0, 8) : '—'}</code></span></div>
                 <button class="btn btn-primary btn-sm" data-ex="upd">${ic('reset')}Mettre à jour maintenant</button></div>
