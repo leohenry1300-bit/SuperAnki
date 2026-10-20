@@ -154,7 +154,8 @@ function ambBuffer(ac, id) {
 const AMB_ENG = { ac: null, audio: null, master: null, fade: null, dest: null, srcs: {}, bufs: {}, playing: false, timer: null, tick: null, endsAt: 0 };
 function ambEnsure() {
     const E = AMB_ENG;
-    if (E.ac) { if (E.ac.state === 'suspended') E.ac.resume(); return true; }
+    if (E.ac) { if (E.ac.state !== 'running') E.ac.resume(); return true; }
+    try { sndUnlock(); } catch { /* ignore */ }
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return false;
     const ac = new AC();

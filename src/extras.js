@@ -175,6 +175,27 @@ function ringPlay(id, repeat = true) {
     try { [0, ...(repeat ? [r.len + 0.5] : [])].forEach(d => r.play(ac, bus, t0 + d, v)); } catch { /* ignore */ }
 }
 
+/* iPhone: Web Audio is muted by the ring/silent switch and needs a real touch to start.
+   On the first tap we (1) ask for the "playback" audio session, (2) play one silent <audio> clip (what makes iOS treat the page as media),
+   (3) resume the context and play a silent buffer. After that every sound works, switch or not. */
+const SND_UNLOCK = { done: false };
+function sndUnlock() {
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch { /* ignore */ }
+    const ac = sndCtx(); if (!ac) return;
+    try { const b = ac.createBuffer(1, 1, 22050), s = ac.createBufferSource(); s.buffer = b; s.connect(ac.destination); s.start(0); } catch { /* ignore */ }
+    if (SND_UNLOCK.done) return;
+    SND_UNLOCK.done = true;
+    try {
+        const n = 4410, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf), w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+        w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+        v.setUint32(24, 44100, true); v.setUint32(28, 88200, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
+        const a = new Audio(URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }))); a.setAttribute('playsinline', ''); a.volume = 0.01;
+        const p = a.play(); if (p && p.catch) p.catch(() => { SND_UNLOCK.done = false; });
+    } catch { /* ignore */ }
+}
+['touchend', 'pointerup', 'click', 'keydown'].forEach(ev => document.addEventListener(ev, () => { if (!SND_UNLOCK.done || (window.app && window.app.audioCtx && window.app.audioCtx.state !== 'running')) sndUnlock(); }, { passive: true, capture: true }));
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { const a = window.app && window.app.audioCtx; if (a && a.state !== 'running') { try { a.resume(); } catch { /* ignore */ } } } });
+
 /* hook the sounds on the study actions (wrapping the existing methods: nothing duplicated) */
 (() => {
     const P = SuperAnki.prototype, wrap = (name, fn) => { const o = P[name]; if (typeof o !== 'function') return; P[name] = function (...a) { const pre = fn.pre ? fn.pre.call(this, ...a) : null; const r = o.apply(this, a); try { fn.post.call(this, pre, ...a); } catch { /* ignore */ } return r; }; };
