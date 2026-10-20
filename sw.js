@@ -1,5 +1,5 @@
-/* SuperAnki Pro service worker: makes the app work offline. Version: 9890714cb4 */
-const CACHE = 'superanki-9890714cb4';
+/* SuperAnki Pro service worker: makes the app work offline. Version: c699081b98 */
+const CACHE = 'superanki-c699081b98';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

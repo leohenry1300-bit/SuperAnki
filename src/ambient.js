@@ -162,7 +162,7 @@ function ambCurve(v) { return Math.pow(Math.max(0, Math.min(1, v)), 1.7); }
    While a recording is not available (first use offline, file missing), the synthesized version plays instead. */
 const AMB_REAL = { idx: null, idxP: null, bufs: {}, loading: {} };
 function ambRealIndex() {
-    if (!AMB_REAL.idxP) AMB_REAL.idxP = fetch('sounds/index.json').then(r => (r.ok ? r.json() : null)).catch(() => null).then(j => { AMB_REAL.idx = j; return j; });
+    if (!AMB_REAL.idxP) AMB_REAL.idxP = fetch('sounds/index.json').then(r => (r.ok ? r.json() : null)).catch(() => null).then(j => { AMB_REAL.idx = j; AMB_REAL.done = true; return j; });
     return AMB_REAL.idxP;
 }
 function ambRealLoad(id) {
@@ -263,7 +263,11 @@ Object.assign(SuperAnki.prototype, {
     },
     ambCreditsHtml() {
         const idx = AMB_REAL.idx;
-        if (!idx) { ambRealIndex().then(() => { const b = $('#amb-credits-body'); if (b) b.innerHTML = this.ambCreditsHtml(); }); return '<p class="small muted">Chargement…</p>'; }
+        if (!idx) {
+            if (AMB_REAL.done) return '<p class="small muted">Les enregistrements ne sont pas disponibles ici (hors ligne ou fichier ouvert directement) : les sons générés par l\'appli sont utilisés.</p>';
+            ambRealIndex().then(() => { const b = $('#amb-credits-body'); if (b) b.innerHTML = this.ambCreditsHtml(); });
+            return '<p class="small muted">Chargement…</p>';
+        }
         const rows = AMB_SOUNDS.filter(([id]) => idx[id]).map(([id, em, name]) => { const c = idx[id]; return `<li><b>${em} ${name}</b> — ${esc(c.credit || '')}${c.lic ? ` · ${esc(c.lic)}` : ''}${c.src ? ` · <a href="${esc(c.src)}" target="_blank" rel="noopener">source</a>` : ''}</li>`; });
         const synth = AMB_SOUNDS.filter(([id]) => !idx[id]).map(x => x[2]).join(', ');
         return `<p class="small muted">Vrais enregistrements libres de droits (domaine public, CC0 ou CC BY), recoupés et mis en boucle pour l'appli.${synth ? ` Sons générés par l'appli : ${esc(synth)}.` : ''}</p><ul class="amb-credit-list">${rows.join('')}</ul>`;
