@@ -1555,6 +1555,15 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .audio-bar .chip { padding: 6px 10px; font-size: .74rem; gap: 4px; }
 .audio-bar .chip .i { width: 15px; height: 15px; }
 
+/* phones: the bottom bar is part of the page flow and sticks to the bottom edge (instead of position: fixed, which floats
+   up when Safari's toolbar moves while scrolling) */
+@media (max-width: 767px) {
+  body { display: flex; flex-direction: column; }
+  .main { width: 100%; flex: 1 0 auto; padding-bottom: 24px; }
+  .bottom-nav { position: sticky; left: auto; right: auto; bottom: 0; margin-top: auto; flex: none; transform: translateZ(0); -webkit-transform: translateZ(0); }
+  body.in-session .main { padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+}
+
 </style>
 </head>
 <body>
