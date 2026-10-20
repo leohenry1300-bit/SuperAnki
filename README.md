@@ -58,3 +58,8 @@ Le fichier `.apkg` est vérifié avec SQLite (`integrity_check`) et réimporté 
 - **Temps de concentration** (bouton cerveau en haut) : minuteur étude / pause (20/5, 25/5, 45/10, 50/15 ou tes durées), tours, sonnerie à la fin de l'étude et de la pause.
 - **Corbeille** : Paramètres › Outils. Cartes et paquets supprimés gardés 30 jours, restauration avec leur progression.
 - Logo refait (`logo.svg`, icônes 192/512 pour l'installation).
+
+
+## Sons d'ambiance
+
+Les enregistrements du mélangeur d'ambiance sont dans `sounds/` (MP3 en boucle, listés dans `sounds/index.json` avec leurs crédits et licences : domaine public, CC0 ou CC BY). Les crédits sont aussi affichés dans l'appli (Réglages → Ambiance sonore → Crédits). Si un fichier manque ou si on est hors ligne la première fois, l'appli joue une version synthétisée du son.
