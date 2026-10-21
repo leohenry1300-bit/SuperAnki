@@ -1,0 +1,89 @@
+@course contenu | Stratégie de contenu et rédaction web | ✍️ | Cours de TD1 (7 oct.) et TD2 (13 oct. 2026) : stratégie de contenu, objectifs, cibles, personas, intentions de recherche. Fiches faites à partir de tes supports.
+@tags BUT TC, S5, contenu, rédaction web, strategiecontenu
+
+## TD1 · Stratégie de contenu, késako ? | 🧩
+Les 2 compétences visées par ce cours ? ;; Concevoir une stratégie de contenu cohérente avec un positionnement marketing ; produire et optimiser des contenus web adaptés aux cibles, aux canaux et aux objectifs d'une structure. ;; Concevoir · produire/optimiser
+Une entreprise doit-elle publier tous les jours pour réussir sa communication digitale ? ;; Non : ce qui compte, ce sont des contenus utiles et cohérents qui répondent aux besoins d'une audience et aux objectifs de l'organisation, pas la fréquence en soi. ;; Utile et cohérent > quantité
+Une stratégie de contenu est une démarche qui consiste à… (4 verbes) ;; Planifier, produire, diffuser, évaluer des contenus utiles et cohérents. ;; P · P · D · É
+C: La stratégie de contenu consiste à {{c1::planifier}}, {{c2::produire}}, {{c3::diffuser}} et {{c4::évaluer}} des contenus utiles et cohérents. ;; Les 4 verbes de la démarche.
+Pourquoi une stratégie de contenu ? (finalité) ;; Répondre aux besoins d'une audience tout en contribuant aux objectifs d'une organisation. ;; Audience + organisation
+Définis le marketing de contenu. ;; Création et diffusion de contenus ciblés et cohérents destinés à attirer, informer, convaincre et fidéliser une audience définie. ;; Attirer · informer · convaincre · fidéliser
+C: Le marketing de contenu vise à {{c1::attirer}}, {{c2::informer}}, {{c3::convaincre}} et {{c4::fidéliser}} une audience définie. ;; Les 4 verbes du marketing de contenu.
+Une stratégie de contenu doit répondre à quelles 5 questions ? ;; Pourquoi ? (objectifs) · Pour qui ? (audiences) · Sur quels sujets ? · Avec quels contenus et quels canaux ? · Avec quels résultats attendus ? ;; Pourquoi · pour qui · sujets · contenus/canaux · résultats
+« POURQUOI ? » dans la stratégie de contenu : quelle question ? ;; Quels sont les objectifs de l'organisation ? ;; Objectifs
+« POUR QUI ? » dans la stratégie de contenu : quelle question ? ;; Quelles audiences l'organisation souhaite-t-elle toucher ? ;; Audiences
+« SUR QUELS SUJETS ? » dans la stratégie de contenu : quelle question ? ;; Quels problèmes, besoins ou questions doit-elle aborder ? ;; Problèmes · besoins · questions
+« AVEC QUELS CONTENUS ET QUELS CANAUX ? » : donne des exemples de contenus. ;; Documents print (catalogue, brochure…), fiches produits, articles de blog, vidéos, réseaux sociaux, newsletters, pages web, podcasts, livres blancs, webinaires. ;; Formats et canaux
+« AVEC QUELS RÉSULTATS ATTENDUS ? » : donne des exemples. ;; Visibilité, trafic, engagement, leads, ventes, fidélisation, recommandation. ;; Résultats / KPI
+Dans quel ordre s'enchaîne le schéma de la stratégie de contenu ? ;; Objectifs de l'organisation → besoins des audiences → piliers de contenu et angles éditoriaux → formats et canaux → appels à l'action → indicateurs et amélioration. ;; Du pourquoi à l'amélioration continue
+C: Schéma : objectifs de l'organisation → {{c1::besoins des audiences}} → {{c2::piliers de contenu et angles éditoriaux}} → {{c3::formats et canaux}} → {{c4::appels à l'action}} → {{c5::indicateurs et amélioration}}. ;; Les 6 étapes du schéma.
+Définis « contenu ». ;; Message ou production destinée à être consommée par une audience. ;; Ce que l'audience consomme
+Définis « communication ». ;; Ensemble des actions permettant de transmettre un message. ;; Transmettre un message
+Définis « stratégie de contenu » (vs contenu et communication). ;; Démarche globale qui relie objectifs, audiences, contenus, canaux et résultats. ;; Vision d'ensemble
+Définis « calendrier éditorial ». ;; Outil de planification des contenus. ;; Planifier quoi et quand
+Définis « ligne éditoriale ». ;; Règles qui encadrent les sujets, le ton et la manière de s'exprimer. ;; Sujets · ton · façon de s'exprimer
+C: La {{c1::ligne éditoriale}} encadre les sujets, le ton et la manière de s'exprimer ; le {{c2::calendrier éditorial}} est l'outil de planification des contenus. ;; Ne pas confondre les deux.
+Quelle différence entre contenu, communication et stratégie de contenu ? ;; Contenu = le message/la production consommé(e) par l'audience. Communication = l'ensemble des actions qui transmettent un message. Stratégie de contenu = la démarche globale reliant objectifs, audiences, contenus, canaux et résultats. ;; Produit · actions · démarche globale
+Cite des métiers liés à la stratégie de contenu. ;; Rédacteur web, content strategist, content manager, copywriter, social media manager, brand content manager, spécialiste SEO, concepteur-rédacteur, vidéaste, motion designer, graphiste. ;; Rédaction, stratégie, social, SEO, image
+Cite des mots-clés du domaine. ;; Marketing de contenu, stratégie de contenu, content marketing, brand content, inbound marketing, création de contenu, storytelling. ;; Vocabulaire du cours
+
+## TD1 · Cas concret : 1083 | 👖
+Les 3 questions du cas concret 1083 (www.1083.fr) ? ;; 1. Que cherche à vendre, faire connaître ou faire comprendre la marque ? 2. À qui s'adresse-t-elle ? 3. Quel comportement souhaite-t-elle déclencher ? ;; Offre · cible · comportement
+Quels types de contenus la marque 1083 propose-t-elle ? (exemples vus en cours) ;; Présentation d'un jean, borne de collecte pour recyclage de jeans, « 6 astuces pour s'habiller de manière responsable », partenariat avec une autre marque, préservation de l'eau (matières et procédé de fabrication), recyclage en interne, arrivée du printemps, ambiance/inspiration du dimanche, processus de fabrication, newsletter. ;; Produit + engagement responsable + inspiration
+Quels grands thèmes (piliers) ressortent des contenus de 1083 ? ;; Le produit (jean), la fabrication et le processus, l'engagement écologique (recyclage, eau), les conseils (s'habiller responsable), l'inspiration/ambiance, les partenariats. ;; Produit · fabrication · écologie · conseils · inspiration
+Colgate : quels contenus propose-t-il sur son site ? ;; Articles de blog sur la santé bucco-dentaire, quiz pour trouver le soin blancheur adapté, bilan de santé bucco-dentaire en ligne, newsletter spécialisée avec des conseils. ;; Blog · quiz · bilan · newsletter
+Lego : comment adapte-t-il sa stratégie de contenu ? ;; Par cible : enfants (pubs avec histoires, films, app Lego Play, Lego Magazine), parents (vidéos YouTube, app LEGO Builder avec instructions), grands-parents (articles de blog pour préparer les cadeaux de Noël). ;; Un contenu par audience
+Lego : contenus pour les ENFANTS ? ;; Publicités avec de vraies histoires, films Lego à voir en famille, application Lego Play pour partager ses créations, Lego Magazine reçu gratuitement. ;; Histoires · films · app · magazine
+Lego : contenus pour les PARENTS ? ;; Vidéos YouTube pour tout savoir sur les produits, application LEGO Builder avec instructions de montage. ;; YouTube · Builder
+Lego : contenus pour les GRANDS-PARENTS ? ;; Articles de blog pour aider à préparer les cadeaux de Noël. ;; Blog cadeaux
+Ce que montrent les exemples Colgate et Lego ? ;; Que le contenu est adapté à chaque audience et à son besoin (informer, aider à choisir, divertir, accompagner), au-delà de la simple publicité. ;; Contenu utile par cible
+
+## TD2 · Objectifs de la stratégie | 🎯
+À quelle question répond la partie « Objectifs » ? ;; À quels objectifs répond la stratégie de contenu à mettre en place ? ;; Pourquoi on produit du contenu
+Cite les 6 objectifs possibles d'une stratégie de contenu. ;; Faire connaître la structure · développer sa notoriété · fédérer une communauté existante · communiquer différemment (image de marque) · acquérir de nouveaux clients · recruter. ;; Connaître · notoriété · communauté · image · clients · recrutement
+Objectif « Faire connaître la structure » : contenu type ? ;; Naissance d'un projet, partager son actualité, développer la confiance des cibles. ;; Lancement + confiance
+Objectif « Développer sa notoriété » : contenu type ? ;; Élargir ses prospects potentiels, trouver des partenaires. ;; Prospects + partenaires
+Objectif « Fédérer une communauté existante » : contenu type ? ;; Rassembler autour d'une mission sociale ou territoriale, fédérer et fidéliser des clients, créer des échanges. ;; Mission · fidélisation · échanges
+Objectif « Communiquer différemment (image de marque) » : contenu type ? ;; Montrer les coulisses, rajeunir son image, développer un autre axe de communication. ;; Coulisses · rajeunir · nouvel axe
+Objectif « Acquérir de nouveaux clients » : contenu type ? ;; Convertir ses prospects en clients pour augmenter les ventes. ;; Conversion · ventes
+Objectif « Recruter » : qui veut-on recruter ? ;; De nouveaux salariés, des adhérents, des bénévoles. ;; Salariés · adhérents · bénévoles
+C: Convertir ses prospects en clients pour augmenter les ventes correspond à l'objectif {{c1::acquérir de nouveaux clients}} ; montrer les coulisses ou rajeunir son image correspond à {{c2::communiquer différemment (image de marque)}}. ;; Associer l'objectif à son contenu.
+Quelle action faut-il faire après avoir fixé les objectifs ? ;; Définir des indicateurs clés de performance (KPI) à suivre pour évaluer l'évolution de la stratégie. ;; KPI
+C: Pour évaluer la stratégie, on définit des {{c1::indicateurs clés de performance (KPI)}} à suivre. ;; Mesure de la stratégie.
+
+## TD2 · Cibles et personas | 👥
+À quelle question répond la partie « Cibles » ? ;; À qui souhaite-t-on s'adresser ? ;; Cibles / audiences
+Quels éléments décrivent une cible ? (5 axes) ;; Leurs profils · leurs besoins · leurs points de douleur · leurs sources d'information · leurs envies du moment. ;; Profil · besoins · douleurs · sources · envies
+Cible : que recouvre « leurs profils » ? ;; Particuliers ou professionnels, âge, sexe, situation familiale, emploi, localisation… ;; Données socio-démo
+Cible : que recouvre « les besoins qu'ils expriment » ? ;; Par exemple rapidité d'intervention, compétences techniques, conseils, localisation… ;; Ce qu'ils demandent
+Cible : que sont les « points de douleur » ? ;; Les difficultés qu'ils rencontrent en lien avec votre offre : confiance, expérience, prix… ;; Freins/difficultés
+Cible : que recouvre « leurs sources d'information » ? ;; Presse, sites internet, réseaux sociaux, bouche à oreille… ;; Où ils s'informent
+Cible : que recouvre « leurs envies du moment » ? ;; Développer de nouveaux projets, se lancer dans une nouvelle activité… ;; Projets en cours
+C: Une cible se décrit par ses {{c1::profils}}, ses {{c2::besoins}}, ses {{c3::points de douleur}}, ses {{c4::sources d'information}} et ses {{c5::envies du moment}}. ;; Les 5 axes.
+Qu'est-ce qu'une proposition de valeur et comment la définit-on ? ;; Ce que l'on met en avant dans sa communication : on définit son positionnement, sa valeur ajoutée et ses éléments de différenciation. ;; Positionnement · valeur ajoutée · différenciation
+C: La proposition de valeur = {{c1::positionnement}} + {{c2::valeur ajoutée}} + {{c3::éléments de différenciation}}, à mettre en avant dans la communication. ;; Objectif de la partie cibles.
+À quoi correspondent les cibles dans la stratégie de contenu ? ;; Aux piliers de contenus à traiter. ;; Cibles = piliers de contenu
+Pour quelles cibles établit-on des fiches personas ? ;; Pour les cibles principales et pour les cibles secondaires. ;; Principales + secondaires
+Qu'est-ce qu'une fiche persona ? ;; Un portrait type d'une cible (profil, besoins, points de douleur, sources d'information, envies) qui sert à produire des contenus adaptés. ;; Portrait type d'une cible
+
+## TD2 · Intentions de recherche | 🔎
+Définis l'intention de recherche. ;; Le type de requête susceptible d'amener vos lecteurs sur votre site ou vos réseaux sociaux. ;; Pourquoi ils cherchent
+Pourquoi travailler les intentions de recherche ? ;; C'est la meilleure solution pour produire des contenus qui répondent aux attentes des cibles. ;; Contenu = attentes des cibles
+Cite les 4 types d'intentions de recherche. ;; Navigationnelle, informationnelle, transactionnelle, géolocalisée. ;; N · I · T · G
+Intention navigationnelle : définition et exemple ? ;; Recherche d'un résultat déjà identifié. Ex : « conseils yoga decathlon ». ;; Je sais déjà où aller
+Intention informationnelle : définition et exemple ? ;; L'internaute cherche une réponse à une question précise. Ex : « comment débuter le yoga ? ». ;; Je veux comprendre
+Intention transactionnelle : définition et exemple ? ;; Intention d'achat. Ex : « tapis de yoga pas cher ». ;; Je veux acheter
+Intention géolocalisée : définition et exemple ? ;; Localisation d'un lieu, d'une personne. Ex : « cours yoga laval ». ;; Je cherche près de moi
+C: « tapis de yoga pas cher » est une requête {{c1::transactionnelle}} ; « comment débuter le yoga ? » est {{c2::informationnelle}} ; « cours yoga laval » est {{c3::géolocalisée}} ; « conseils yoga decathlon » est {{c4::navigationnelle}}. ;; Classer les 4 exemples.
+Quelle est l'intention de la requête « comment changer une roue de vélo » ? ;; Informationnelle (réponse à une question précise). ;; Question = informationnelle
+Quelle est l'intention de la requête « acheter casque vélo pas cher » ? ;; Transactionnelle (intention d'achat). ;; Achat = transactionnelle
+Quelle est l'intention de la requête « magasin de vélo Lyon » ? ;; Géolocalisée (recherche d'un lieu). ;; Lieu = géolocalisée
+Quelle est l'intention de la requête « décathlon horaires » ? ;; Navigationnelle (on cherche un résultat déjà identifié : la marque). ;; Marque connue = navigationnelle
+
+## Organisation du cours et évaluation | 📅
+Combien de séances et quel format ? ;; 10 TD d'1h30, d'octobre à décembre. ;; 10 × 1h30
+Planning du cours (octobre) ? ;; 07/10 : stratégie de contenu, késako ? · 13/10 : persona et parcours utilisateur · 22/10 : positionnement et ligne éditoriale, cartographie des contenus. ;; Oct.
+Planning du cours (novembre) ? ;; 03/11 : rédaction web et référencement naturel (mots-clés, intentions de recherche) · 10/11 : structuration d'articles et de fiches produits · 17/11 : optimisation SEO d'un article · 23/11 : rédaction d'une page orientée conversion. ;; Nov.
+Planning du cours (décembre) ? ;; 01/12 : déclinaison sur les réseaux sociaux et en newsletter · 07/12 : piloter et mesurer une stratégie de contenu · 08/12 : évaluation (rendu et présentation de dossier). ;; Déc.
+Quelle est la forme de l'évaluation finale ? ;; Rendu et présentation de dossier, le 08/12. ;; Dossier + oral
+Consigne du travail en groupe du TD2 ? ;; Découvrir la structure, réfléchir à ses objectifs et à ses cibles, établir les fiches personas des cibles principales, lister 5 questions/requêtes possibles de ces cibles selon leurs intentions de recherche. ;; Structure · objectifs/cibles · personas · 5 requêtes
