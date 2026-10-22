@@ -1,0 +1,205 @@
+@course scach | Logistique, Supply Chain et Achats | 🚚 | Fiches faites UNIQUEMENT à partir du support de cours « Logistique, Supply Chain & Achats » (Myriam Ait Salem, RSP Achats Groupe) : fondamentaux, flux et planification, stocks, achats, logistique internationale, Incoterms 2020, douane, risques, RSE, mise en pratique.
+@tags BUT TC, S5, logistique, supply chain, achats, incoterms, scach
+
+## 0 · L'essentiel en 10 idées | 🗺️
+Idée 1 : une phrase pour résumer le cours ? ;; La Supply Chain est un système : une décision locale (achat, stock, transport) peut avoir un impact global ; il faut raisonner en coût total et en performance globale, pas en prix unitaire. ;; Système, pas fonction isolée
+Idée 2 : les 4 objectifs du cours ? ;; 1 Comprendre la différence entre logistique, supply chain, achats et approvisionnement · 2 Lire une chaîne de valeur et identifier les flux physiques, informationnels et financiers · 3 Comprendre les leviers de pilotage : prévision, stock, MRP, sourcing, TCO, transport, KPI · 4 Raisonner sur un cas industriel et international. ;; Définir · lire les flux · piloter · raisonner
+Idée 3 : les 10 réflexes du professionnel ? ;; 1 Clarifier le besoin · 2 Cartographier les flux · 3 Distinguer prix et coût total · 4 Mesurer le risque d'approvisionnement · 5 Vérifier la qualité et la qualification · 6 Comprendre le lead time réel · 7 Choisir l'Incoterm selon le flux réel · 8 Piloter avec des KPI · 9 Anticiper les scénarios de rupture · 10 Chercher la performance globale. ;; 10 réflexes
+Idée 4 : « À retenir » : le bon fournisseur est… ;; Pas seulement celui qui propose le meilleur prix : le bon choix dépend du coût total, du service, du risque, de la qualité et des objectifs de l'entreprise. ;; Coût total + service + risque + qualité
+Idée 5 : qui doit partager quoi ? ;; Achats + Supply + Logistique doivent partager les mêmes données et objectifs. ;; Mêmes données, mêmes objectifs
+Idée 6 : « chaque matière première a… » ? ;; Une histoire logistique, économique et opérationnelle (dans l'industrie). ;; Logistique + économique + opérationnelle
+Idée 7 : les 3 flux ? ;; Physiques, d'information et financiers. « Une rupture d'information peut devenir une rupture physique. » ;; Physique · information · financier
+Idée 8 : les Incoterms, en une phrase ? ;; 11 règles 2020 qui définissent coûts, responsabilités et transfert de risques entre vendeur et acheteur ; ils complètent le contrat commercial, ne le remplacent pas. ;; Coûts · obligations · risques
+Idée 9 : le point essentiel des Incoterms ? ;; Celui qui paie le transport n'est pas nécessairement celui qui supporte le risque pendant ce transport (CPT / CIP / CFR / CIF). ;; Payer ≠ risque
+Idée 10 : comment sécuriser une source ? ;; Dual sourcing ou source alternative qualifiée, stock de sécurité adapté, capacité réservée, diversification géographique, plans de continuité. ;; Alternative qualifiée + stock
+
+## 1 · Introduction | 🎯
+Qui pilote quoi : les Achats ? ;; Qui fournit ? À quelles conditions ? Avec quel niveau de risque ? ;; Fournisseur · conditions · risque
+Qui pilote quoi : l'Approvisionnement / Supply ? ;; Quand commander ? Combien ? Avec quel stock ? ;; Quand · combien · stock
+Qui pilote quoi : la Logistique ? ;; Comment déplacer, stocker, préparer et livrer ? ;; Déplacer · stocker · préparer · livrer
+Qui pilote quoi : la Production ? ;; Comment transformer les matières en produits finis ? ;; Transformer
+Pourquoi une performance Supply Chain est-elle « collective » ? ;; Parce qu'optimiser une fonction peut dégrader le système dans son ensemble. ;; Optimiser une fonction peut nuire au tout
+C: Achats : {{c1::qui fournit ?}} · Supply : {{c2::quand commander, combien, quel stock ?}} · Logistique : {{c3::comment déplacer, stocker, préparer, livrer ?}} · Production : {{c4::comment transformer ?}} ;; Qui pilote quoi.
+Pourquoi la Supply Chain est-elle stratégique ? (5 idées) ;; Elle relie fournisseurs, usine, entrepôts et clients · elle influence simultanément coût, délai, qualité, disponibilité et cash · une décision d'achat peut créer une conséquence logistique · une décision logistique peut modifier le coût total d'achat · objectif : raisonner en coût et performance globale, pas uniquement en prix unitaire. ;; Coût, délai, qualité, disponibilité, cash
+Sur quoi la Supply Chain influence-t-elle simultanément ? ;; Le coût, le délai, la qualité, la disponibilité et le cash. ;; 5 dimensions
+Exemple de lien achats ↔ logistique ? ;; Une décision d'achat peut créer une conséquence logistique, et une décision logistique peut modifier le coût total d'achat. ;; Les deux s'influencent
+
+## 2 · Les fondamentaux | 🧱
+Définis la logistique. ;; Elle organise et pilote les flux physiques : transport, stockage, manutention, préparation et livraison. Elle cherche le bon produit, au bon endroit, au bon moment, dans la bonne quantité et au bon coût. Elle inclut aussi les flux d'information nécessaires à l'exécution. ;; Flux physiques, 5 « bon »
+C: La logistique vise le bon {{c1::produit}}, au bon {{c2::endroit}}, au bon {{c3::moment}}, dans la bonne {{c4::quantité}} et au bon {{c5::coût}}. ;; Définition de la logistique.
+Définis la supply chain. ;; Elle coordonne les acteurs et décisions de l'amont vers l'aval : achats, approvisionnement, planification, production, stocks, logistique et distribution. Elle vise une performance globale : service + coût + risque + qualité + agilité. Elle dépasse la seule gestion du transport. ;; Amont → aval, performance globale
+Quelle est la performance visée par la supply chain ? ;; Service + coût + risque + qualité + agilité. ;; 5 éléments
+Différence logistique / supply chain ? ;; La logistique exécute et pilote les flux physiques (transport, stockage, livraison). La supply chain coordonne tous les acteurs et décisions, de l'amont à l'aval (achats, planification, production, stocks, logistique, distribution). ;; Exécution / coordination globale
+Définis le sourcing. ;; Identifier et analyser des fournisseurs potentiels. ;; Trouver des fournisseurs
+Définis les achats. ;; Sélectionner, négocier, contractualiser et piloter la relation fournisseur. ;; Sélectionner · négocier · contractualiser · piloter
+Définis l'approvisionnement. ;; Transformer le besoin planifié en commandes et suivre leur exécution. ;; Besoin → commandes
+Définis le « supply ». ;; Arbitrer les besoins, stocks, capacités et niveaux de service. ;; Arbitrer
+Définis la logistique (vs supply) dans la liste des 5 termes. ;; Exécuter et piloter le déplacement et le stockage. ;; Exécuter
+C: Sourcing = {{c1::identifier et analyser}} des fournisseurs · Achats = {{c2::sélectionner, négocier, contractualiser, piloter}} · Approvisionnement = {{c3::transformer le besoin en commandes et suivre}} · Supply = {{c4::arbitrer besoins, stocks, capacités, service}} · Logistique = {{c5::exécuter déplacement et stockage}}. ;; À ne pas confondre.
+Les 3 flux de la supply chain ? ;; Physiques (matières premières, composants, produits finis, retours) · d'information (prévisions, commandes, confirmations, stocks, ETA, qualité) · financiers (factures, paiements, droits, coûts de transport, stocks et BFR). ;; Physique · information · financier
+Que contiennent les flux physiques ? ;; Matières premières, composants, produits finis, retours. ;; Les produits qui bougent
+Que contiennent les flux d'information ? ;; Prévisions, commandes, confirmations, stocks, ETA, qualité. ;; Les données qui circulent
+Que contiennent les flux financiers ? ;; Factures, paiements, droits, coûts de transport, stocks et BFR. ;; L'argent
+Pourquoi une rupture d'information est-elle dangereuse ? ;; Elle peut devenir une rupture physique (manque de matière, retard, stock inadapté). ;; Info → physique
+Les 5 étapes pour cartographier une chaîne industrielle ? ;; 1 Identifier fournisseurs et sous-traitants · 2 Identifier sites de production et plateformes · 3 Identifier clients et canaux · 4 Ajouter transports et points de stockage · 5 Ajouter délais, stocks, dépendances et points critiques. ;; Acteurs → sites → clients → transports → points critiques
+Quel est le schéma simplifié d'une chaîne industrielle ? ;; Fournisseurs → Transport → Usine → Entrepôt → Clients. ;; Du fournisseur au client
+
+## 3 · Flux et planification | 📈
+Qu'est-ce qu'une prévision de la demande ? ;; Une estimation, pas une certitude. ;; Estimation
+Quelles sont les sources d'une prévision ? ;; Historique, saisonnalité, promotions, nouveaux produits, marché et informations commerciales. ;; Historique · saison · promos · nouveaux produits · marché
+Que dit le cours de l'horizon de prévision ? ;; Plus l'horizon est long, plus l'incertitude augmente. ;; Long terme = plus incertain
+Comment mesure-t-on une bonne prévision ? ;; On la mesure : biais, erreur, fiabilité. ;; Biais · erreur · fiabilité
+Qu'est-ce que le MRP ? ;; Material Requirements Planning : il traduit un besoin de production en besoins de composants et de matières. ;; Besoin produit → besoin matières
+Quelles données utilise le MRP ? ;; Nomenclatures, stocks, commandes ouvertes, délais et paramètres de lot. ;; Nomenclatures · stocks · commandes · délais · lots
+Quelles sont les sorties possibles du MRP ? ;; Besoins nets, propositions d'ordres, commandes ou messages d'exception. ;; Besoins nets · propositions d'ordres · messages
+De quoi dépend la fiabilité d'un MRP ? ;; De la fiabilité des données (« un MRP fiable dépend de données fiables »). ;; Données fiables
+Qu'est-ce que le Bullwhip Effect ? ;; Une petite variation de la demande client peut être amplifiée en remontant la chaîne. ;; Amplification vers l'amont
+Quelles sont les causes du Bullwhip ? ;; Prévisions imparfaites, lots de commande, promotions, longs délais, manque de partage d'information. ;; Prévisions · lots · promos · délais · information
+Quelles sont les conséquences du Bullwhip ? ;; Surstock, ruptures, surcapacités, urgences transport et instabilité fournisseur. ;; Surstock · ruptures · urgences
+Quel est le remède au Bullwhip ? ;; Visibilité, collaboration et paramètres de planification adaptés. ;; Visibilité + collaboration
+C: Bullwhip : causes = {{c1::prévisions imparfaites, lots de commande, promotions, longs délais, manque de partage d'information}} ; remède = {{c2::visibilité, collaboration, paramètres de planification adaptés}}. ;; À connaître.
+Exemple COLART : le Bullwhip sur une gamme de peinture ? ;; Une variation de demande sur une gamme peut modifier les besoins en matières ; si chaque acteur ajoute une marge de sécurité, l'effet peut être amplifié. Le Supply Planner doit distinguer demande réelle, prévision et commandes ; le fournisseur doit avoir une visibilité suffisamment fiable sur les besoins. ;; Marges de sécurité cumulées
+
+## 4 · Les stocks | 📦
+Les 4 types de stocks ? ;; Stock de cycle · stock de sécurité · stock d'anticipation · stock dormant. ;; Cycle · sécurité · anticipation · dormant
+Stock de cycle ? ;; Lié à la taille et à la fréquence des commandes. ;; Dépend des commandes
+Stock de sécurité ? ;; Protège contre la variabilité et l'incertitude. ;; Contre l'aléa
+Stock d'anticipation ? ;; Constitué avant une saison, une hausse de prix ou une contrainte connue. ;; Avant un événement connu
+Stock dormant ? ;; Stock sans consommation ou à très faible rotation. ;; Ne bouge plus
+C: Stock de {{c1::cycle}} (taille/fréquence des commandes) · de {{c2::sécurité}} (variabilité) · d'{{c3::anticipation}} (saison, hausse de prix) · {{c4::dormant}} (sans consommation). ;; Les 4 stocks.
+Règle sur les stocks ? ;; Chaque stock doit avoir une raison et un coût accepté. ;; Une raison + un coût
+Pourquoi le stock coûte-t-il cher ? ;; Immobilisation de trésorerie et BFR · stockage, manutention, assurance, inventaires · risque d'obsolescence, péremption, dégradation · risque de baisse de prix ou de changement de spécification. Plus de stock peut améliorer le service… mais pas gratuitement. ;; Cash, stockage, obsolescence, prix
+Formule de la couverture ? ;; Couverture = stock disponible / consommation moyenne sur la période. ;; Stock ÷ consommation
+Formule de la rotation ? ;; Rotation = consommation annuelle / stock moyen. ;; Conso annuelle ÷ stock moyen
+C: Couverture = {{c1::stock disponible}} / {{c2::consommation moyenne sur la période}} · Rotation = {{c3::consommation annuelle}} / {{c4::stock moyen}}. ;; Les 2 formules.
+Une forte couverture est-elle positive ? ;; Pas automatiquement. Une faible couverture n'est pas automatiquement négative non plus : cela dépend du risque et du service attendu. ;; Dépend du risque et du service
+
+## 5 · Les achats | 🛒
+Les 10 étapes du processus achats ? ;; 1 Expression du besoin · 2 Cahier des charges · 3 Analyse marché · 4 Sourcing · 5 Consultation · 6 Analyse et qualification · 7 Négociation · 8 Sélection et contractualisation · 9 Commande et suivi · 10 Évaluation et amélioration fournisseur. ;; Besoin → évaluation
+Version courte du processus achats ? ;; Besoin → Sourcing → Consultation → Qualification → Négociation → Contrat → Pilotage. ;; 7 grandes étapes
+C: Processus achats : besoin → cahier des charges → {{c1::analyse marché}} → {{c2::sourcing}} → {{c3::consultation}} → {{c4::analyse et qualification}} → {{c5::négociation}} → {{c6::sélection et contractualisation}} → {{c7::commande et suivi}} → {{c8::évaluation et amélioration fournisseur}}. ;; Les 10 étapes.
+Que contient le cahier des charges achats ? ;; Besoin fonctionnel et spécifications techniques · volumes prévisionnels, MOQ et fréquence · qualité, certificats, traçabilité et exigences réglementaires · packaging, livraison, délai et lieu · Incoterm, conditions de paiement et exigences RSE · critères de sélection pondérés si besoin. ;; Technique · volumes · qualité · livraison · Incoterm · RSE
+Où sont les sources pour le sourcing ? ;; Panels existants, salons, bases fournisseurs, recommandations, associations, veille marché. ;; Panels · salons · bases · reco · associations · veille
+Que compare-t-on au sourcing ? ;; Pays, capacité, technologie, qualité, coûts, délais et risques. ;; 7 critères
+Quelle confusion éviter au sourcing ? ;; Ne pas confondre « trouver un prix » et « qualifier une source ». Le sourcing doit intégrer les contraintes industrielles et réglementaires. ;; Prix ≠ qualification
+RFI ? ;; Request for Information : comprendre le marché et les capacités. ;; Information
+RFQ ? ;; Request for Quotation : obtenir une offre chiffrée comparable. ;; Offre chiffrée
+RFP ? ;; Request for Proposal : demander une proposition globale répondant à un besoin complexe. ;; Proposition globale
+C: {{c1::RFI}} = comprendre le marché et les capacités · {{c2::RFQ}} = obtenir une offre chiffrée comparable · {{c3::RFP}} = proposition globale pour un besoin complexe. ;; Les 3 consultations.
+Que doit définir une consultation efficace ? ;; Exactement les hypothèses de comparaison. ;; Hypothèses comparables
+Les 6 axes de qualification d'un fournisseur ? ;; Technique (produit, procédé, capacité, innovation) · Qualité (système qualité, certificats, traçabilité, non-conformités) · Financier (solidité, dépendance, conditions de paiement) · Supply (capacité, lead time, flexibilité) · RSE/conformité (origine, substances, environnement, éthique) · Audit si le niveau de risque le justifie. ;; Technique · qualité · financier · supply · RSE · audit
+Quand faire un audit fournisseur ? ;; Si le niveau de risque le justifie. ;; Selon le risque
+Exemple COLART : le processus d'achat d'une matière première ? ;; R&D définit les performances recherchées · Achats identifie plusieurs sources et construit la consultation · Qualité vérifie documentation et conformité · échantillons testés en laboratoire puis en conditions industrielles · après qualification : négociation, contrat, paramètres logistiques et lancement. ;; R&D → Achats → Qualité → tests → négociation
+Outil 1 : l'analyse ABC ? ;; Elle mesure le poids économique : classe A = faible nombre d'articles pour une grande part de la valeur ; B = poids intermédiaire ; C = nombreux articles pour une faible part de valeur. Elle aide à prioriser l'effort d'analyse. ;; Poids économique
+Que ne mesure PAS l'ABC ? ;; Ni le risque fournisseur ni la criticité. ;; Ni risque ni criticité
+C: ABC : classe A = {{c1::peu d'articles, grande part de la valeur}} · B = {{c2::poids intermédiaire}} · C = {{c3::nombreux articles, faible part de la valeur}}. ;; Les 3 classes.
+Outil 2 : la matrice de Kraljic, c'est quoi ? ;; Une matrice à deux axes : impact économique (importance stratégique des achats) et risque d'approvisionnement (complexité du marché). ;; Impact × risque
+Matrice de Kraljic : stratégie pour les achats NON CRITIQUES (simples) ? ;; Simplifier et automatiser. ;; Simplifier
+Matrice de Kraljic : stratégie pour les achats LEVIERS ? ;; Mettre en concurrence et optimiser le coût. ;; Concurrence + coût
+Matrice de Kraljic : stratégie pour les GOULOTS D'ÉTRANGLEMENT (achats critiques) ? ;; Sécuriser la disponibilité et les alternatives. ;; Sécuriser
+Matrice de Kraljic : stratégie pour les achats STRATÉGIQUES ? ;; Partenariat, innovation, gouvernance et gestion du risque. ;; Partenariat
+C: Kraljic : non critiques → {{c1::simplifier et automatiser}} · leviers → {{c2::mettre en concurrence et optimiser le coût}} · goulots d'étranglement → {{c3::sécuriser disponibilité et alternatives}} · stratégiques → {{c4::partenariat, innovation, gouvernance, gestion du risque}}. ;; 4 quadrants.
+Comment lire les quadrants de Kraljic sur le schéma ? ;; Axes : importance stratégique des achats (vertical) et complexité du marché (horizontal). Achats leviers = importance élevée / marché peu complexe ; stratégiques = élevée / complexe ; simples = faible / peu complexe ; critiques = faible / complexe. ;; Importance × complexité
+Comment préparer une négociation ? ;; Définir objectif, cible et seuil de sortie · avoir une solution de repli · identifier les variables négociables · préparer concessions et contreparties · ne jamais concéder gratuitement. ;; Objectif · repli · variables · concessions
+Quelles variables négociables ? ;; Prix, volume, MOQ, délai, paiement, transport, Incoterm, capacité, qualité. ;; 9 variables
+Règle d'or sur les concessions ? ;; Ne jamais concéder gratuitement : une concession doit obtenir quelque chose en retour (contrepartie). ;; Concession = contrepartie
+Les leviers de négociation ? ;; Prix et indexation · volumes et durée d'engagement · MOQ et fréquence de livraison · délais, capacité réservée et flexibilité · paiement, transport et Incoterm · qualité, packaging, stocks consignés, innovation et RSE. ;; Prix · volumes · MOQ · délais · paiement · qualité
+
+## 6 · Logistique internationale | 🌐
+Les modes de transport et leurs atouts ? ;; Route : flexible, flux européens et dernier kilomètre · Mer : économique sur longues distances mais délais plus longs · Air : rapide mais coût et impact environnemental élevés · Rail : pertinent sur certains corridors et flux massifiés · Multimodal : combinaison de plusieurs modes. ;; Route · mer · air · rail · multimodal
+Transport routier : atouts ? ;; Flexible, adapté aux flux européens et au dernier kilomètre. ;; Flexible, dernier km
+Transport maritime : atouts et limites ? ;; Économique sur longues distances, mais délais plus longs. ;; Pas cher, lent
+Transport aérien : atouts et limites ? ;; Rapide, mais coût et impact environnemental élevés. ;; Rapide, cher, polluant
+Transport ferroviaire : intérêt ? ;; Pertinent sur certains corridors et flux massifiés. ;; Corridors, gros flux
+Transport multimodal ? ;; Combinaison de plusieurs modes de transport. ;; Plusieurs modes
+FCL ? ;; Full Container Load : conteneur complet réservé au flux. ;; Conteneur complet
+LCL ? ;; Less than Container Load : groupage de plusieurs expéditions. ;; Groupage
+Comment choisir FCL ou LCL ? ;; Selon le volume, la fréquence, l'urgence, la valeur et les contraintes. ;; Volume · fréquence · urgence · valeur
+Que comprennent les délais en transport maritime ? ;; Souvent pré-acheminement, transit, opérations portuaires et post-acheminement. ;; Pré + transit + port + post
+Facture commerciale ? ;; Document qui indique la valeur et les données de la transaction. ;; Valeur
+Packing list ? ;; Document qui précise colis, poids, dimensions et contenu. ;; Colisage
+CMR ? ;; Document du transport routier. ;; Route
+Bill of Lading (B/L) ? ;; Document du transport maritime. ;; Mer
+Air Waybill (AWB) ? ;; Document du transport aérien. ;; Air
+C: Documents : {{c1::CMR}} = routier · {{c2::Bill of Lading}} = maritime · {{c3::Air Waybill}} = aérien · {{c4::packing list}} = colis, poids, dimensions, contenu · {{c5::facture commerciale}} = valeur et données de transaction. ;; Documents de transport.
+Quels autres documents peuvent être exigés ? ;; Documents douaniers, origine, certificats qualité/réglementaires selon le produit. ;; Douane · origine · certificats
+
+## 7 · INCOTERMS (le cours) | 🚢
+Que définissent les Incoterms® ? ;; Notamment certaines responsabilités, coûts et transferts de risques entre vendeur et acheteur. ;; Responsabilités · coûts · risques
+Combien d'Incoterms® 2020 ? Quelles familles ? ;; 11 règles : 7 pour tous modes (EXW, FCA, CPT, CIP, DAP, DPU, DDP) et 4 maritimes / voies navigables (FAS, FOB, CFR, CIF). ;; 7 + 4
+C: Tous modes : {{c1::EXW, FCA, CPT, CIP, DAP, DPU, DDP}} (7) · maritimes / voies navigables : {{c2::FAS, FOB, CFR, CIF}} (4). ;; Les 11 règles 2020.
+Comment doit-on écrire un Incoterm ? ;; Toujours : règle + lieu précis + Incoterms® 2020. ;; Règle + lieu + version
+Pourquoi les Incoterms sont-ils essentiels en achats ? ;; Ils déterminent notamment : qui organise le transport · qui paie les différentes étapes logistiques · où le risque est transféré · qui réalise certaines formalités douanières · qui souscrit l'assurance lorsqu'elle est prévue · jusqu'où le vendeur doit livrer. ;; Transport · coûts · risque · douane · assurance · livraison
+Question du cours : un fournisseur chinois propose 2 000 €/tonne en EXW, FOB ou DDP. Est-ce le même prix ? ;; Non : selon l'Incoterm, le vendeur prend en charge plus ou moins de transport, de formalités et de risques ; il faut comparer en coût rendu (ajouter les coûts logistiques non inclus). ;; Même prix affiché ≠ même coût
+Que ne définissent PAS les Incoterms ? ;; Le transfert de propriété · le prix de la marchandise · le mode de paiement · la date de paiement · la qualité · les pénalités contractuelles · les conditions de garantie · la responsabilité en cas de non-conformité. ;; Pas propriété, prix, paiement, qualité, garantie
+Que signifie « les Incoterms complètent le contrat commercial » ? ;; Ils ne le remplacent pas : ils précisent coûts, risques et obligations de livraison, mais prix, paiement, qualité, pénalités et garanties restent dans le contrat. ;; Complètent, ne remplacent pas
+Les 3 notions fondamentales des Incoterms ? ;; A. Les coûts (qui paie) · B. Les risques (quand le risque de perte ou d'avarie passe du vendeur à l'acheteur) · C. Les obligations (qui organise, réserve, charge, décharge, dédouane, assure). ;; Coûts · risques · obligations
+Dans quel ordre se répartissent les coûts ? ;; Pré-transport → export → transport principal → import → livraison finale. ;; De l'usine au client
+Quelles obligations les Incoterms répartissent-ils ? ;; Organiser, réserver, charger, décharger, dédouaner, assurer. ;; 6 verbes
+Quel est LE point essentiel à retenir ? ;; Celui qui paie le transport n'est pas nécessairement celui qui supporte le risque pendant ce transport. ;; Payer ≠ risque
+Pour quels Incoterms ce point est-il particulièrement important ? ;; CPT, CIP, CFR, CIF. ;; Les termes C
+Incoterms : vue d'ensemble EXW ? ;; Mise à disposition chez le vendeur. ;; Chez le vendeur
+Incoterms : vue d'ensemble FCA ? ;; Livraison au transporteur / lieu convenu, avec formalités export par le vendeur. ;; Export vendeur
+Incoterms : vue d'ensemble CPT / CIP ? ;; Transport payé jusqu'au lieu nommé ; transfert du risque plus tôt, à la remise au transporteur. ;; Payé jusqu'à destination, risque au départ
+Incoterms : vue d'ensemble DAP / DPU / DDP ? ;; Responsabilité vendeur croissante jusqu'à la destination ; DPU inclut le déchargement, DDP inclut les obligations import selon la règle. ;; Vendeur de plus en plus responsable
+Attention (vue d'ensemble) ? ;; Le transfert des coûts et le transfert du risque ne coïncident pas nécessairement. ;; Coûts ≠ risque
+Focus EXW vs FCA : que donne EXW ? ;; Davantage de tâches à l'acheteur dès la mise à disposition. ;; Tout à l'acheteur
+Focus EXW vs FCA : pourquoi FCA ? ;; FCA peut être plus adapté à un flux international où le vendeur gère l'export et remet la marchandise au transporteur. Le choix dépend de la capacité réelle des parties à gérer transport, export, douane et responsabilités ; le lieu nommé doit être précis. ;; Export géré par le vendeur
+Focus DAP : définition ? ;; Le vendeur supporte coûts et risques jusqu'au lieu de destination convenu, marchandise prête à être déchargée. ;; Livré, prêt à décharger
+Focus DDP : définition ? ;; Responsabilité vendeur plus large, incluant les formalités import et les droits/taxes selon la règle. ;; Import inclus
+Pourquoi le DDP peut-il être complexe ? ;; Lorsque le vendeur n'a pas la capacité juridique ou opérationnelle de gérer l'import dans le pays d'arrivée ; il faut analyser le schéma réel avant de choisir. ;; Vendeur parfois incapable de gérer l'import
+Focus FOB : définition ? ;; Livraison lorsque la marchandise est à bord du navire. Règle maritime / voies navigables. ;; À bord
+Focus CFR : définition ? ;; Le vendeur paie le fret jusqu'au port nommé, mais le risque transfère à l'embarquement. ;; Fret payé, risque à l'embarquement
+Focus CIF : définition ? ;; Comme CFR, avec assurance selon la règle. ;; CFR + assurance
+Quels Incoterms pour les conteneurs ? ;; FCA/CPT/CIP peuvent souvent mieux correspondre au point réel de remise (les règles FOB/CFR/CIF sont destinées au transport maritime / voies navigables). ;; FCA · CPT · CIP
+Tableau : EXW : qui paie le transport principal ? Où est transféré le risque ? Assurance vendeur ? ;; Transport principal : acheteur · risque : mise à disposition · assurance vendeur : non. ;; Acheteur · mise à disposition · non
+Tableau : FCA ? ;; Transport principal : acheteur · risque : remise au transporteur · assurance vendeur : non. ;; Acheteur · remise au transporteur · non
+Tableau : CPT ? ;; Transport principal : vendeur · risque : premier transporteur · assurance vendeur : non. ;; Vendeur · 1er transporteur · non
+Tableau : CIP ? ;; Transport principal : vendeur · risque : premier transporteur · assurance vendeur : OUI. ;; Vendeur · 1er transporteur · oui
+Tableau : DAP ? ;; Transport principal : vendeur · risque : destination · assurance vendeur : non. ;; Vendeur · destination · non
+Tableau : DPU ? ;; Transport principal : vendeur · risque : destination après déchargement · assurance vendeur : non. ;; Vendeur · destination déchargée · non
+Tableau : DDP ? ;; Transport principal : vendeur · risque : destination · assurance vendeur : non. ;; Vendeur · destination · non
+Tableau : FAS ? ;; Transport principal : acheteur · risque : le long du navire · assurance vendeur : non. ;; Acheteur · le long du navire · non
+Tableau : FOB ? ;; Transport principal : acheteur · risque : à bord · assurance vendeur : non. ;; Acheteur · à bord · non
+Tableau : CFR ? ;; Transport principal : vendeur · risque : à bord · assurance vendeur : non. ;; Vendeur · à bord · non
+Tableau : CIF ? ;; Transport principal : vendeur · risque : à bord · assurance vendeur : OUI. ;; Vendeur · à bord · oui
+C: Transport principal payé par l'ACHETEUR : {{c1::EXW, FCA, FAS, FOB}} · par le VENDEUR : {{c2::CPT, CIP, DAP, DPU, DDP, CFR, CIF}}. ;; Qui paie le transport principal.
+C: Assurance souscrite par le vendeur : seulement {{c1::CIP}} et {{c2::CIF}}. ;; Seuls CIP et CIF.
+C: Risque transféré : EXW = {{c1::mise à disposition}} · FCA = {{c2::remise au transporteur}} · CPT/CIP = {{c3::premier transporteur}} · DAP/DDP = {{c4::destination}} · DPU = {{c5::destination après déchargement}} · FAS = {{c6::le long du navire}} · FOB/CFR/CIF = {{c7::à bord}}. ;; Où le risque passe à l'acheteur.
+Quels Incoterms ont le risque transféré au départ alors que le vendeur paie le transport ? ;; CPT, CIP (premier transporteur), CFR, CIF (à bord) : le vendeur paie le transport principal mais le risque est transféré tôt. ;; Les termes C
+Schéma multimodal : quelles étapes de la chaîne sont représentées ? ;; Chargé · douane export · pré-acheminement · THC (départ) · transport principal · THC (arrivée) · douane import · post-acheminement · déchargé. ;; 9 étapes, du vendeur à l'acheteur
+Que veut dire THC sur le schéma ? ;; Terminal Handling Charges (frais de manutention au terminal). ;; Frais de terminal
+Schéma : couleurs bleu et orange ? ;; Bleu = coûts vendeur · orange = risques vendeur · les teintes claires = option · gris = coûts/risques acheteur. ;; Bleu coûts · orange risques
+Schéma : que supporte le vendeur en EXW ? ;; Seulement la mise à disposition (tout le reste est à l'acheteur). ;; Presque rien
+Schéma : jusqu'où va le vendeur en DDP ? ;; Coûts et risques jusqu'à la destination, import compris (« si possible : DDP hors TVA ») ; seul le déchargement reste à l'acheteur. ;; Import inclus, hors TVA si possible
+Schéma : DPU vs DAP ? ;; En DPU le vendeur va jusqu'au déchargement ; en DAP il livre prêt à décharger. L'import reste à l'acheteur dans les deux cas. ;; Déchargement
+Schéma : l'assurance en CIP ? ;; Assurance « ad valorem – tous risques » au profit de l'acheteur. Hormis pour CIP, l'assurance n'est pas obligatoire, ni pour le vendeur, ni pour l'acheteur. ;; Tous risques pour l'acheteur
+
+## 8 · Douane, risques, qualité et RSE | 🛡️
+Les 5 points de la douane ? ;; Classification tarifaire (code douanier) · origine · valeur en douane · droits, TVA import, restrictions, licences et documents · traçabilité documentaire. ;; Classification · origine · valeur
+Classification tarifaire ? ;; Déterminer le code douanier applicable. ;; Code douanier
+Origine en douane ? ;; Déterminer le pays d'origine au sens douanier ; à ne pas confondre avec la provenance. ;; Origine ≠ provenance
+Valeur en douane ? ;; La base utilisée selon les règles applicables (pour calculer les droits). ;; Base de calcul
+Qualité fournisseurs : avant sélection ? ;; Spécifications, échantillons, essais, certificats, capacité, traçabilité. ;; Spécifications · échantillons · essais
+Qualité fournisseurs : après sélection ? ;; Contrôle réception, non-conformités, analyse de cause, plan d'action ; mesurer la performance dans le temps. ;; Réception · NC · cause · plan d'action
+Qui partage les critères de qualification ? ;; La Qualité et les Achats. ;; Qualité + Achats
+Quels sont les risques supply chain ? ;; Single sourcing et dépendance fournisseur · risque géographique, géopolitique et transport · capacité, qualité, financier, change et réglementation · catastrophe, énergie, matières premières, cyber ou défaillance logistique. ;; Dépendance, géographie, capacité, change, cyber
+Comment évalue-t-on un risque ? ;; Selon la probabilité, l'impact et la capacité de détection / réaction. ;; Probabilité · impact · détection
+Comment sécuriser une source ? ;; Dual sourcing ou source alternative qualifiée · stock de sécurité adapté au risque · capacité réservée et accords de continuité · diversification géographique · plans de continuité et scénarios de crise · qualification préalable d'une alternative pour réduire le temps de réaction. ;; Dual sourcing · stock · capacité · géographie · continuité
+Pourquoi qualifier une alternative à l'avance ? ;; Pour réduire le temps de réaction en cas de problème. ;; Gagner du temps
+RSE dans les achats et la logistique : quels sujets ? ;; Origine et traçabilité des matières · transport et émissions · packaging, déchets, circularité · énergie, eau, substances réglementées · conditions de travail et exigences fournisseurs. ;; Origine · transport · packaging · énergie · travail
+Quel est le rôle de la RSE dans la décision ? ;; Elle devient progressivement un critère de décision et de pilotage. ;; Critère de décision
+
+## 9 · Mise en pratique : 3 fournisseurs | 🧮
+Énoncé : besoin annuel et fournisseurs ? ;; Besoin : 120 tonnes/an. A : 8,50 €/kg + transport 0,40 €/kg, délai 12 j, MOQ 1 t, défauts 1 %, FCA. B : 8,10 + 1,00 €/kg, 35 j, MOQ 8 t, défauts 2,5 %, EXW. C : 9,00 + 0,10 €/kg, 5 j, MOQ 0,5 t, défauts 0,5 %, DAP. ;; 120 t · A FCA · B EXW · C DAP
+Quelles questions pose l'exercice ? ;; Coût rendu ? Risques ? Allocation ? Incoterm ? 5 KPI ? Plan B ? (calculer, comparer, identifier les risques, proposer une allocation, choisir un Incoterm, proposer 5 KPI). ;; 6 questions
+Coût rendu du fournisseur A ? ;; 8,50 + 0,40 = 8,90 €/kg. ;; 8,90
+Coût rendu du fournisseur B ? ;; 8,10 + 1,00 = 9,10 €/kg (avant autres coûts éventuels). ;; 9,10
+Coût rendu du fournisseur C ? ;; 9,00 + 0,10 = 9,10 €/kg (avant autres coûts éventuels). ;; 9,10
+C: Coût rendu = {{c1::prix}} + {{c2::transport}} : A = {{c3::8,90}} · B = {{c4::9,10}} · C = {{c5::9,10}} €/kg. ;; Corrigé de l'exercice.
+Coût annuel de chaque fournisseur pour 120 t (calcul) ? ;; A : 120 000 kg × 8,90 = 1 068 000 € · B : 120 000 × 9,10 = 1 092 000 € · C : 1 092 000 €. (Calcul à partir des coûts rendus du corrigé.) ;; 1,068 M€ · 1,092 M€
+Que dit le corrigé : peut-on décider sur le coût seul ? ;; Non : il faut intégrer délai, qualité, MOQ, risque et capacité. ;; Délai · qualité · MOQ · risque · capacité
+Que dit le corrigé de l'allocation ? ;; Une stratégie multi-sources peut être défendue si elle améliore la résilience. ;; Multi-sources = résilience
+Quels sont les Incoterms de l'exercice ? ;; A : FCA · B : EXW · C : DAP. ;; FCA · EXW · DAP
+Pourquoi B n'est pas le moins cher malgré son prix matière le plus bas ? ;; Son transport est à 1,00 €/kg : le coût rendu (9,10 €/kg) dépasse celui de A (8,90 €/kg). En plus : délai 35 j, MOQ 8 t, défauts 2,5 %. ;; 8,10 + 1,00
+Quel fournisseur est le plus rapide et le plus qualitatif de l'exercice ? ;; C : délai 5 j, MOQ 0,5 t, défauts 0,5 % (mais prix matière le plus élevé : 9,00 €/kg). ;; C

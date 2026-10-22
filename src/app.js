@@ -701,7 +701,7 @@ class SuperAnki {
     migrateCourses() {
         const st = this.data.settings;
         /* course decks that were withdrawn (not based on the user's own course material): removed once from this device */
-        ['logsc', 'incosc'].forEach(id => {
+        ['logsc', 'incosc', 'tdach'].forEach(id => {
             const flag = `course_retired_${id}`;
             if (st[flag]) return;
             st[flag] = true;
