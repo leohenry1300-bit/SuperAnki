@@ -700,6 +700,18 @@ class SuperAnki {
        "Mes cours BUT TC > Semestre N", with a saved filter to revise the whole course in one go. */
     migrateCourses() {
         const st = this.data.settings;
+        /* course decks that were withdrawn (not based on the user's own course material): removed once from this device */
+        ['logsc'].forEach(id => {
+            const flag = `course_retired_${id}`;
+            if (st[flag]) return;
+            st[flag] = true;
+            const dids = new Set(this.data.decks.filter(d => d.id === `co_${id}` || d.id.startsWith(`co_${id}_d`)).map(d => d.id));
+            if (dids.size) {
+                this.data.cards = this.data.cards.filter(c => !dids.has(c.deckId));
+                this.data.decks = this.data.decks.filter(d => !dids.has(d.id));
+            }
+            if (Array.isArray(st.filters)) st.filters = st.filters.filter(f => f.id !== `flt_${id}`);
+        });
         (typeof COURSES === 'undefined' ? [] : COURSES).forEach(co => {
             const flag = `course_${co.id}`;
             if (st[flag]) return;
