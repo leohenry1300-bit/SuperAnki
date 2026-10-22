@@ -2945,6 +2945,7 @@ class SuperAnki {
                 ${st.due ? `<span class="due-badge" title="À revoir">${st.due}</span>` : '<span class="due-badge ph"></span>'}
                 <button class="icon-btn icon-btn-sm" title="Réviser ce sous-paquet" data-action="study" data-deck="${esc(k.id)}">${ic('play')}</button>
                 <button class="icon-btn icon-btn-sm" title="Révision libre : toutes les cartes, sans toucher au planning" data-action="free-deck" data-deck="${esc(k.id)}">${ic('repeat')}</button>
+                <button class="icon-btn icon-btn-sm" title="Étudier dans l'ordre" data-action="ordered-deck" data-deck="${esc(k.id)}">${ic('list')}</button>
             </div>${kids.length && isOpen ? subRows(k.id, depth + 1) : ''}`;
         }).join('');
         return rows.map(({ deck, cards, c, todo }) => {
@@ -2970,6 +2971,7 @@ class SuperAnki {
                         : `<button class="btn btn-soft btn-sm" data-action="practice-deck" data-deck="${esc(deck.id)}">${ic('check')}À jour</button>`}
                     <div class="modes">
                         <button class="icon-btn icon-btn-sm" title="Révision libre : toutes les cartes, sans toucher au planning" data-action="free-deck" data-deck="${esc(deck.id)}">${ic('repeat')}</button>
+                        <button class="icon-btn icon-btn-sm" title="Étudier dans l'ordre" data-action="ordered-deck" data-deck="${esc(deck.id)}">${ic('list')}</button>
                         <button class="icon-btn icon-btn-sm" title="Écrire" data-action="mode" data-mode="write" data-deck="${esc(deck.id)}">${ic('keyboard')}</button>
                         <button class="icon-btn icon-btn-sm" title="Quiz" data-action="mode" data-mode="quiz" data-deck="${esc(deck.id)}">${ic('quiz')}</button>
                         <button class="icon-btn icon-btn-sm" title="Chrono" data-action="mode" data-mode="chrono" data-deck="${esc(deck.id)}">${ic('timer')}</button>
@@ -3224,6 +3226,7 @@ class SuperAnki {
             actions = `
                 <button class="btn btn-primary btn-sm" data-action="study" data-deck="${esc(deck.id)}">${ic('play')}Réviser</button>
                 <button class="btn btn-soft btn-sm" data-action="free-deck" data-deck="${esc(deck.id)}" title="Toutes les cartes du paquet et des sous-paquets, sans toucher au planning">${ic('repeat')}Révision libre</button>
+                <button class="btn btn-soft btn-sm" data-action="ordered-deck" data-deck="${esc(deck.id)}" title="Les cartes du paquet et des sous-paquets, dans l'ordre du cours, sans toucher au planning">${ic('list')}Dans l'ordre</button>
                 <button class="btn btn-soft btn-sm" data-action="new-card" data-deck="${esc(deck.id)}">${ic('plus')}Carte</button>
                 <button class="icon-btn" title="Options d'étude du paquet" data-action="deck-options" data-deck="${esc(deck.id)}">${ic('sliders')}</button>
                 <button class="icon-btn" title="Sous-paquet" data-action="new-subdeck" data-deck="${esc(deck.id)}">${ic('folderPlus')}</button>
@@ -3513,10 +3516,10 @@ class SuperAnki {
         this.go('session');
         this.nextCard();
     }
-    startPractice(deckIds, answer = 'flip', count = 20, title, fromIds) {
+    startPractice(deckIds, answer = 'flip', count = 20, title, fromIds, ordered = false) {
         let ids = fromIds || this.poolFor(deckIds).map(c => c.id);
         if (!ids.length) { this.toast('Aucune carte disponible.', 'warning'); return; }
-        ids = shuffle([...ids]).slice(0, count >= 9999 ? ids.length : count);
+        ids = ordered ? ids : shuffle([...ids]).slice(0, count >= 9999 ? ids.length : count);
         const deck = deckIds && deckIds.length === 1 && this.deck(deckIds[0]);
         this.session = {
             kind: 'practice', title: title || (answer === 'type' ? 'Écrire' : 'Entraînement') + (deck ? ` · ${this.deckPath(deck.id)}` : ''),
@@ -3528,9 +3531,15 @@ class SuperAnki {
     }
     /* Free revision: every card of the deck and its sub-decks, in random order, no impact on the schedule.
        Missed cards are put back at the end of the queue (see practiceAnswer). */
-    startFree(deckId) {
-        const d = this.deck(deckId);
-        this.startPractice([deckId], this.data.settings.answerMode, 9999, d ? `Révision libre · ${this.deckPath(d.id)}` : 'Révision libre');
+    startFree(deckId, ordered = false) {
+        const d = this.deck(deckId), name = d ? this.deckPath(d.id) : '';
+        if (!ordered) { this.startPractice([deckId], this.data.settings.answerMode, 9999, `Révision libre · ${name}`); return; }
+        /* in order: sub-decks as listed (depth first), cards in the order they were written, then cloze number */
+        const rank = new Map(); let n = 0;
+        const walk = id => { rank.set(id, n++); this.childrenOf(id).forEach(k => walk(k.id)); };
+        walk(deckId);
+        const ids = this.poolFor([deckId]).sort((a, b) => (rank.get(a.deckId) - rank.get(b.deckId)) || (a.created - b.created) || ((a.ord || 0) - (b.ord || 0))).map(c => c.id);
+        this.startPractice([deckId], this.data.settings.answerMode, 9999, `Dans l'ordre · ${name}`, ids, true);
     }
     poolFor(deckIds) {
         if (deckIds === 'errors') return this.errorCards();
@@ -4777,6 +4786,7 @@ class SuperAnki {
             case 'practice-all': this.startPractice(null, this.data.settings.answerMode, 20); break;
             case 'practice-deck':
             case 'free-deck': this.startFree(ds.deck); break;
+            case 'ordered-deck': this.startFree(ds.deck, true); break;
             case 'practice-errors': {
                 const ids = this.errorCards().map(c => c.id);
                 if (!ids.length) { this.toast('Aucune erreur à retravailler 🎉', 'success'); break; }
