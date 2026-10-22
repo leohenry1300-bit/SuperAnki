@@ -2943,6 +2943,7 @@ class SuperAnki {
                 <span class="sub-bar">${this.progressHtml(st)}<small>${this.pctSeen(st)} % vu · ${this.pctMature(st)} % maîtrisé · ${st.total}</small></span>
                 ${st.due ? `<span class="due-badge" title="À revoir">${st.due}</span>` : '<span class="due-badge ph"></span>'}
                 <button class="icon-btn icon-btn-sm" title="Réviser ce sous-paquet" data-action="study" data-deck="${esc(k.id)}">${ic('play')}</button>
+                <button class="icon-btn icon-btn-sm" title="Révision libre : toutes les cartes, sans toucher au planning" data-action="free-deck" data-deck="${esc(k.id)}">${ic('repeat')}</button>
             </div>${kids.length && isOpen ? subRows(k.id, depth + 1) : ''}`;
         }).join('');
         return rows.map(({ deck, cards, c, todo }) => {
@@ -2967,6 +2968,7 @@ class SuperAnki {
                     ${todo > 0 ? `<button class="btn btn-primary btn-sm" data-action="study" data-deck="${esc(deck.id)}">${ic('play')}Réviser (${todo})</button>`
                         : `<button class="btn btn-soft btn-sm" data-action="practice-deck" data-deck="${esc(deck.id)}">${ic('check')}À jour</button>`}
                     <div class="modes">
+                        <button class="icon-btn icon-btn-sm" title="Révision libre : toutes les cartes, sans toucher au planning" data-action="free-deck" data-deck="${esc(deck.id)}">${ic('repeat')}</button>
                         <button class="icon-btn icon-btn-sm" title="Écrire" data-action="mode" data-mode="write" data-deck="${esc(deck.id)}">${ic('keyboard')}</button>
                         <button class="icon-btn icon-btn-sm" title="Quiz" data-action="mode" data-mode="quiz" data-deck="${esc(deck.id)}">${ic('quiz')}</button>
                         <button class="icon-btn icon-btn-sm" title="Chrono" data-action="mode" data-mode="chrono" data-deck="${esc(deck.id)}">${ic('timer')}</button>
@@ -3220,6 +3222,7 @@ class SuperAnki {
             title = `<span class="crumbs">${this.deckChain(deck.id).map((d, i, a) => i === a.length - 1 ? `<span>${esc(d.emoji)} ${esc(d.name)}</span>` : `<button class="crumb" data-action="select-deck" data-deck="${esc(d.id)}">${esc(d.name)}</button><span class="crumb-sep">›</span>`).join('')}</span>`;
             actions = `
                 <button class="btn btn-primary btn-sm" data-action="study" data-deck="${esc(deck.id)}">${ic('play')}Réviser</button>
+                <button class="btn btn-soft btn-sm" data-action="free-deck" data-deck="${esc(deck.id)}" title="Toutes les cartes du paquet et des sous-paquets, sans toucher au planning">${ic('repeat')}Révision libre</button>
                 <button class="btn btn-soft btn-sm" data-action="new-card" data-deck="${esc(deck.id)}">${ic('plus')}Carte</button>
                 <button class="icon-btn" title="Options d'étude du paquet" data-action="deck-options" data-deck="${esc(deck.id)}">${ic('sliders')}</button>
                 <button class="icon-btn" title="Sous-paquet" data-action="new-subdeck" data-deck="${esc(deck.id)}">${ic('folderPlus')}</button>
@@ -3486,7 +3489,7 @@ class SuperAnki {
                 }).then(y => { if (y) this.startStudy(deckId, 10); });
             } else {
                 this.confirm({ title: 'Tout est à jour 🎉', message: 'Rien à réviser ici pour l\'instant. Veux-tu t\'entraîner quand même (sans impact sur le planning) ?', ok: 'S\'entraîner' })
-                    .then(y => { if (y) this.startPractice(deckIds, 'flip', 20); });
+                    .then(y => { if (y) { if (deckId) this.startFree(deckId); else this.startPractice(null, 'flip', 20); } });
             }
             return;
         }
@@ -3521,6 +3524,12 @@ class SuperAnki {
         };
         this.go('session');
         this.nextCard();
+    }
+    /* Free revision: every card of the deck and its sub-decks, in random order, no impact on the schedule.
+       Missed cards are put back at the end of the queue (see practiceAnswer). */
+    startFree(deckId) {
+        const d = this.deck(deckId);
+        this.startPractice([deckId], this.data.settings.answerMode, 9999, d ? `Révision libre · ${this.deckPath(d.id)}` : 'Révision libre');
     }
     poolFor(deckIds) {
         if (deckIds === 'errors') return this.errorCards();
@@ -3763,7 +3772,7 @@ class SuperAnki {
             card.wrong++; card.errors++;
             if (!s.missed.includes(card.id)) s.missed.push(card.id);
             s.retries[card.id] = (s.retries[card.id] || 0) + 1;
-            if (s.retries[card.id] <= 2) s.queue.splice(Math.min(3, s.queue.length), 0, card.id);
+            if (s.retries[card.id] <= 2) s.queue.push(card.id);   // missed cards come back at the very end, not right away
         }
         s.done++;   // only the error counters are updated: no scheduling, stats, streak or history
         this.save();
@@ -4758,7 +4767,8 @@ class SuperAnki {
             case 'study': this.startStudy(ds.deck || null); break;
             case 'extra-new': this.startStudy(null, 10); break;
             case 'practice-all': this.startPractice(null, this.data.settings.answerMode, 20); break;
-            case 'practice-deck': this.startPractice([ds.deck], this.data.settings.answerMode, 20); break;
+            case 'practice-deck':
+            case 'free-deck': this.startFree(ds.deck); break;
             case 'practice-errors': {
                 const ids = this.errorCards().map(c => c.id);
                 if (!ids.length) { this.toast('Aucune erreur à retravailler 🎉', 'success'); break; }
