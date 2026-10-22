@@ -1097,6 +1097,7 @@ class SuperAnki {
     go(view, opts = {}) {
         if (this.session && view !== 'session') this.endSession(false);
         if (this.ex && view !== 'exam') this.exLeave();
+        if (view === 'session' && this.view !== 'session' && this.view !== 'exam') this.back = { view: this.view, deck: this.ui.deck, filter: this.ui.filter, y: window.scrollY };   // where to return when the session is closed
         this.view = view;
         if (opts.deck !== undefined) { this.ui.deck = opts.deck; this.ui.limit = 60; }
         if (opts.filter !== undefined) this.ui.filter = opts.filter;
@@ -1858,7 +1859,14 @@ class SuperAnki {
         this.session = null;
         document.body.classList.remove('in-session');
         if (Cloud.deferred) { Cloud.deferred = false; setTimeout(() => Cloud.sync(), 300); }
-        if (goHome) this.go('dashboard');
+        if (goHome) this.goBack();
+    }
+    /* After a session: back to the screen it was started from (same deck, same scroll), the dashboard otherwise */
+    goBack() {
+        const b = this.back; this.back = null;
+        if (!b || !['dashboard', 'decks', 'stats', 'toeic'].includes(b.view)) { this.go('dashboard'); return; }
+        this.go(b.view, b.view === 'decks' && b.deck !== undefined && (b.deck === 'all' || b.deck === 'errors' || this.deck(b.deck)) ? { deck: b.deck, filter: b.filter } : {});
+        if (b.y) window.scrollTo({ top: b.y, behavior: 'instant' in window ? 'instant' : 'auto' });
     }
     quitSession() {
         const s = this.session;
@@ -2311,7 +2319,7 @@ class SuperAnki {
                 ${groupLeft ? `<button class="btn btn-primary btn-lg" data-action="study-next-group" data-deck="${esc(groupDeck)}">${ic('play')}Groupe suivant (${plural(groupLeft, 'carte restante', 'cartes restantes')})</button>` : ''}
                 ${missed.length ? `<button class="btn ${groupLeft ? 'btn-soft' : 'btn-primary'} btn-lg" data-action="practice-missed">${ic('target')}Retravailler ces ${plural(missed.length, 'erreur')}</button>` : ''}
                 ${kind === 'chrono' || kind === 'quiz' ? `<button class="btn btn-soft btn-lg" data-action="replay">${ic('repeat')}Rejouer</button>` : ''}
-                <button class="btn ${missed.length ? 'btn-soft' : 'btn-primary'} btn-lg" data-action="home">${ic('home')}Retour à l'accueil</button>
+                <button class="btn ${missed.length ? 'btn-soft' : 'btn-primary'} btn-lg" data-action="back-origin">${ic('home')}${this.back && this.back.view === 'decks' ? 'Retour aux cartes' : 'Retour à l\'accueil'}</button>
             </div>
         </div>`;
         this.view = 'session';
@@ -3034,7 +3042,7 @@ class SuperAnki {
         const s = this.session;
         if (this.view !== 'session') return;
         if (!s) {
-            if (e.key === 'Escape' || (e.key === 'Enter' && !typing)) { e.preventDefault(); this.go('dashboard'); }
+            if (e.key === 'Escape' || (e.key === 'Enter' && !typing)) { e.preventDefault(); this.goBack(); }
             return;
         }
         if (e.key === 'Escape') { e.preventDefault(); this.quitSession(); return; }
@@ -3100,6 +3108,7 @@ class SuperAnki {
                 break;
             }
             case 'home': this.endSession(false); this.go('dashboard'); break;
+            case 'back-origin': this.goBack(); break;
             case 'mode': this.openModeLauncher(ds.mode, ds.deck); break;
             case 'new-card': this.openCardModal(null, ds.deck); break;
             case 'new-deck': this.openDeckModal(); break;
