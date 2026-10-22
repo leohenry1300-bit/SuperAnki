@@ -1,0 +1,151 @@
+@course tdach | Achats et supply chain · dossier COLART | 📦 | Révisions faites UNIQUEMENT à partir du support « TD Achats & Supply Chain » (résine acrylique, COLART) : cahier des charges, fournisseurs, Incoterms utilisés, risques, TCO, matrice, stratégie et négociation.
+@tags BUT TC, S5, achats, supply chain, colart, tdach
+
+## 0 · L'essentiel du dossier | 🗺️
+Quel est le sujet du dossier ? ;; Le renouvellement du contrat d'approvisionnement en résine acrylique pour COLART : 5 fournisseurs analysés selon le prix, la qualité, les délais, les risques et l'impact environnemental. ;; Résine acrylique, 5 fournisseurs
+Quelle est la conclusion principale ? ;; RheinChem GmbH (Allemagne) est le meilleur choix : 1er de la matrice de décision (3,9/5) et risque le plus faible (1,8/5). Malgré un prix plus élevé, il garantit meilleure qualité, délais courts et forte fiabilité. ;; Allemagne : fiable, plus cher
+Quelle stratégie de sourcing est recommandée ? ;; Un sourcing multi-fournisseurs pour limiter les risques de rupture et de dépendance : 60 % Allemagne, 25 % États-Unis, 15 % Turquie. ;; 60 / 25 / 15
+Quel est le coût rendu moyen et le budget annuel ? ;; 8,36 €/kg, soit environ 8,4 M€/an. ;; 8,36 €/kg · 8,4 M€
+Quelle durée de contrat est recommandée et pourquoi ? ;; Un contrat de 3 ans, pour sécuriser les volumes et négocier les prix. ;; 3 ans
+Quelles mesures limitent les risques ? ;; Des audits, des contrôles qualité et un stock de sécurité. ;; Audits · contrôles · stock
+Quel est l'objectif final du dossier ? ;; Garantir un approvisionnement fiable et conforme aux exigences de COLART, tout en maîtrisant les coûts et en assurant la continuité de l'activité. ;; Fiable, conforme, maîtrisé
+Quelles sont les 10 parties du dossier ? ;; Executive summary · cahier des charges · analyse des 5 fournisseurs · analyse pays · analyse des risques fournisseurs · TCO / analyse économique · matrice de décision · stratégie de sourcing · plan de mitigation · recommandation finale. ;; Du résumé à la reco
+
+## 1 · Le cahier des charges | 📋
+Description du besoin ? ;; Résine acrylique utilisée pour plusieurs produits stratégiques. Contrat actuel à échéance dans 6 mois ; nouveau contrat visé : 3 ans. ;; Contrat 3 ans
+Spécifications de la résine ? ;; Pureté ≥ 98 % · humidité ≤ 0,5 % · conditionnement en fûts de 200 kg ou IBC · durée de vie 12 mois. ;; ≥98 % · ≤0,5 % · 12 mois
+Volumes ? ;; 1 000 t/an : France 500 t, Royaume-Uni 300 t, Chine 200 t. ;; 500 / 300 / 200
+Prévisions ? ;; 83,3 t/mois en moyenne ; prévisions glissantes sur 6 mois partagées avec les fournisseurs. ;; Glissantes sur 6 mois
+Fréquence de livraison et MOQ ? ;; Livraisons mensuelles. MOQ fournisseur ≤ lot mensuel du plus petit site. ;; Mensuel · MOQ ≤ plus petit lot
+Lead time demandé ? ;; ≤ 30 jours (production + transport). ;; ≤ 30 j
+Exigences qualité ? ;; Taux de non-conformité (NC) < 1 % · échantillon obligatoire avant qualification · audit avant les premiers volumes. ;; NC < 1 %
+Réglementation et RSE ? ;; Conformité REACH · réduction du CO₂ · traçabilité des matières · politique environnementale documentée · normes sociales (absence de travail forcé) · gestion des déchets · réduction de l'énergie. ;; REACH + RSE
+Exigences logistiques ? ;; OTIF cible ≥ 95 % · livraison par site (France, Royaume-Uni, Chine). ;; OTIF ≥ 95 %
+Incoterms demandés ? ;; DAP et FCA. ;; DAP · FCA
+Conditions de paiement ? ;; 60 jours date de facture ou 45 jours fin de mois. ;; 60 j / 45 j FDM
+Documents exigés ? ;; Traçabilité obligatoire · FDS (sites en France et au Royaume-Uni) · déclaration de conformité REACH · certificat d'analyse. ;; FDS · REACH · analyse · traçabilité
+Les 4 critères éliminatoires ? ;; Pas de conformité REACH · OTIF < 95 % · taux de NC ≥ 1 % · refus d'audit ou d'échantillon. ;; REACH · OTIF · NC · audit
+Les 2 critères de sélection ? ;; Contrat de 3 ans · pas de dépendance à un seul fournisseur. ;; 3 ans · pas de fournisseur unique
+C: Critères éliminatoires : pas de conformité {{c1::REACH}} · OTIF < {{c2::95 %}} · taux de NC ≥ {{c3::1 %}} · refus d'{{c4::audit}} ou d'{{c5::échantillon}}. ;; À connaître par cœur.
+
+## 2 · Les 5 fournisseurs | 🏭
+Qui sont les 5 fournisseurs ? ;; A : Chine · B : Allemagne (RheinChem GmbH) · C : Turquie (Anatolia Polymer) · D : Inde · E : États-Unis (American Polymer Solutions). ;; A Chine · B Allemagne · C Turquie · D Inde · E USA
+Prix matière de chaque fournisseur (€/kg) ? ;; A Chine 7,20 · B Allemagne 8,60 · C Turquie 7,70 · D Inde 6,90 · E États-Unis 8,00. ;; Inde la moins chère
+Lead time de chaque fournisseur ? ;; A Chine 60 j (25 prod + 35 transport) · B Allemagne 13 j (10 + 3) · C Turquie 22 j (15 + 7) · D Inde 55 j (30 + 25) · E USA 27 j (12 + 15). ;; Allemagne 13 j
+Capacité de chaque fournisseur ? ;; A Chine 3 000 t · B Allemagne 1 500 t (garantie : 600 t) · C Turquie 2 000 t · D Inde 4 000 t · E USA 2 500 t. ;; B : 600 t garanties
+MOQ de chaque fournisseur ? ;; A Chine 20 t · B Allemagne 5 t · C Turquie 10 t · D Inde 25 t · E USA 5 t. ;; Inde 25 t
+Taux de NC et OTIF de chaque fournisseur ? ;; A Chine 2,8 % / 91 % · B Allemagne 0,4 % / 98 % · C Turquie 1,2 % / 94 % · D Inde 3,5 % / 88 % · E USA 0,7 % / 96 %. ;; Allemagne meilleure
+Conditions de paiement de chaque fournisseur ? ;; A Chine 30 j · B Allemagne 60 j · C Turquie 45 j · D Inde 30 j · E USA 60 j. ;; Chine et Inde : 30 j
+Dépendance client de chaque fournisseur ? ;; A Chine 35 % · B Allemagne 18 % · C Turquie 25 % · D Inde 42 % · E USA 12 % (seuil de 10 %). ;; Inde 42 %
+Certifications et audits ? ;; Chine : ISO 9001, ISO 14001, REACH, audit non réalisé · Allemagne : ISO 9001, 14001, REACH, audit réalisé · Turquie : ISO 9001, REACH (ISO 14001 en cours), audit à réaliser · Inde : ISO 9001, REACH, audit non réalisé · USA : ISO 9001, 14001, REACH, audit à réaliser. ;; Seule l'Allemagne est auditée
+Impact CO₂ et structure des sites ? ;; CO₂ : Chine élevé, Allemagne faible, Turquie moyen, Inde élevé, USA élevé. Sites : Allemagne et USA multi-sites ; Chine, Turquie, Inde mono-site. ;; Allemagne : faible CO₂, multi-sites
+Que dit le dossier de la Chine (fournisseur) ? ;; Prix compétitif (7,20 €/kg) et grande capacité, mais délai de 60 jours, qualité insuffisante et pas d'audit : des risques pour COLART. ;; Prix OK, qualité non
+Que dit le dossier de l'Allemagne (fournisseur) ? ;; Excellente qualité, OTIF 98 %, délai de 13 jours ; prix élevé (8,60 €/kg) mais fournisseur le plus fiable. ;; Le plus fiable
+Que dit le dossier de la Turquie (fournisseur) ? ;; Bon compromis prix/délai, mais OTIF 94 % et NC 1,20 % : des améliorations sont nécessaires. ;; Compromis à améliorer
+Que dit le dossier de l'Inde (fournisseur) ? ;; Prix le plus bas (6,90 €/kg) et grande capacité, mais NC élevé, OTIF 88 % et MOQ de 25 t : fournisseur plus risqué. ;; Moins cher, plus risqué
+Que dit le dossier des États-Unis (fournisseur) ? ;; Bonne qualité et OTIF 96 %, mais risques de change, droits de douane et émissions de CO₂ peuvent augmenter le coût total. ;; Bien, mais coût total
+
+## 3 · Les Incoterms du dossier | 🚢
+Quels Incoterms sont utilisés dans le dossier ? ;; FOB Shanghai (Chine), DAP France (Allemagne et États-Unis), FCA Istanbul (Turquie), CIF Rotterdam (Inde). ;; FOB · DAP · FCA · CIF
+C: A (Chine) = {{c1::FOB Shanghai}} · B (Allemagne) = {{c2::DAP France}} · C (Turquie) = {{c3::FCA Istanbul}} · D (Inde) = {{c4::CIF Rotterdam}} · E (États-Unis) = {{c5::DAP France}}. ;; Incoterm de chaque fournisseur.
+Que doit prendre en charge COLART avec la Chine en FOB Shanghai ? ;; Le fret maritime, les THC, le déchargement, les frais de douane et le post-acheminement. ;; Fret + THC + déchargement + douane + post-acheminement
+Que comprend DAP France (Allemagne) pour COLART ? ;; Le transport jusqu'au lieu convenu est inclus dans le prix. Reste à COLART : le déchargement et les éventuels frais non inclus. Pas de droits de douane entre l'Allemagne et la France. ;; Transport inclus
+Que doit prévoir COLART avec la Turquie en FCA Istanbul ? ;; Le transport à partir du lieu de remise convenu, les formalités douanières (sans droits : union douanière avec l'UE), le post-acheminement et les éventuels frais de manutention. ;; Transport depuis Istanbul pour COLART
+Que comprend CIF Rotterdam (Inde) pour COLART ? ;; Le fret maritime et l'assurance minimale sont inclus. COLART doit prévoir le déchargement, les frais de douane et le post-acheminement. ;; Fret + assurance minimale inclus
+Que doit prévoir COLART avec les États-Unis en DAP France ? ;; Le transport jusqu'au lieu convenu est inclus. COLART doit principalement prévoir le déchargement et les frais de douane (+ risque de change EUR/USD). ;; Déchargement + douane
+Quel Incoterm est le plus risqué logistiquement pour COLART, selon la note ? ;; D (Inde, CIF Rotterdam) : note 5 : 25 jours de mer et post-acheminement à la charge de COLART. A (Chine, FOB) : note 4 : 35 jours de mer. C (Turquie, FCA Istanbul) : 3. E (USA, DAP) : 3 (mais 15 j de mer). B (Allemagne, DAP en 3 j) : 1. ;; CIF Inde = 5 · DAP Allemagne = 1
+Pourquoi les Incoterms comptent-ils dans la note « Contractuel » ? ;; D : CIF, MOQ de 25 t, 30 j · A : FOB, MOQ de 20 t, 30 j · C : FCA, MOQ de 10 t, 45 j, clause de change à prévoir · E : DAP, MOQ de 5 t, 60 j · B : DAP, MOQ de 5 t, 60 j. ;; Incoterm + MOQ + paiement
+Quel Incoterm le dossier recommande-t-il de privilégier en négociation ? ;; Un Incoterm qui limite les risques de COLART et clarifie la répartition des frais de transport et des responsabilités, par exemple le DAP (livraison au lieu convenu), en échange d'un volume régulier de commandes. ;; DAP
+Pourquoi le DAP limite-t-il les risques de l'acheteur ? ;; Le transport jusqu'au lieu convenu est inclus dans le prix : COLART n'a pas à organiser ni payer le fret principal et la répartition des frais et responsabilités est claire. ;; Livraison au lieu convenu
+Quels coûts le DAP laisse-t-il à l'acheteur ? ;; Le déchargement, les éventuels frais non inclus et, hors UE (États-Unis), les frais de douane. ;; Déchargement + douane
+Quels coûts le FOB laisse-t-il à l'acheteur ? ;; Tout le transport maritime et ce qui suit : fret, THC, déchargement, douane, post-acheminement. ;; Presque tout
+Qu'est-ce que le « post-acheminement » ? ;; Le transport entre le port d'arrivée (ex. Rotterdam) et le site de COLART (à la charge de COLART en FOB, CIF et FCA). ;; Port → site
+Qu'est-ce que les « THC » ? ;; Terminal Handling Charges : frais de manutention au terminal portuaire (cités pour la Chine en FOB). ;; Frais de port
+
+## 4 · Analyse pays | 🌍
+Échelle de l'analyse pays ? ;; 1 = risque faible, 5 = risque très élevé. Source : COFACE. ;; 1 faible · 5 élevé
+Critères de l'analyse pays ? ;; Stabilité politique, situation économique, risque de change, risque géopolitique, infrastructures/logistique, risque douanier, risque réglementaire, risque social, risque climatique. ;; 9 critères
+Classement des pays du moins au plus risqué ? ;; Allemagne 1,89 · États-Unis 2,22 · Chine 3 · Inde 3,11 · Turquie 3,78. ;; Allemagne la plus sûre
+Pourquoi l'Allemagne est-elle la moins risquée ? ;; Stabilité politique, infrastructures performantes, euro (comme la France), appartenance à l'UE qui simplifie les échanges. Reste exposée aux difficultés économiques et aux risques climatiques. ;; Stable, euro, UE
+Pourquoi la Turquie est-elle la plus risquée ? ;; Inflation élevée, fluctuations de la livre turque (coûts imprévisibles), tensions géopolitiques et incertitudes économiques. Avantage : proximité de l'Europe. ;; Inflation + livre
+Que dit le dossier de l'Inde (pays) ? ;; Risques intermédiaires à élevés : économie en développement, infrastructures et transports inégaux, risques climatiques (inondations, fortes chaleurs). ;; Infrastructures + climat
+Que dit le dossier de la Chine (pays) ? ;; Industrie puissante et infrastructures logistiques performantes, mais tensions commerciales, droits de douane et contraintes réglementaires. ;; Puissante mais complexe
+Que dit le dossier des États-Unis (pays) ? ;; Économie diversifiée, infrastructures développées ; risques : tensions commerciales, évolutions réglementaires, catastrophes naturelles, distance (délais et coûts de transport). ;; Distance + réglementation
+
+## 5 · Analyse des risques fournisseurs | ⚠️
+Échelle et lecture de la matrice des risques ? ;; 1 = risque faible, 5 = risque très élevé. Score = somme (note × poids). Rang 1 = le plus sûr. ;; Plus bas = plus sûr
+Les 9 critères de risque et leurs poids ? ;; Financier 15 % · Qualité 15 % · Supply chain 20 % · Capacité 10 % · Dépendance 10 % · Logistique 10 % · RSE 10 % · Mono-site 5 % · Contractuel 5 %. ;; Supply chain = 20 %
+Scores pondérés et rangs des fournisseurs ? ;; B Allemagne 1,8 (rang 1) · E USA 1,9 (2) · C Turquie 3,10 (3) · A Chine 4,1 (4) · D Inde 4,35 (5). ;; B < E < C < A < D
+Que conclut le dossier de ces scores ? ;; Allemagne (1,8) et USA (1,9) = fournisseurs les moins risqués ; Turquie (3,1) = quelques risques ; Chine (4,1) et Inde (4,35) = risques très élevés, dangereux de travailler avec eux. ;; 2 sûrs · 1 moyen · 2 dangereux
+Comment est noté le risque « Financier » ? ;; D (5) et A (5) : paiement à 30 jours, forte dépendance client (42 % et 35 %, seuil de 10 %), aucun audit · C (4) : 25 % de dépendance, 45 jours, audit à réaliser · B (3) : 18 % mais audit réalisé, 60 jours · E (2) : 12 %, 60 jours. ;; Dépendance client + paiement + audit
+Comment est noté le risque « Qualité » ? ;; Selon le taux de NC : D 3,5 % et A 2,8 % = 5 (2,8 à 3,5 fois la cible de 1 %) · C 1,2 % = 2 · E 0,7 % = 1 · B 0,4 % = 1. ;; NC vs cible de 1 %
+Comment est noté le risque « Supply chain » ? ;; Selon OTIF et lead time : D (88 %, 55 j) et A (91 %, 60 j) = 4 · C (94 %, 22 j) = 2 · E (96 %, 27 j) et B (98 %, 13 j) = 1. ;; OTIF + délai
+Comment est noté le risque « Capacité » ? ;; A (3 000 t) et D (4 000 t) = 1 (3 à 4 fois le besoin) · E (2 500 t) = 2 · C (2 000 t) = 3 · B = 4, car ses 1 500 t ne sont garanties qu'à hauteur de 600 t. ;; Capacité vs besoin
+Comment est noté le risque « Logistique » ? ;; D (5) CIF Rotterdam, 25 j de mer, post-acheminement à notre charge · A (4) FOB, 35 j de mer · C (3) FCA Istanbul · E (3) DAP mais 15 j de mer · B (1) DAP en 3 j. ;; Incoterm + jours de mer
+Comment est noté le risque « RSE » ? ;; D (5) CO₂ élevé, sans ISO 14001 ni audit · A et E (4) CO₂ élevé et éloignés · C (3) CO₂ moyen, ISO 14001 en cours · B (1) CO₂ faible, ISO 14001, audit réalisé. ;; CO₂ + ISO 14001 + audit
+Comment sont notés « Mono-site » et « Contractuel » ? ;; Mono-site : A, C, D = 5 ; B et E multi-sites = 1. Contractuel : D 4 (CIF, MOQ 25 t, 30 j) · A 3 (FOB, MOQ 20 t, 30 j) · C 3 (FCA, MOQ 10 t, 45 j, clause de change) · E 2 (DAP, MOQ 5 t, 60 j) · B 1 (DAP, MOQ 5 t, 60 j). ;; Sites + Incoterm/MOQ/paiement
+
+## 6 · TCO et coût rendu | 💶
+Matrice de décision : sens de l'échelle ? ;; 1 = peu favorable, 5 = très favorable : on cherche le total le plus ÉLEVÉ. ;; Plus haut = mieux
+Matrice des risques : sens de l'échelle ? ;; 1 = risque faible, 5 = risque très élevé : on cherche le score le plus BAS. ;; Plus bas = mieux
+Quels critères et poids de la matrice de décision COLART ? ;; Prix/TCO 25 % · Qualité 15 % · Supply/OTIF 15 % · Lead time 10 % · Capacité 10 % · Risque pays 10 % · RSE 5 % · Flexibilité 5 % · Conditions commerciales 5 %. ;; Prix 25 · qualité 15 · OTIF 15
+C: Matrice de décision COLART : prix/TCO {{c1::25 %}}, qualité {{c2::15 %}}, OTIF {{c3::15 %}}, lead time {{c4::10 %}}, capacité {{c5::10 %}}, risque pays {{c6::10 %}}, RSE/flexibilité/conditions {{c7::5 % chacun}}. ;; Total = 100 %.
+Quels critères et poids de la matrice de risques COLART ? ;; Supply chain 20 % · Financier 15 % · Qualité 15 % · Capacité 10 % · Dépendance 10 % · Logistique 10 % · RSE 10 % · Mono-site 5 % · Contractuel 5 %. ;; Supply chain pèse le plus
+Résultats de la matrice de décision COLART ? ;; 1er B Allemagne 3,9 · 2e E USA 3,8 · 3e A Chine 2,95 · 4e C Turquie 2,9 · 5e D Inde 2,7. ;; B > E > A > C > D
+Résultats de la matrice de risques COLART (1 = sûr) ? ;; B Allemagne 1,8 (rang 1) · E USA 1,9 · C Turquie 3,10 · A Chine 4,1 · D Inde 4,35 (rang 5, le plus risqué). ;; B < E < C < A < D
+Classement du risque pays (COFACE) dans le TD ? ;; Allemagne 1,89 (moins risqué) · États-Unis 2,22 · Chine 3 · Inde 3,11 · Turquie 3,78 (plus risqué). ;; Allemagne la plus sûre
+Pourquoi l'Allemagne est-elle le pays le moins risqué ? ;; Stabilité politique, infrastructures performantes, euro (pas de risque de change), appartenance à l'UE (pas de douane). ;; Stable, euro, UE
+Pourquoi la Turquie est-elle jugée la plus risquée (pays) ? ;; Forte inflation, fluctuations de la livre turque (coûts imprévisibles), tensions géopolitiques ; avantage : proximité de l'Europe. ;; Inflation + livre
+Calcule le coût rendu : prix 7,20 €/kg + transport 0,45 €/kg ? ;; 7,65 €/kg (coût rendu = prix + transport). ;; Prix + transport
+C: Coût rendu = {{c1::prix matière}} + {{c2::transport}} ; TCO = coût rendu + {{c3::coûts indirects}} (douane, non-conformité, retards, stockage, change, finance). ;; Du prix au TCO.
+Pourquoi les coûts indirects ne sont-ils pas chiffrés dans la matrice ? ;; Dans le TD, la note « Prix/TCO » est basée sur le coût rendu ; les coûts indirects sont identifiés (section 6) mais non chiffrés (limite de l'analyse). ;; Limite assumée
+Coût rendu de chaque fournisseur ? ;; A Chine 7,65 €/kg (7,20 + 0,45 de transport) · B Allemagne 8,60 · C Turquie 8,00 (7,70 + 0,30) · D Inde 6,90 · E États-Unis 8,00. ;; Étape 1 du TCO
+Quel est le fournisseur le moins cher au coût rendu ? Pourquoi n'est-ce pas décisif ? ;; D (Inde) à 6,90 €/kg. Mais il faut ajouter les coûts indirects (douane, retards, stockage, transports urgents) : les fournisseurs risqués (D et A) peuvent coûter plus cher que leur prix ne le laisse penser. ;; Coûts indirects
+Quels coûts indirects pour la Chine (FOB Shanghai) ? ;; Fret maritime, THC, déchargement, douane, post-acheminement + coûts de non-conformité (2,8 %), contrôles supplémentaires, transports urgents, retards de production, stockage, frais administratifs, immobilisation financière. ;; Tout est pour COLART
+Quels coûts indirects pour l'Allemagne (DAP) ? ;; Peu : déchargement et éventuels frais non inclus ; stockage, contrôle et gestion administrative possibles ; pas de droits de douane France–Allemagne ; risques de NC et de retard faibles. ;; Quasi aucun
+Quels coûts indirects pour la Turquie (FCA) ? ;; Transport depuis le lieu de remise, formalités douanières (sans droits), post-acheminement, manutention, NC 1,2 % (contrôles), transports urgents, stockage, retard, change (livre turque), administration. ;; Pas de droits, mais transport
+Quels coûts indirects pour l'Inde (CIF) ? ;; Déchargement, douane, post-acheminement + contrôle, remplacement, transport urgent, stockage, retard de production et forte immobilisation financière (NC 3,5 %, OTIF 88 %, délai 55 j). ;; Beaucoup de coûts cachés
+Quels coûts indirects pour les États-Unis (DAP) ? ;; Déchargement, droits de douane, contrôles qualité, retards, stockage, frais administratifs, risque de change EUR/USD. ;; Douane + change
+
+## 7 · Matrice de décision | 🧮
+Résultats de la matrice de décision par critère (extrait) ? ;; Prix/TCO : A 4, B 2, C 3, D 5, E 3 · Qualité : A 2, B 5, C 3, D 1, E 5 · Supply/OTIF : A 2, B 5, C 3, D 1, E 4 · Lead time : A 1, B 5, C 4, D 2, E 3. ;; Allemagne forte en qualité/OTIF/délai
+
+## 8 · Stratégie, mitigation et négociation | 🛡️
+Quelle est la stratégie de sourcing recommandée ? ;; Un fournisseur principal (RheinChem, Allemagne) + 2 secours : American Polymer Solutions (USA) et Anatolia Polymer (Turquie). ;; 1 principal + 2 secours
+Quelle est la répartition des volumes ? ;; 60 % Allemagne (600 t), 25 % États-Unis (250 t), 15 % Turquie (150 t). Total 1 000 t/an. ;; 60 / 25 / 15
+C: Répartition : Allemagne {{c1::60 %}} (600 t) · États-Unis {{c2::25 %}} (250 t) · Turquie {{c3::15 %}} (150 t). ;; Chiffre à connaître.
+Quel est le coût rendu moyen de ce mix ? ;; 8,36 €/kg, soit environ 8,4 M€/an (contre 8,60 €/kg pour l'Allemagne seule). Calcul : 0,6 × 8,60 + 0,25 × 8,00 + 0,15 × 8,00. ;; 8,36 €/kg
+Pourquoi accepter un coût plus élevé que le fournisseur indien ? ;; Pour la fiabilité : l'Inde est moins chère (6,90 €/kg) mais NC 3,5 %, OTIF 88 %, 42 % de dépendance client : refusé (score de risque 4,35). On accepte de payer plus cher pour éviter les risques de retard et de défauts. ;; Fiable > moins cher
+Pourquoi ne pas prendre uniquement l'Allemagne ? ;; Aucune solution de secours, et 400 t non garanties (capacité garantie 600 t) : on veut éviter la dépendance à un seul fournisseur. ;; Dépendance + capacité
+Pourquoi la Turquie est-elle retenue avec condition ? ;; OTIF 94 % et NC 1,2 % sont hors cahier des charges : volume limité (15 %) et seulement avec un plan de progrès OTIF/NC signé. MOQ 10 t compatible. ;; Plan de progrès signé
+Pourquoi écarter la Chine et l'Inde ? ;; Chine : OTIF 91 %, NC 2,8 %, délai 60 jours, pas d'audit. Inde : NC 3,5 %, OTIF 88 %, 42 % de dépendance client, délai 55 jours. ;; Qualité, OTIF, délais
+Quel est le plan de mitigation ? ;; Contrat de 3 ans avec prix négociés et clauses d'indexation ; double sourcing (USA, Turquie) ; stock de sécurité ; audits avant contrat, échantillons, certifications, traçabilité. ;; Contrat · double sourcing · stock · audits
+Que « refuse » COLART ? ;; Pas de conformité réglementaire, travail forcé, manque de traçabilité, dépendance à un seul fournisseur sans secours, OTIF < 95 % ou NC ≥ 1 % sans plan de progrès signé. ;; Les non-négociables
+Que « concède » COLART ? ;; Un prix légèrement plus élevé en Allemagne, des MOQ raisonnables, un délai un peu plus long si la qualité est garantie. ;; Prix, MOQ, délai
+Quels sont les prix cibles et seuils de sortie ? ;; Cibles : B à 8,30 €/kg (−3,5 %), E à 7,90 €/kg (−1,3 %) → coût rendu moyen ≈ 8,15 €/kg, ≈ 200 k€/an d'économie. Seuils de sortie : B 8,50 €/kg, E 8,00 €/kg. ;; 8,30 / 7,90 · sortie 8,50 / 8,00
+Quelle est la solution alternative si l'Allemagne refuse ? ;; Augmenter les volumes chez les fournisseurs américain et turc, après vérification de leur conformité. ;; BATNA
+Les 5 leviers de négociation du TD ? ;; 1 Prix (réduction contre engagement 3 ans) · 2 RSE (preuves, audits) · 3 Lead time (délais garantis, pénalités) · 4 Paiement (plus rapide contre baisse de prix) · 5 Incoterm (DAP contre volume régulier). ;; Prix · RSE · délai · paiement · Incoterm
+Pourquoi privilégier DAP dans la négociation ? ;; Il limite les risques de l'acheteur (le vendeur supporte transport et risque jusqu'au lieu convenu) et clarifie la répartition des frais et des responsabilités. ;; Moins de risques pour COLART
+Quelle durée de contrat est visée et pourquoi ? ;; 3 ans : sécurise les volumes, permet de négocier les prix et de limiter la volatilité (contrat actuel à échéance dans 6 mois). ;; 3 ans
+
+## 9 · Le dossier en détail | 🎨
+Quel est le contexte du cas ? ;; Renouvellement du contrat d'approvisionnement en résine acrylique de COLART (contrat actuel à échéance dans 6 mois ; nouveau contrat visé : 3 ans) ; 5 fournisseurs comparés. ;; Résine acrylique, 5 fournisseurs
+Volumes et sites ? ;; 1 000 t/an : France 500 t, Royaume-Uni 300 t, Chine 200 t (≈ 83,3 t/mois). Livraisons mensuelles par site. ;; 500 / 300 / 200
+Exigences logistique et qualité du cahier des charges ? ;; Lead time ≤ 30 jours (production + transport) · OTIF ≥ 95 % · NC < 1 % · MOQ ≤ lot mensuel du plus petit site · échantillon + audit avant volumes. ;; 30 j · 95 % · 1 %
+Incoterms demandés et paiement ? ;; Incoterm : DAP ou FCA. Paiement : 60 jours date de facture ou 45 jours fin de mois. ;; DAP / FCA
+Les 4 critères éliminatoires du cahier des charges ? ;; Pas de conformité REACH · OTIF < 95 % · taux de NC ≥ 1 % · refus d'audit ou d'échantillon. ;; REACH · OTIF · NC · audit/échantillon
+Les 5 fournisseurs et leur pays ? ;; A : Chine · B : Allemagne (RheinChem GmbH) · C : Turquie (Anatolia Polymer) · D : Inde · E : États-Unis (American Polymer Solutions). ;; A Chine · B Allemagne · C Turquie · D Inde · E USA
+Incoterms des fournisseurs ? ;; A Chine : FOB Shanghai · B Allemagne : DAP France · C Turquie : FCA Istanbul · D Inde : CIF Rotterdam · E États-Unis : DAP France. ;; FOB · DAP · FCA · CIF · DAP
+Prix matière (€/kg) de chaque fournisseur ? ;; A Chine 7,20 · B Allemagne 8,60 · C Turquie 7,70 · D Inde 6,90 · E États-Unis 8,00. ;; Inde la moins chère, Allemagne la plus chère
+Coût rendu (€/kg) de chaque fournisseur ? ;; A 7,65 (7,20 + 0,45 de transport) · B 8,60 · C 8,00 (7,70 + 0,30) · D 6,90 · E 8,00. ;; Seuls A et C ont du transport ajouté
+Délais (lead time) des fournisseurs ? ;; A Chine 60 j (25 prod + 35 transport) · B Allemagne 13 j (10 + 3) · C Turquie 22 j (15 + 7) · D Inde 55 j (30 + 25) · E USA 27 j (12 + 15). ;; Allemagne 13 j · Chine 60 j
+OTIF et NC des fournisseurs ? ;; A Chine 91 % / 2,8 % · B Allemagne 98 % / 0,4 % · C Turquie 94 % / 1,2 % · D Inde 88 % / 3,5 % · E USA 96 % / 0,7 %. ;; Allemagne = meilleure
+Quels coûts supplémentaires pour la Chine (FOB Shanghai) ? ;; Fret maritime, THC, déchargement, droits de douane et post-acheminement (à la charge de COLART) + non-conformité (2,8 %), contrôles, transports urgents, retards, stockage, frais administratifs, immobilisation financière. ;; Tout le transport est pour COLART
+Quels coûts supplémentaires pour l'Allemagne (DAP France) ? ;; Peu : déchargement et éventuels frais non inclus ; pas de droits de douane entre l'Allemagne et la France ; risques de NC et de retard faibles. ;; Quasi aucun
+Quels coûts supplémentaires pour la Turquie (FCA Istanbul) ? ;; Transport depuis Istanbul, formalités douanières (sans droits : union douanière avec l'UE), post-acheminement, manutention, + NC 1,2 %, transports urgents, stockage, change (livre turque). ;; Pas de droits mais transport
+Quels coûts supplémentaires pour l'Inde (CIF Rotterdam) ? ;; Fret maritime et assurance minimale déjà inclus ; COLART paie déchargement, droits de douane, post-acheminement + coûts de NC (3,5 %), OTIF 88 %, délai 55 jours, immobilisation financière. ;; Beaucoup de coûts cachés
+Quels coûts supplémentaires pour les États-Unis (DAP France) ? ;; Déchargement et droits de douane, contrôles qualité, retards, stockage, frais administratifs, risque de change EUR/USD. ;; Douane + change
+Pourquoi le fournisseur indien, le moins cher, n'est-il pas retenu ? ;; Son TCO réel est supérieur au prix : NC 3,5 %, OTIF 88 %, délai 55 j, 42 % de dépendance client, paiement 30 j, mono-site, MOQ 25 t ; score de risque 4,35 (le plus élevé). ;; Moins cher mais très risqué
+Que signifie « dépendance client 42 % » pour un fournisseur ? ;; 42 % de son chiffre d'affaires dépend d'un seul client : risque financier si ce client part (seuil retenu : 10 %). ;; Seuil de 10 %
+Notes de dépendance client des fournisseurs ? ;; A Chine 35 % · B Allemagne 18 % · C Turquie 25 % · D Inde 42 % · E USA 12 % (seuil de 10 %). ;; Inde la plus dépendante
+Que dit l'Executive Summary ? ;; RheinChem (Allemagne) est le meilleur choix : 1er de la matrice (3,9/5), risque le plus faible (1,8/5) ; malgré un prix plus élevé : qualité, délais courts, fiabilité. Sourcing multi-fournisseurs 60/25/15, coût rendu moyen 8,36 €/kg, ≈ 8,4 M€/an, contrat de 3 ans. ;; Résumé de la recommandation
