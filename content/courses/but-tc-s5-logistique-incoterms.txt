@@ -1,0 +1,92 @@
+@course incosc | Logistique et supply chain · notions + INCOTERMS | 🚚 | Notions principales de la logistique et de la supply chain, avec un gros focus sur les Incoterms 2020 (règles officielles de la CCI). Basé sur les notions standards, pas sur ton TD : compare avec le cours de ton prof.
+@tags BUT TC, S5, logistique, supply chain, incoterms, incosc
+
+## 0 · L'essentiel en 10 idées | 🗺️
+Idée 1 : c'est quoi la supply chain ? ;; L'ensemble des étapes et acteurs qui font passer un produit du fournisseur au client final (achats, production, stockage, transport, distribution), avec les flux physiques, d'information et financiers. ;; Du fournisseur au client
+Idée 2 : logistique vs supply chain ? ;; La logistique organise les flux de marchandises (transport, stockage, livraison). La supply chain est la vision globale de toute la chaîne, des fournisseurs aux clients. ;; Logistique ⊂ supply chain
+Idée 3 : les 3 flux ? ;; Flux physiques (marchandises), flux d'information (commandes, prévisions), flux financiers (paiements). ;; Physique · info · financier
+Idée 4 : l'objectif de la logistique ? ;; Mettre le bon produit, au bon endroit, au bon moment, en bonne quantité et état, au moindre coût. ;; Le bon produit au bon moment
+Idée 5 : les Incoterms servent à quoi ? ;; À fixer dans un contrat de vente internationale qui organise et paie le transport, l'assurance et les formalités, et où le RISQUE passe du vendeur à l'acheteur. ;; Coûts + risques + lieu
+Idée 6 : combien d'Incoterms et quelles familles ? ;; 11 règles (Incoterms 2020) : 7 tous modes (EXW, FCA, CPT, CIP, DAP, DPU, DDP) et 4 maritimes (FAS, FOB, CFR, CIF). ;; 7 + 4
+Idée 7 : la logique des Incoterms ? ;; De EXW à DDP, le vendeur en fait de plus en plus : EXW = minimum, DDP = maximum. ;; EXW → DDP
+Idée 8 : le piège des Incoterms ? ;; Les termes C (CPT, CIP, CFR, CIF) : le vendeur paie le transport jusqu'à destination mais le RISQUE passe à l'acheteur dès le départ. ;; Coût d'arrivée, risque de départ
+Idée 9 : le piège du prix ? ;; Le prix d'achat n'est pas le coût complet : transport, douane, non-qualité, retards, stockage ; d'où le coût rendu puis le TCO. ;; Prix < coût rendu < TCO
+Idée 10 : comment réduire le risque d'approvisionnement ? ;; Ne pas dépendre d'un seul fournisseur, avoir un stock de sécurité, auditer les fournisseurs, sécuriser par contrat. ;; Diversifier + sécuriser
+
+## 1 · INCOTERMS : les bases | 📜
+Que signifie Incoterms ? Qui les publie ? ;; International Commercial Terms : règles publiées par la Chambre de Commerce Internationale (CCI/ICC). Version en vigueur : Incoterms 2020. ;; CCI · version 2020
+À quoi servent les Incoterms ? ;; Ils définissent dans un contrat de vente internationale : qui organise et paie le transport et l'assurance, qui fait les formalités douanières, et où se fait le transfert des risques. ;; Qui fait quoi, qui paie, qui risque
+Que ne règlent PAS les Incoterms ? ;; Le prix et les modalités de paiement, le transfert de propriété, le droit applicable et les litiges. Ce ne sont pas un contrat : ils sont intégrés au contrat de vente. ;; Pas la propriété ni le paiement
+Combien d'Incoterms 2020 existe-t-il ? ;; 11 règles : EXW, FCA, CPT, CIP, DAP, DPU, DDP (tous modes) et FAS, FOB, CFR, CIF (maritime et fluvial). ;; 7 + 4
+C: Les 11 Incoterms 2020 : tous modes = {{c1::EXW, FCA, CPT, CIP, DAP, DPU, DDP}} ; maritime/fluvial uniquement = {{c2::FAS, FOB, CFR, CIF}}. ;; À connaître par cœur.
+Comment s'écrit-on un Incoterm dans un contrat ? ;; Sigle + lieu nommé + version. Exemples : « FCA Hambourg Incoterms 2020 », « DAP Paris Incoterms 2020 ». Le lieu est essentiel. ;; Sigle + lieu + année
+Quelles sont les 3 idées à toujours retenir d'un Incoterm ? ;; (1) Où a lieu la livraison ; (2) à quel moment/lieu le risque est transféré ; (3) qui paie le transport, l'assurance, l'export, l'import. ;; Livraison · risque · coûts
+Qu'est-ce que le transfert de risques ? ;; Le moment à partir duquel l'acheteur supporte la perte ou la détérioration de la marchandise. Avant : c'est le vendeur. ;; Qui supporte la casse
+Risque et coûts se transfèrent-ils toujours au même endroit ? ;; Non : pour les termes C (CPT, CIP, CFR, CIF), le vendeur paie le transport jusqu'à destination mais le RISQUE passe à l'acheteur dès le départ (chargement/remise au transporteur). ;; Termes C = piège
+Quelles sont les 4 familles de la logique E-F-C-D ? ;; E (Départ : EXW) · F (transport principal NON payé par le vendeur : FCA, FAS, FOB) · C (transport principal payé par le vendeur, risque au départ : CFR, CIF, CPT, CIP) · D (Arrivée : DAP, DPU, DDP). ;; E · F · C · D
+C: Groupe E = {{c1::EXW}} · groupe F = {{c2::FCA, FAS, FOB}} · groupe C = {{c3::CFR, CIF, CPT, CIP}} · groupe D = {{c4::DAP, DPU, DDP}}. ;; Familles d'Incoterms.
+Qui fait le dédouanement export / import dans la plupart des Incoterms ? ;; Export : le vendeur (sauf EXW où c'est l'acheteur). Import : l'acheteur (sauf DDP où c'est le vendeur). ;; Export vendeur · import acheteur
+Quels Incoterms pour un conteneur (transport multimodal) ? ;; Les termes « tous modes » : FCA, CPT, CIP (plutôt que FOB, CFR, CIF qui supposent le chargement à bord d'un navire). ;; Conteneur → FCA/CPT/CIP
+Quelles nouveautés apportent les Incoterms 2020 vs 2010 ? ;; DAT devient DPU (livré déchargé en tout lieu) ; CIP : assurance « tous risques » (Clauses A) ; FCA : option pour obtenir un connaissement « à bord » ; transport possible avec ses propres moyens (FCA, DAP, DPU, DDP) ; sécurité précisée dans les obligations. ;; DAT → DPU · CIP en clauses A
+
+## 2 · INCOTERMS : un par un | 📦
+EXW (Ex Works) : définition ? ;; Départ usine : le vendeur met la marchandise à disposition dans ses locaux (ou un lieu convenu). L'acheteur supporte TOUS les coûts et risques (chargement, transport, export, import). Obligation minimale du vendeur. Tous modes. ;; Le vendeur ne fait presque rien
+FCA (Free Carrier) : définition ? ;; Franco transporteur : le vendeur livre la marchandise, dédouanée à l'export, au transporteur désigné par l'acheteur au lieu convenu. Le vendeur charge s'il livre dans ses locaux ; ailleurs, il ne décharge pas. Risque transféré à la remise au transporteur. Tous modes. ;; Remise au transporteur
+CPT (Carriage Paid To) : définition ? ;; Port payé jusqu'à : le vendeur paie le transport jusqu'au lieu de destination convenu, mais le risque passe à l'acheteur dès la remise au 1er transporteur. Export par le vendeur. Tous modes. ;; Transport payé, risque au départ
+CIP (Carriage and Insurance Paid To) : définition ? ;; Port payé, assurance comprise : comme CPT + le vendeur souscrit une assurance couvrant la marchandise jusqu'à destination, en « tous risques » (Clauses A de l'Institute Cargo Clauses) pour 110 % de la valeur. Risque transféré au départ. Tous modes. ;; CPT + assurance tous risques
+DAP (Delivered at Place) : définition ? ;; Rendu au lieu de destination : le vendeur livre quand la marchandise est mise à disposition de l'acheteur sur le moyen de transport d'arrivée, prête à être déchargée, au lieu convenu. Le vendeur supporte coûts et risques jusque-là (export compris) ; l'acheteur décharge et fait l'import (douane, droits). Tous modes. ;; Livré non déchargé
+DPU (Delivered at Place Unloaded) : définition ? ;; Rendu lieu de destination déchargé (ex-DAT) : le vendeur livre une fois la marchandise DÉCHARGÉE au lieu convenu (n'importe quel lieu). C'est le seul terme où le vendeur décharge. Import à la charge de l'acheteur. Tous modes. ;; Livré déchargé
+DDP (Delivered Duty Paid) : définition ? ;; Rendu droits acquittés : le vendeur supporte TOUS les coûts et risques jusqu'au lieu de destination, y compris le dédouanement import et les droits et taxes. Obligation maximale du vendeur. Tous modes. ;; Le vendeur fait tout
+FAS (Free Alongside Ship) : définition ? ;; Franco le long du navire : le vendeur livre quand la marchandise est placée le long du navire (sur le quai ou une barge) au port d'embarquement. Risque transféré à ce moment. Export par le vendeur. Maritime/fluvial uniquement. ;; Le long du navire
+FOB (Free On Board) : définition ? ;; Franco à bord : le vendeur livre quand la marchandise est chargée À BORD du navire au port d'embarquement désigné. Risque transféré à ce moment. L'acheteur paie le fret. Maritime/fluvial uniquement. ;; Chargée à bord
+CFR (Cost and Freight) : définition ? ;; Coût et fret : le vendeur paie le fret jusqu'au port de destination, mais le risque passe à l'acheteur dès que la marchandise est à bord au port d'embarquement. Pas d'assurance obligatoire. Maritime/fluvial uniquement. ;; Fret payé, risque au départ
+CIF (Cost, Insurance and Freight) : définition ? ;; Coût, assurance et fret : CFR + le vendeur souscrit une assurance minimale (Clauses C) pour 110 % de la valeur jusqu'au port de destination. Risque transféré à bord au port d'embarquement. Maritime/fluvial uniquement. ;; CFR + assurance minimale
+C: CIP = assurance {{c1::tous risques (Clauses A)}} ; CIF = assurance {{c2::minimale (Clauses C)}} ; dans les deux cas pour {{c3::110 %}} de la valeur. ;; Niveau d'assurance.
+Dans quel Incoterm le vendeur a-t-il le MOINS d'obligations ? Le PLUS ? ;; Le moins : EXW (départ usine). Le plus : DDP (rendu droits acquittés, import compris). ;; EXW / DDP
+Quels Incoterms n'imposent AUCUNE assurance au vendeur ? ;; Tous sauf CIF (minimale) et CIP (tous risques). Dans les autres, l'assurance est facultative ou à la charge de l'acheteur. ;; Assurance = CIF et CIP
+Qui paie le fret principal pour FOB ? Pour CIF ? ;; FOB : l'acheteur. CIF : le vendeur (fret + assurance minimale jusqu'au port de destination). ;; FOB acheteur · CIF vendeur
+Qui décharge la marchandise : DAP, DPU, DDP ? ;; DAP : l'acheteur. DPU : le vendeur (seul cas). DDP : l'acheteur (le vendeur livre prêt à décharger, mais il a payé les droits). ;; Seul DPU décharge
+Où se fait la livraison (transfert des risques) : EXW, FCA, FAS, FOB ? ;; EXW : chez le vendeur. FCA : remise au transporteur (au lieu convenu). FAS : le long du navire au port d'embarquement. FOB : à bord du navire au port d'embarquement. ;; Au départ
+Où se fait la livraison pour CPT, CIP, CFR, CIF ? ;; Au départ aussi : remise au 1er transporteur (CPT, CIP) ou à bord au port d'embarquement (CFR, CIF), même si le vendeur paie le transport jusqu'à destination. ;; Livraison au départ, coût jusqu'à l'arrivée
+Où se fait la livraison pour DAP, DPU, DDP ? ;; À destination : au lieu convenu (non déchargé pour DAP et DDP, déchargé pour DPU). ;; À l'arrivée
+
+## 3 · INCOTERMS : comparer et choisir | ⚖️
+Quel est le seul Incoterm où l'acheteur fait l'export ? ;; EXW (le vendeur ne fait pas les formalités d'exportation). ;; EXW = export acheteur
+Quel est le seul Incoterm où le vendeur fait l'import ? ;; DDP (il paie aussi les droits et taxes). ;; DDP = import vendeur
+Différence DAP / DDP ? ;; Les deux sont livrés à destination non déchargés ; DAP : l'acheteur fait le dédouanement import et paie droits et taxes. DDP : c'est le vendeur. ;; Droits d'import : qui paie
+Différence DAP / DPU ? ;; DAP : marchandise prête à être déchargée (l'acheteur décharge). DPU : le vendeur décharge. ;; Déchargement
+Différence FCA / EXW ? ;; EXW : l'acheteur charge et dédouane l'export. FCA : le vendeur dédouane l'export et remet la marchandise au transporteur (il charge si c'est dans ses locaux). ;; Export + chargement
+Différence FOB / CFR / CIF ? ;; FOB : fret à la charge de l'acheteur. CFR : fret payé par le vendeur. CIF : fret + assurance minimale payés par le vendeur. Dans les 3, le risque passe à bord au port d'embarquement. ;; FOB < CFR < CIF
+Pourquoi un acheteur préfère-t-il un Incoterm « D » (DAP) ? ;; Il limite ses risques et ses frais de transport : livraison à destination, délai et prix de transport connus, responsabilité du vendeur jusqu'à destination. ;; Moins de risques pour l'acheteur
+Pourquoi un acheteur choisit-il parfois FCA/FOB ? ;; Pour contrôler le transport et son coût (négociation du fret, choix du transporteur), souvent quand il maîtrise mieux la logistique que le vendeur. ;; Maîtriser le transport
+Quels coûts supplémentaires pour l'acheteur en FOB ? ;; Fret maritime, THC (frais de manutention au terminal), assurance (à sa charge), déchargement, droits de douane et post-acheminement jusqu'au site. ;; Fret + THC + douane + post-acheminement
+Quels coûts supplémentaires pour l'acheteur en CIF ? ;; Déchargement, droits de douane, post-acheminement ; le fret maritime et une assurance minimale sont déjà inclus. Mais il supporte le risque dès l'embarquement. ;; Risque en mer pour lui
+Que doit prévoir l'acheteur en FCA ? ;; Le transport à partir du lieu de remise convenu (ex. FCA Hambourg), les formalités douanières à l'import, le post-acheminement et les frais de manutention. ;; Transport principal pour lui
+Que signifie « THC » ? ;; Terminal Handling Charges : frais de manutention au terminal portuaire (mouvements de conteneurs). ;; Frais de port
+Que signifie « post-acheminement » ? ;; Le transport entre le port/lieu d'arrivée et le site de livraison final (souvent à la charge de l'acheteur en CIF/FOB). ;; Dernier kilomètre
+Exemple : 10 000 € de marchandise, risque de casse en mer. Qui supporte ? ;; En FOB, CFR, CIF : l'acheteur (le risque est passé à bord au départ). En DAP, DPU, DDP : le vendeur (risque jusqu'à destination). ;; Dépend du lieu de transfert
+Un acheteur veut un maximum de sécurité et peu de formalités. Quel Incoterm ? ;; DDP ou DAP (le vendeur gère transport, risque et export ; avec DDP aussi l'import). ;; Les termes D
+Un vendeur veut un minimum d'obligations. Quel Incoterm ? ;; EXW (puis FCA / FAS / FOB). ;; Les termes E et F
+
+## 4 · Les notions principales | 🔗
+Qu'est-ce que le lead time ? ;; Le délai entre la commande (ou le lancement de la production) et la livraison : production + transport. ;; Délai de bout en bout
+Qu'est-ce que l'OTIF ? ;; On Time In Full : pourcentage de livraisons reçues à l'heure ET complètes. ;; À l'heure + complet
+Qu'est-ce que le MOQ ? ;; Minimum Order Quantity : quantité minimale qu'un fournisseur accepte de livrer par commande. ;; Quantité minimale
+Qu'est-ce que le taux de non-conformité (NC) ? ;; Le pourcentage de produits qui ne respectent pas les spécifications. ;; % de produits non conformes
+Qu'est-ce qu'un stock de sécurité ? ;; Un stock supplémentaire pour absorber les aléas (retard, hausse de demande) et éviter la rupture. ;; Tampon anti-rupture
+Qu'est-ce qu'une rupture d'approvisionnement ? ;; L'impossibilité de livrer ou de produire faute de matière ou de produit en stock : arrêt de production, retards, perte de ventes. ;; Plus de stock
+Qu'est-ce que le juste-à-temps (JAT) ? ;; Produire et livrer au moment précis du besoin, en quantité juste nécessaire, pour réduire les stocks (flux tendus). Il rend la fiabilité des livraisons essentielle. ;; Flux tendus
+Qu'est-ce que l'effet coup de fouet (bullwhip) ? ;; Les petites variations de la demande finale s'amplifient en remontant la chaîne (distributeur, grossiste, usine, fournisseurs), créant des stocks et des ruptures. ;; Amplification de la demande
+Qu'est-ce que le sourcing ? ;; La recherche, l'évaluation et la sélection de fournisseurs. ;; Trouver et choisir
+Mono-sourcing, double sourcing, multi-sourcing ? ;; Mono : un seul fournisseur (risque de dépendance). Double : deux (un principal, un de secours). Multi : plusieurs avec répartition des volumes. ;; 1 · 2 · plusieurs
+Qu'est-ce que le TCO ? ;; Total Cost of Ownership : coût total = prix d'achat + transport, douane, non-qualité, stockage, retards, financement, administration… ;; Coût complet
+Différence prix, coût rendu et TCO ? ;; Prix = prix de la marchandise. Coût rendu = prix + transport jusque chez l'acheteur. TCO = coût rendu + coûts indirects. ;; Prix < rendu < TCO
+Qu'est-ce que le cross-docking ? ;; Transférer les marchandises directement du camion d'arrivée à celui de départ, sans stockage (ou presque) dans l'entrepôt. ;; Zéro stockage
+Qu'est-ce que le dernier kilomètre ? ;; La dernière étape de la livraison, de la plateforme de distribution au client final : la plus coûteuse et la plus visible. ;; Livraison finale
+Qu'est-ce qu'un prestataire logistique (3PL) ? ;; Une entreprise à qui on confie tout ou partie de la logistique (transport, stockage, préparation de commandes). ;; Logistique externalisée
+Quels sont les modes de transport ? ;; Routier, ferroviaire, maritime, fluvial, aérien. Maritime = lent mais peu cher pour les gros volumes ; aérien = rapide mais cher ; routier = souple (porte à porte). ;; Route · fer · mer · fleuve · air
+Qu'est-ce que le transport multimodal / intermodal ? ;; Utiliser plusieurs modes de transport successifs (ex. camion + bateau + train), souvent avec un conteneur. ;; Plusieurs modes, un conteneur
+Que signifie EVP / TEU ? ;; Équivalent Vingt Pieds : unité de mesure d'un conteneur (un 20 pieds = 1 EVP, un 40 pieds = 2 EVP). ;; Unité de conteneur
+Qu'est-ce que le dédouanement ? ;; Les formalités douanières à l'export et à l'import (déclaration, droits de douane, TVA). ;; Passer la douane
+Qu'est-ce que le risque de change ? ;; La variation du taux de change entre l'achat et le paiement, qui peut augmenter le coût (ex. EUR/USD). ;; Écart de monnaie
+Qu'est-ce qu'un audit fournisseur ? ;; Une évaluation du fournisseur (qualité, processus, RSE, conformité) pour vérifier sa fiabilité avant de s'engager. ;; Vérifier avant de signer
