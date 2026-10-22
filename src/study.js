@@ -37,6 +37,7 @@ function guessLang(text) {
 const VOICE_CMDS = [
     ['stop', ['stop', 'arrete', 'arreter', 'arretes', 'quitter', 'termine', 'terminer', 'fin du mode', 'pause']],
     ['repeat', ['repete', 'repeter', 'repetez', 'relis', 'relire', 'encore une fois', 'rejoue', 'rejouer']],
+    ['hint', ['indice', 'indices', 'un indice', 'un indisse', 'indisse', 'hint', 'aide', 'aide moi', 'coup de pouce']],
     ['undo', ['annule', 'annuler', 'retour', 'precedent']],
     [1, ['rate', 'ratee', 'rater', 'rates', 'oublie', 'oublier', 'encore', 'non', 'faux', 'pas su', 'pas bien', 'pas correct', 'je ne savais pas', 'je savais pas', 'again', 'rate pas', 'ra te']],
     [4, ['facile', 'faciles', 'evident', 'evidente', 'trop facile', 'easy', 'parfait', 'fastile']],
@@ -156,7 +157,7 @@ Object.assign(SuperAnki.prototype, {
         if (!bar) { const pb = $('#view-session .pbar'); if (!pb) return; pb.insertAdjacentHTML('afterend', `<div class="audio-bar" id="audio-bar">${html}</div>`); }
         else if (bar.dataset.h !== html) bar.innerHTML = html;
         const cur = $('#audio-bar'); if (cur) cur.dataset.h = html;
-        if (on && !$('#voice-bar')) cur.insertAdjacentHTML('afterend', `<div class="voice-bar" id="voice-bar"><span class="rec-dot"></span><span id="voice-msg">🎤 Dis : « réponse », puis « bien », « difficile », « raté », « facile » ou « suivant »</span></div>`);
+        if (on && !$('#voice-bar')) cur.insertAdjacentHTML('afterend', `<div class="voice-bar" id="voice-bar"><span class="rec-dot"></span><span id="voice-msg">🎤 Dis : « réponse » (ou « indice »), puis « bien », « difficile », « raté », « facile » ou « suivant »</span></div>`);
         if (!on) { const vb = $('#voice-bar'); if (vb) vb.remove(); }
     },
     sessionCleanup() {
@@ -209,7 +210,7 @@ Object.assign(SuperAnki.prototype, {
                 if (Date.now() - v.last < 800) continue;
                 const cmd = alts.map(parseVoice).find(c => c !== null && c !== undefined);
                 if (cmd !== undefined && cmd !== null) { handled = i; v.last = Date.now(); this.voiceAct(cmd, alts[0]); try { rec.abort(); } catch { /* restart clears the buffer */ } return; }
-                if (res.isFinal) { handled = i; this.voiceMsg(`« ${alts[0].trim()} » : pas compris. Dis « réponse », « bien », « suivant »…`); }
+                if (res.isFinal) { handled = i; this.voiceMsg(`« ${alts[0].trim()} » : pas compris. Dis « réponse », « indice », « bien », « suivant »…`); }
             }
         };
         rec.onerror = e => {
@@ -231,6 +232,14 @@ Object.assign(SuperAnki.prototype, {
         const grades = ['', 'Raté', 'Difficile', 'Bien', 'Facile'];
         if (cmd === 'stop') { this.voiceStop(true); this.syncVoiceUi(); this.toast('Commande vocale désactivée', 'success', ic('mic')); return; }
         if (cmd === 'repeat') { this.voiceMsg('🔊 Je relis'); this.speak(); return; }
+        if (cmd === 'hint') {
+            const c = this.card(s.current), slot = $('#hint-slot');
+            if (s.revealed) { this.voiceMsg('💡 La réponse est déjà affichée'); return; }
+            if (!c.hint) { this.voiceMsg('💡 Pas d\'indice pour cette carte'); return; }
+            this.voiceMsg('💡 Indice');
+            if (slot && !slot.innerHTML) this.handleAction('hint');
+            return;
+        }
         if (cmd === 'undo') { this.voiceMsg('↩ Annulé'); this.undo(); return; }
         if (cmd === 'reveal' || (!s.revealed && (typeof cmd === 'number' || cmd === 'next'))) { if (!s.revealed) { this.voiceMsg('✔ Réponse'); this.reveal(); } return; }
         if (s.revealed && (typeof cmd === 'number' || cmd === 'next')) {
