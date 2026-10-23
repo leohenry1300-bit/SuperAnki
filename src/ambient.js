@@ -231,7 +231,7 @@ function ambPause(fast) {
     E.playing = false;
     E.fade.gain.cancelScheduledValues(E.ac.currentTime); E.fade.gain.setTargetAtTime(0, E.ac.currentTime, fast ? 0.05 : 0.7);
     clearTimeout(E.timer); clearInterval(E.tick);
-    setTimeout(() => { if (!E.playing && E.audio) { try { E.audio.pause(); } catch { /* ignore */ } try { if (navigator.audioSession) navigator.audioSession.type = 'ambient'; } catch { /* ignore */ } } }, fast ? 200 : 2800);
+    setTimeout(() => { if (!E.playing && E.audio) { try { E.audio.pause(); } catch { /* ignore */ } try { if (navigator.audioSession) navigator.audioSession.type = 'transient'; } catch { /* ignore */ } } }, fast ? 200 : 2800);
     try { if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused'; } catch { /* ignore */ }
 }
 function ambMedia() {

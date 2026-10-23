@@ -244,10 +244,11 @@ function sndPrerender() { ['reveal', 'g1', 'g2', 'g3', 'g4', 'right', 'wrong', '
 /* the audio session decides who wins on the iPhone: "ambient" mixes our small sounds with the music you are listening to (it never stops it),
    "playback" (used only while the ambiance mixer runs, so it can go on with the screen locked) takes the audio over */
 function sndSession(t) { try { if (navigator.audioSession && navigator.audioSession.type !== t) navigator.audioSession.type = t; } catch { /* ignore */ } }
-sndSession(SND.mode === 'prio' ? 'playback' : 'ambient');
+const SND_MIX = 'transient';   // short sounds that live alongside the music (ambient stayed silent on the installed app)
+sndSession(SND.mode === 'prio' ? 'playback' : SND_MIX);
 const SND_UNLOCK = { done: false };
 function sndUnlock() {
-    sndSession((typeof AMB_ENG !== 'undefined' && AMB_ENG.playing) || SND.mode === 'prio' ? 'playback' : 'ambient');
+    sndSession((typeof AMB_ENG !== 'undefined' && AMB_ENG.playing) || SND.mode === 'prio' ? 'playback' : SND_MIX);
     const ac = sndCtx(); if (!ac) return;
     try { const b = ac.createBuffer(1, 1, 22050), s = ac.createBufferSource(); s.buffer = b; s.connect(ac.destination); s.start(0); } catch { /* ignore */ }
     if (sndClipsOk()) sndWake();
@@ -337,7 +338,7 @@ Object.assign(SuperAnki.prototype, {
         document.addEventListener('input', e => { if (e.target.id === 'snd-vol') { SND.vol = Number(e.target.value) / 100; sndSave(); } });
         document.addEventListener('change', e => {
             if (e.target.id === 'snd-vol') sfx('pop');
-            else if (e.target.id === 'snd-mode') { SND.mode = e.target.value === 'prio' ? 'prio' : 'mix'; sndSave(); sndSession(SND.mode === 'prio' ? 'playback' : 'ambient'); sndDiag(); sfx('g3'); }
+            else if (e.target.id === 'snd-mode') { SND.mode = e.target.value === 'prio' ? 'prio' : 'mix'; sndSave(); sndSession(SND.mode === 'prio' ? 'playback' : SND_MIX); sndDiag(); sfx('g3'); }
             else if (e.target.id === 'snd-tab') { SND.tab = e.target.value; sndSave(); if (SND.tab !== 'none') setTimeout(() => { if (SND.on) sfx('tab' + SND.tab); }, 160); }
         });
     },
