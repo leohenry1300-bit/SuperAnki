@@ -839,10 +839,24 @@ Object.assign(SuperAnki.prototype, {
         const g = this.goalsAll()[0];
         return g ? { name: g.name, days: g.days, date: g.date } : null;
     },
+    /* "Examens" on the home screen: one row per upcoming goal, soonest first; a goal linked to a course shows how much of it was seen and a daily target */
     goalsHtml() {
-        const all = this.goalsAll();
-        if (all.length < 2) return '';
-        return `<div><div class="section-head"><h3 class="section-title">Échéances</h3><button class="link" data-nav="settings">Gérer</button></div><div class="goal-chips">${all.slice(0, 8).map(g => `<span class="goal-chip ${g.days < 0 ? 'past' : g.days <= 7 ? 'soon' : ''}">${ic('target')}<b>${esc(g.name)}</b><em>${g.days > 0 ? `J-${g.days}` : g.days === 0 ? "aujourd'hui" : 'terminé'}</em></span>`).join('')}</div></div>`;
+        const all = this.goalsAll().filter(g => g.days >= 0);
+        if (!all.length) return '';
+        const rows = all.slice(0, 6).map(g => {
+            const d = g.deck ? this.deck(g.deck) : null, left = g.days === 0 ? "aujourd'hui" : `J-${g.days}`, soon = g.days <= 7;
+            let body = '';
+            if (d) {
+                const cards = this.poolFor([d.id]), total = cards.length, seen = cards.filter(c => (c.right || 0) + (c.wrong || 0) > 0 || c.state !== 'new').length, rest = total - seen;
+                const perDay = Math.ceil(rest / Math.max(g.days, 1));
+                body = `<div class="ex-sub">${esc(d.emoji)} ${esc(d.name)} · <b>${seen}</b> / ${total} cartes vues</div>
+                    <div class="progress"><i style="width:${total ? seen / total * 100 : 0}%;background:var(--primary)"></i></div>
+                    <div class="ex-plan">${rest > 0 ? `≈ <b>${plural(perDay, 'carte')} par jour</b> pour tout voir avant l'examen` : '✔ Tout vu : repasse tout une dernière fois en Libre'}</div>
+                    <div class="ex-actions"><button class="btn btn-soft btn-sm" data-action="exam-go" data-mode="ordered" data-deck="${esc(d.id)}">${ic('list')}Ordre</button><button class="btn btn-soft btn-sm" data-action="exam-go" data-mode="free" data-deck="${esc(d.id)}">${ic('repeat')}Libre</button><button class="link" data-action="open-deck" data-deck="${esc(d.id)}">Voir le paquet</button></div>`;
+            }
+            return `<div class="panel exam-row ${soon ? 'soon' : ''}"><div class="ex-top"><b>${esc(g.name)}</b><span class="goal-days ${soon ? 'soon' : ''}">${left}</span></div>${body}</div>`;
+        }).join('');
+        return `<div><div class="section-head"><h3 class="section-title">Examens</h3><button class="link" data-nav="settings">Gérer</button></div><div class="exam-list">${rows}</div></div>`;
     },
 
     /* ============================================================

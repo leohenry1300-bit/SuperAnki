@@ -1828,3 +1828,18 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .sec-toggle.open .i { transform: rotate(90deg); }
 .sec-toggle h3 { margin: 0; }
 .sec-count { font-size: .75rem; font-weight: 800; color: var(--text-faint); background: var(--surface-2); border-radius: 99px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
+
+/* exams on the home screen */
+.exam-list { display: flex; flex-direction: column; gap: 10px; }
+.exam-row { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.exam-row.soon { border-color: color-mix(in srgb, var(--again, #e11d48) 35%, transparent); }
+.ex-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ex-top b { font-size: 1.02rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ex-sub { font-size: .84rem; color: var(--text-muted); }
+.ex-plan { font-size: .86rem; }
+.ex-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.gr-deck { color: var(--primary); font-weight: 600; }
+.goal-add { grid-template-columns: 1fr auto; }
+.goal-add #goal-name { grid-column: 1 / -1; }
+.goal-add #goal-deck { grid-column: 1 / -1; }
+@media (max-width: 560px) { .goal-add { grid-template-columns: 1fr; } }

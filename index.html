@@ -1848,6 +1848,21 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .sec-toggle h3 { margin: 0; }
 .sec-count { font-size: .75rem; font-weight: 800; color: var(--text-faint); background: var(--surface-2); border-radius: 99px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
 
+/* exams on the home screen */
+.exam-list { display: flex; flex-direction: column; gap: 10px; }
+.exam-row { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.exam-row.soon { border-color: color-mix(in srgb, var(--again, #e11d48) 35%, transparent); }
+.ex-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ex-top b { font-size: 1.02rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ex-sub { font-size: .84rem; color: var(--text-muted); }
+.ex-plan { font-size: .86rem; }
+.ex-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.gr-deck { color: var(--primary); font-weight: 600; }
+.goal-add { grid-template-columns: 1fr auto; }
+.goal-add #goal-name { grid-column: 1 / -1; }
+.goal-add #goal-deck { grid-column: 1 / -1; }
+@media (max-width: 560px) { .goal-add { grid-template-columns: 1fr; } }
+
 </style>
 </head>
 <body>
@@ -3159,8 +3174,8 @@ class SuperAnki {
                 </div>
             </div>
 
-            ${this.goalsHtml()}
             ${this.resumeHtml()}
+            ${this.goalsHtml()}
             ${libBanner}
             ${this.tipsHtml()}
             <div class="status-grid">
@@ -3731,10 +3746,11 @@ class SuperAnki {
             <div class="panel panel-pad set-section" id="goals-panel">
                 <h3>${ic('target')} Objectifs / examens</h3>
                 <p class="small muted">Chaque objectif a son compte à rebours sur l'accueil. Ajoute-en autant que tu veux.</p>
-                <div class="goal-list">${this.goalsAll().map(g => `<div class="goal-row ${g.days < 0 ? 'past' : ''}"><div class="gr-main"><b>${esc(g.name)}</b><span class="small muted">${esc(this.goalDateLabel(g.date))}</span></div><span class="goal-days ${g.days <= 7 && g.days >= 0 ? 'soon' : ''}">${g.days > 0 ? `J-${g.days}` : g.days === 0 ? 'Aujourd\'hui' : 'Terminé'}</span><button class="icon-btn" data-action="goal-del" data-id="${esc(g.id)}" title="Supprimer cet objectif" aria-label="Supprimer ${esc(g.name)}">${ic('trash')}</button></div>`).join('') || '<p class="small muted" style="margin:6px 0">Aucun objectif pour l\'instant.</p>'}</div>
+                <div class="goal-list">${this.goalsAll().map(g => `<div class="goal-row ${g.days < 0 ? 'past' : ''}"><div class="gr-main"><b>${esc(g.name)}</b><span class="small muted">${esc(this.goalDateLabel(g.date))}</span>${g.deck && this.deck(g.deck) ? `<span class="small gr-deck">${esc(this.deck(g.deck).emoji)} ${esc(this.deck(g.deck).name)}</span>` : ''}</div><span class="goal-days ${g.days <= 7 && g.days >= 0 ? 'soon' : ''}">${g.days > 0 ? `J-${g.days}` : g.days === 0 ? 'Aujourd\'hui' : 'Terminé'}</span><button class="icon-btn" data-action="goal-del" data-id="${esc(g.id)}" title="Supprimer cet objectif" aria-label="Supprimer ${esc(g.name)}">${ic('trash')}</button></div>`).join('') || '<p class="small muted" style="margin:6px 0">Aucun objectif pour l\'instant.</p>'}</div>
                 <div class="goal-add">
                     <input class="input" id="goal-name" placeholder="Nom de l'objectif" aria-label="Nom de l'objectif" maxlength="40">
                     <input class="input" id="goal-date" aria-label="Date de l'objectif" type="date">
+                    <select class="select" id="goal-deck" aria-label="Cours lié (facultatif)"><option value="">Cours lié : aucun</option>${this.sortedDecks().map(d => `<option value="${esc(d.id)}">${esc(d.emoji)} ${esc(this.deckPath(d.id).split(' › ').slice(-2).join(' › '))}</option>`).join('')}</select>
                     <button class="btn btn-primary btn-sm" data-action="goal-add">${ic('plus')}Ajouter</button>
                 </div>
             </div>
@@ -5263,6 +5279,11 @@ class SuperAnki {
                 ]);
                 break;
             }
+            case 'exam-go': {
+                if (!this.deck(ds.deck)) break;
+                if (ds.mode === 'ordered') this.startFree(ds.deck, true, true); else this.startFree(ds.deck);
+                break;
+            }
             case 'home-toggle': {
                 const o = { ...(this.data.settings.homeOpen || {}) }; o[ds.sec] = !(o[ds.sec] === true);
                 this.setSetting('homeOpen', o); this.renderDashboard(); break;
@@ -5382,7 +5403,8 @@ class SuperAnki {
             case 'goal-add': {
                 const name = (($('#goal-name') || {}).value || '').trim(), date = ($('#goal-date') || {}).value || '';
                 if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { this.toast('Choisis une date pour ton objectif.', 'warning'); break; }
-                this.data.settings.goals = [...this.goalsRaw(), { id: uid('g'), name: name || 'Objectif', date }];
+                const deck = ($('#goal-deck') || {}).value || '';
+                this.data.settings.goals = [...this.goalsRaw(), { id: uid('g'), name: name || (deck && this.deck(deck) ? this.deck(deck).name : 'Objectif'), date, ...(deck && this.deck(deck) ? { deck } : {}) }];
                 this.data.settings.settingsMod = Date.now();
                 this.save(); this.renderSettings();
                 this.toast('Objectif ajouté', 'success', ic('target'));
@@ -6979,10 +7001,24 @@ Object.assign(SuperAnki.prototype, {
         const g = this.goalsAll()[0];
         return g ? { name: g.name, days: g.days, date: g.date } : null;
     },
+    /* "Examens" on the home screen: one row per upcoming goal, soonest first; a goal linked to a course shows how much of it was seen and a daily target */
     goalsHtml() {
-        const all = this.goalsAll();
-        if (all.length < 2) return '';
-        return `<div><div class="section-head"><h3 class="section-title">Échéances</h3><button class="link" data-nav="settings">Gérer</button></div><div class="goal-chips">${all.slice(0, 8).map(g => `<span class="goal-chip ${g.days < 0 ? 'past' : g.days <= 7 ? 'soon' : ''}">${ic('target')}<b>${esc(g.name)}</b><em>${g.days > 0 ? `J-${g.days}` : g.days === 0 ? "aujourd'hui" : 'terminé'}</em></span>`).join('')}</div></div>`;
+        const all = this.goalsAll().filter(g => g.days >= 0);
+        if (!all.length) return '';
+        const rows = all.slice(0, 6).map(g => {
+            const d = g.deck ? this.deck(g.deck) : null, left = g.days === 0 ? "aujourd'hui" : `J-${g.days}`, soon = g.days <= 7;
+            let body = '';
+            if (d) {
+                const cards = this.poolFor([d.id]), total = cards.length, seen = cards.filter(c => (c.right || 0) + (c.wrong || 0) > 0 || c.state !== 'new').length, rest = total - seen;
+                const perDay = Math.ceil(rest / Math.max(g.days, 1));
+                body = `<div class="ex-sub">${esc(d.emoji)} ${esc(d.name)} · <b>${seen}</b> / ${total} cartes vues</div>
+                    <div class="progress"><i style="width:${total ? seen / total * 100 : 0}%;background:var(--primary)"></i></div>
+                    <div class="ex-plan">${rest > 0 ? `≈ <b>${plural(perDay, 'carte')} par jour</b> pour tout voir avant l'examen` : '✔ Tout vu : repasse tout une dernière fois en Libre'}</div>
+                    <div class="ex-actions"><button class="btn btn-soft btn-sm" data-action="exam-go" data-mode="ordered" data-deck="${esc(d.id)}">${ic('list')}Ordre</button><button class="btn btn-soft btn-sm" data-action="exam-go" data-mode="free" data-deck="${esc(d.id)}">${ic('repeat')}Libre</button><button class="link" data-action="open-deck" data-deck="${esc(d.id)}">Voir le paquet</button></div>`;
+            }
+            return `<div class="panel exam-row ${soon ? 'soon' : ''}"><div class="ex-top"><b>${esc(g.name)}</b><span class="goal-days ${soon ? 'soon' : ''}">${left}</span></div>${body}</div>`;
+        }).join('');
+        return `<div><div class="section-head"><h3 class="section-title">Examens</h3><button class="link" data-nav="settings">Gérer</button></div><div class="exam-list">${rows}</div></div>`;
     },
 
     /* ============================================================

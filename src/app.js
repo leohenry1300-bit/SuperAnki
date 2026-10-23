@@ -1204,8 +1204,8 @@ class SuperAnki {
                 </div>
             </div>
 
-            ${this.goalsHtml()}
             ${this.resumeHtml()}
+            ${this.goalsHtml()}
             ${libBanner}
             ${this.tipsHtml()}
             <div class="status-grid">
@@ -1776,10 +1776,11 @@ class SuperAnki {
             <div class="panel panel-pad set-section" id="goals-panel">
                 <h3>${ic('target')} Objectifs / examens</h3>
                 <p class="small muted">Chaque objectif a son compte à rebours sur l'accueil. Ajoute-en autant que tu veux.</p>
-                <div class="goal-list">${this.goalsAll().map(g => `<div class="goal-row ${g.days < 0 ? 'past' : ''}"><div class="gr-main"><b>${esc(g.name)}</b><span class="small muted">${esc(this.goalDateLabel(g.date))}</span></div><span class="goal-days ${g.days <= 7 && g.days >= 0 ? 'soon' : ''}">${g.days > 0 ? `J-${g.days}` : g.days === 0 ? 'Aujourd\'hui' : 'Terminé'}</span><button class="icon-btn" data-action="goal-del" data-id="${esc(g.id)}" title="Supprimer cet objectif" aria-label="Supprimer ${esc(g.name)}">${ic('trash')}</button></div>`).join('') || '<p class="small muted" style="margin:6px 0">Aucun objectif pour l\'instant.</p>'}</div>
+                <div class="goal-list">${this.goalsAll().map(g => `<div class="goal-row ${g.days < 0 ? 'past' : ''}"><div class="gr-main"><b>${esc(g.name)}</b><span class="small muted">${esc(this.goalDateLabel(g.date))}</span>${g.deck && this.deck(g.deck) ? `<span class="small gr-deck">${esc(this.deck(g.deck).emoji)} ${esc(this.deck(g.deck).name)}</span>` : ''}</div><span class="goal-days ${g.days <= 7 && g.days >= 0 ? 'soon' : ''}">${g.days > 0 ? `J-${g.days}` : g.days === 0 ? 'Aujourd\'hui' : 'Terminé'}</span><button class="icon-btn" data-action="goal-del" data-id="${esc(g.id)}" title="Supprimer cet objectif" aria-label="Supprimer ${esc(g.name)}">${ic('trash')}</button></div>`).join('') || '<p class="small muted" style="margin:6px 0">Aucun objectif pour l\'instant.</p>'}</div>
                 <div class="goal-add">
                     <input class="input" id="goal-name" placeholder="Nom de l'objectif" aria-label="Nom de l'objectif" maxlength="40">
                     <input class="input" id="goal-date" aria-label="Date de l'objectif" type="date">
+                    <select class="select" id="goal-deck" aria-label="Cours lié (facultatif)"><option value="">Cours lié : aucun</option>${this.sortedDecks().map(d => `<option value="${esc(d.id)}">${esc(d.emoji)} ${esc(this.deckPath(d.id).split(' › ').slice(-2).join(' › '))}</option>`).join('')}</select>
                     <button class="btn btn-primary btn-sm" data-action="goal-add">${ic('plus')}Ajouter</button>
                 </div>
             </div>
@@ -3308,6 +3309,11 @@ class SuperAnki {
                 ]);
                 break;
             }
+            case 'exam-go': {
+                if (!this.deck(ds.deck)) break;
+                if (ds.mode === 'ordered') this.startFree(ds.deck, true, true); else this.startFree(ds.deck);
+                break;
+            }
             case 'home-toggle': {
                 const o = { ...(this.data.settings.homeOpen || {}) }; o[ds.sec] = !(o[ds.sec] === true);
                 this.setSetting('homeOpen', o); this.renderDashboard(); break;
@@ -3427,7 +3433,8 @@ class SuperAnki {
             case 'goal-add': {
                 const name = (($('#goal-name') || {}).value || '').trim(), date = ($('#goal-date') || {}).value || '';
                 if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { this.toast('Choisis une date pour ton objectif.', 'warning'); break; }
-                this.data.settings.goals = [...this.goalsRaw(), { id: uid('g'), name: name || 'Objectif', date }];
+                const deck = ($('#goal-deck') || {}).value || '';
+                this.data.settings.goals = [...this.goalsRaw(), { id: uid('g'), name: name || (deck && this.deck(deck) ? this.deck(deck).name : 'Objectif'), date, ...(deck && this.deck(deck) ? { deck } : {}) }];
                 this.data.settings.settingsMod = Date.now();
                 this.save(); this.renderSettings();
                 this.toast('Objectif ajouté', 'success', ic('target'));
