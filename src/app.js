@@ -1288,19 +1288,19 @@ class SuperAnki {
             const st = stats.get(k.id), kids = this.childrenOf(k.id), isOpen = openD.has(k.id);
             return `<div class="sub-row" style="--d:${depth}">
                 ${kids.length ? `<button class="dl-chev ${isOpen ? 'open' : ''}" data-action="dash-toggle" data-deck="${esc(k.id)}" aria-label="${isOpen ? 'Replier' : 'Déplier'}" aria-expanded="${isOpen}">${ic('chevronRight')}</button>` : '<span class="dl-chev ph"></span>'}
-                <button class="sub-name" data-action="open-deck" data-deck="${esc(k.id)}" title="Voir les cartes"><span>${esc(k.emoji)}</span><b>${esc(k.name)}</b></button>
+                <button class="sub-name" data-action="dash-open" data-deck="${esc(k.id)}" title="${kids.length ? 'Voir les sous-paquets' : 'Voir les cartes'}"><span>${esc(k.emoji)}</span><b>${esc(k.name)}</b></button>
                 <span class="sub-bar">${this.progressHtml(st)}<small>${st.tried ? `<b style="color:var(--mature)">✔ ${st.acq}</b>/${st.total} acquises${st.weak ? ` · <b style="color:var(--due)">↺ ${st.weak}</b>` : ''}` : `${this.pctSeen(st)} % vu · ${this.pctMature(st)} % maîtrisé · ${st.total}`}</small></span>
                 ${st.due ? `<span class="due-badge" title="À revoir">${st.due}</span>` : '<span class="due-badge ph"></span>'}
                 <button class="icon-btn icon-btn-sm" title="Réviser ce sous-paquet" data-action="study" data-deck="${esc(k.id)}">${ic('play')}</button>
                 <button class="icon-btn icon-btn-sm" title="Révision libre : toutes les cartes, sans toucher au planning" data-action="free-deck" data-deck="${esc(k.id)}">${ic('repeat')}</button>
                 <button class="icon-btn icon-btn-sm" title="Étudier dans l'ordre" data-action="ordered-deck" data-deck="${esc(k.id)}">${ic('list')}</button>
-            </div>${kids.length && isOpen ? subRows(k.id, depth + 1) : ''}`;
+            </div>${kids.length && isOpen ? `<div class="sub-open-link" style="--d:${depth + 1}"><button class="link" data-action="open-deck" data-deck="${esc(k.id)}">${ic('layers')}Voir les cartes de « ${esc(k.name)} »</button></div>${subRows(k.id, depth + 1)}` : ''}`;
         }).join('');
         return rows.map(({ deck, cards, c, todo }) => {
             const st = stats.get(deck.id), total = st.total || 1;
             const kids = this.childrenOf(deck.id), nSub = this.descendantIds(deck.id).length - 1, isOpen = openD.has(deck.id);
             return `
-            <div class="panel deck-card ${kids.length && isOpen ? 'wide' : ''}" data-action="open-deck" data-deck="${esc(deck.id)}">
+            <div class="panel deck-card ${kids.length && isOpen ? 'wide' : ''}" data-action="dash-open" data-deck="${esc(deck.id)}">
                 <div class="deck-head">
                     <span class="deck-emoji">${esc(deck.emoji)}</span>
                     <div style="min-width:0"><div class="deck-name">${esc(deck.name)}</div><div class="deck-meta">${plural(cards.length, 'carte')} · ${this.pctSeen(st)} % vu · ${this.pctMature(st)} % maîtrisé</div></div>
@@ -1315,7 +1315,7 @@ class SuperAnki {
                 ${this.progressHtml(st)}
                 ${this.trainHtml(st)}
                 ${kids.length ? `<button class="sub-toggle ${isOpen ? 'open' : ''}" data-action="dash-toggle" data-deck="${esc(deck.id)}" aria-expanded="${isOpen}">${ic('chevronRight')}<span>${plural(nSub, 'sous-paquet')}${isOpen ? '' : ' : voir l\'avancée'}</span></button>` : ''}
-                ${kids.length && isOpen ? `<div class="sub-tree">${subRows(deck.id, 0)}</div>` : ''}
+                ${kids.length && isOpen ? `<div class="sub-tree"><div class="sub-open-link" style="--d:0"><button class="link" data-action="open-deck" data-deck="${esc(deck.id)}">${ic('layers')}Voir les cartes de « ${esc(deck.name)} »</button></div>${subRows(deck.id, 0)}</div>` : ''}
                 <div class="deck-foot">
                     ${todo > 0 ? `<button class="btn btn-primary btn-sm" data-action="study" data-deck="${esc(deck.id)}">${ic('play')}Réviser (${todo})</button>`
                         : `<button class="btn btn-soft btn-sm" data-action="practice-deck" data-deck="${esc(deck.id)}">${ic('check')}À jour</button>`}
@@ -3250,9 +3250,16 @@ class SuperAnki {
                 break;
             }
             case 'sync-now': Cloud.sync(true); break;
+            case 'dash-open': {   // home: a deck with sub-decks unfolds in place, a deck without opens its cards
+                if (this.childrenOf(ds.deck).length) { this.toggleOpen('dash', ds.deck); this.renderDashboard(); }
+                else { this.ui.deckQ = ''; this.ui.treeOpen = false; this.go('decks', { deck: ds.deck, filter: 'all' }); }
+                break;
+            }
             case 'deck-more': {
                 const id = el.dataset.deck;
                 this.showMenu(el, [
+                    { icon: 'layers', label: 'Voir les cartes du paquet', fn: () => this.handleAction('open-deck', { dataset: { deck: id } }) },
+                    { sep: true },
                     { icon: 'keyboard', label: 'Écrire la réponse', fn: () => this.openModeLauncher('write', id) },
                     { icon: 'quiz', label: 'Quiz (QCM)', fn: () => this.openModeLauncher('quiz', id) },
                     { icon: 'timer', label: 'Chrono', fn: () => this.openModeLauncher('chrono', id) },

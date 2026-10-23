@@ -1712,3 +1712,14 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
   .seg-sm button, .segmented.seg-sm button { min-height: 36px; }
   .deck-foot .modes .icon-btn { width: 40px; height: 40px; }
 }
+
+.sub-open-link { padding: 2px 4px 6px calc(30px + var(--d, 0) * 20px); }
+.sub-open-link .link { font-size: .82rem; display: inline-flex; align-items: center; gap: 6px; }
+.sub-open-link .link .i { width: 15px; height: 15px; }
+.deck-card[data-action="dash-open"] .sub-tree { cursor: default; }
+@media (max-width: 767px) {
+  .sub-row { gap: 4px 6px; }
+  .sub-name b { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.25; }
+  .sub-row .icon-btn-sm { min-width: 36px; min-height: 36px; width: 36px; height: 36px; }
+  .sub-row .due-badge.ph { display: none; }
+}
