@@ -201,7 +201,7 @@ Object.assign(SuperAnki.prototype, {
         const t0 = startOfDay();
         const today = revlog.filter(r => r[0] >= t0);
         let body;
-        if (!today.length) body = `<p class="muted">Aucune carte étudiée aujourd'hui.</p>`;
+        if (!today.length) body = '';
         else {
             const secs = today.reduce((a, r) => a + (r[6] || 0), 0) / 1000;
             const graded = today.filter(r => r[2]);
@@ -210,12 +210,17 @@ Object.assign(SuperAnki.prototype, {
             today.forEach(r => { k[revKind(r)]++; });
             const mat = today.filter(r => r[3] === 1 && (r[5] || 0) >= MATURE_IVL);
             const matOk = mat.filter(r => r[2] >= 2).length;
-            body = `<p>Étudié <b>${plural(today.length, 'carte')}</b> en <b>${fmtDuration(secs)}</b> aujourd'hui (${fmtNum(secs / today.length)} s/carte).</p>
-                <p>Nombre de « Raté » : <b>${again}</b> (${pctStr(graded.length - again, graded.length)} de réponses correctes).</p>
-                <p>Apprentissage : <b>${k.learn}</b> · Révision : <b>${k.young + k.mature}</b> · Réapprentissage : <b>${k.relearn}</b> · Entraînement : <b>${k.cram}</b></p>
-                ${mat.length ? `<p>Cartes matures : <b>${matOk}/${mat.length}</b> réussies (${pctStr(matOk, mat.length)}).</p>` : ''}`;
+            const ok = graded.length - again;
+            body = `<div class="today-grid">
+                    <div class="today-stat"><b>${today.length}</b><span>${today.length > 1 ? 'cartes étudiées' : 'carte étudiée'}</span></div>
+                    <div class="today-stat"><b>${fmtDuration(secs)}</b><span>${fmtNum(secs / today.length)} s par carte</span></div>
+                    <div class="today-stat good"><b>${pctStr(ok, graded.length)}</b><span>réponses correctes</span></div>
+                    <div class="today-stat bad"><b>${again}</b><span>« Raté »</span></div>
+                </div>
+                <div class="today-chips"><span class="tchip">Apprentissage <b>${k.learn}</b></span><span class="tchip">Révision <b>${k.young + k.mature}</b></span><span class="tchip">Réapprentissage <b>${k.relearn}</b></span><span class="tchip">Entraînement <b>${k.cram}</b></span></div>
+                ${mat.length ? `<p class="today-note">Cartes matures : <b>${matOk}/${mat.length}</b> réussies (${pctStr(matOk, mat.length)}).</p>` : ''}`;
         }
-        return `<section class="panel panel-pad stat-card"><h4 class="stat-title">Aujourd'hui</h4><div class="stat-text">${body}</div></section>`;
+        return `<section class="panel panel-pad stat-card wide stat-today"><h4 class="stat-title">Aujourd'hui</h4><div class="stat-text">${today.length ? body : `<p class="muted today-empty">Aucune carte étudiée aujourd'hui.</p>`}</div></section>`;
     },
 
     /* ---------- Charge de travail (prévisions) ---------- */

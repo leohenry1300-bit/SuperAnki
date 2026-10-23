@@ -808,6 +808,7 @@ class SuperAnki {
         if (source === 'legacy') this.toast('Tes cartes et ta progression ont été récupérées', 'success');
         this.initRipple();
         this.initScrollShadow();
+        this.initMascotEyes();
         this.initPull();
         this.focusInit();
         this.extrasInit();
@@ -1209,13 +1210,13 @@ class SuperAnki {
             clearTimeout(idle); idle = setTimeout(() => { const go = acc; acc = 0; if (go * .6 >= 54) { d = 54; release(); } else hide(); }, 220);
         }, { passive: true });
     }
-    /* Léo the lion cub: a small animated SVG character with four moods (ready, happy, calm, tough) */
+    /* Léo the lion cub: an animated SVG character (head, shoulders, paws and a flashcard) with four moods */
     mascotSvg(mood = 'ready') {
         const eyes = {
-            ready: '<g class="mc-eye"><ellipse cx="46" cy="58" rx="4.6" ry="6.2" fill="#1f2937"/><circle cx="47.6" cy="55.6" r="1.7" fill="#fff"/></g><g class="mc-eye"><ellipse cx="74" cy="58" rx="4.6" ry="6.2" fill="#1f2937"/><circle cx="75.6" cy="55.6" r="1.7" fill="#fff"/></g>',
+            ready: '<g class="mc-eye"><g class="mc-look"><ellipse cx="46" cy="58" rx="4.8" ry="6.4" fill="#1f2937"/><circle cx="47.7" cy="55.6" r="1.8" fill="#fff"/></g></g><g class="mc-eye"><g class="mc-look"><ellipse cx="74" cy="58" rx="4.8" ry="6.4" fill="#1f2937"/><circle cx="75.7" cy="55.6" r="1.8" fill="#fff"/></g></g>',
             happy: '<path d="M40 61 Q46 51 52 61" fill="none" stroke="#1f2937" stroke-width="3.4" stroke-linecap="round"/><path d="M68 61 Q74 51 80 61" fill="none" stroke="#1f2937" stroke-width="3.4" stroke-linecap="round"/>',
             calm: '<path d="M40 58 Q46 64 52 58" fill="none" stroke="#1f2937" stroke-width="3.2" stroke-linecap="round"/><path d="M68 58 Q74 64 80 58" fill="none" stroke="#1f2937" stroke-width="3.2" stroke-linecap="round"/>',
-            tough: '<g class="mc-eye"><ellipse cx="46" cy="59" rx="4.4" ry="5.6" fill="#1f2937"/><circle cx="47.5" cy="57" r="1.6" fill="#fff"/></g><g class="mc-eye"><ellipse cx="74" cy="59" rx="4.4" ry="5.6" fill="#1f2937"/><circle cx="75.5" cy="57" r="1.6" fill="#fff"/></g><path d="M39 49 L52 53" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/><path d="M81 49 L68 53" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/>'
+            tough: '<g class="mc-eye"><g class="mc-look"><ellipse cx="46" cy="59" rx="4.5" ry="5.8" fill="#1f2937"/><circle cx="47.5" cy="57" r="1.6" fill="#fff"/></g></g><g class="mc-eye"><g class="mc-look"><ellipse cx="74" cy="59" rx="4.5" ry="5.8" fill="#1f2937"/><circle cx="75.5" cy="57" r="1.6" fill="#fff"/></g></g><path d="M39 49 L52 53" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/><path d="M81 49 L68 53" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/>'
         }[mood] || '';
         const mouth = {
             ready: '<path d="M51 80 Q60 88 69 80" fill="none" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/>',
@@ -1224,10 +1225,15 @@ class SuperAnki {
             tough: '<path d="M52 83 Q60 79 68 83" fill="none" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/>'
         }[mood] || '';
         const mane = Array.from({ length: 12 }, (_, i) => { const a = (Math.PI * 2 * i) / 12; return `<circle cx="${(60 + Math.cos(a) * 38).toFixed(1)}" cy="${(62 + Math.sin(a) * 38).toFixed(1)}" r="13" fill="#d97706"/>`; }).join('');
-        const extra = mood === 'happy' ? '<g class="mc-spark"><path d="M14 30 l2.4 6 6 2.4 -6 2.4 -2.4 6 -2.4 -6 -6 -2.4 6 -2.4z" fill="#fde047"/><path d="M104 22 l1.8 4.4 4.4 1.8 -4.4 1.8 -1.8 4.4 -1.8 -4.4 -4.4 -1.8 4.4 -1.8z" fill="#fde047"/></g>'
-            : mood === 'calm' ? '<g class="mc-z"><text x="92" y="30" font-size="16" font-weight="800" fill="#fff" opacity=".9">z</text><text x="102" y="18" font-size="11" font-weight="800" fill="#fff" opacity=".7">z</text></g>' : '';
-        const wave = mood === 'ready' ? '<g class="mc-wave"><path d="M82 100 Q96 104 101 88" fill="none" stroke="#d97706" stroke-width="12" stroke-linecap="round"/><path d="M82 100 Q96 104 101 88" fill="none" stroke="#fbbf24" stroke-width="8" stroke-linecap="round"/><circle cx="101" cy="85" r="8.5" fill="#fbbf24" stroke="#d97706" stroke-width="2.4"/></g>' : '';
-        return `<svg class="mc mc-${mood}" viewBox="0 0 120 120" aria-hidden="true"><g class="mc-body">${mane}
+        const cardY = mood === 'happy' ? 96 : 104, cy = cardY + 13;
+        const sym = { ready: `<text x="60" y="${cy + 6}" text-anchor="middle" font-size="18" font-weight="800" fill="#6366f1">?</text>`, happy: `<path d="M51 ${cy} l6 6 12 -13" fill="none" stroke="#10b981" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>`, calm: `<text x="60" y="${cy + 5}" text-anchor="middle" font-size="13" font-weight="800" fill="#94a3b8">zZ</text>`, tough: `<text x="60" y="${cy + 6}" text-anchor="middle" font-size="18" font-weight="800" fill="#f59e0b">!</text>` }[mood] || '';
+        const extra = mood === 'happy' ? '<g class="mc-spark"><path d="M14 30 l2.4 6 6 2.4 -6 2.4 -2.4 6 -2.4 -6 -6 -2.4 6 -2.4z" fill="#fde047"/><path d="M118 22 l1.8 4.4 4.4 1.8 -4.4 1.8 -1.8 4.4 -1.8 -4.4 -4.4 -1.8 4.4 -1.8z" fill="#fde047"/></g>'
+            : mood === 'calm' ? '<g class="mc-z"><text x="104" y="30" font-size="16" font-weight="800" fill="#fff" opacity=".9">z</text><text x="116" y="18" font-size="11" font-weight="800" fill="#fff" opacity=".7">z</text></g>' : '';
+        const wave = mood === 'ready' ? '<g class="mc-wave"><path d="M102 118 Q118 120 121 100" fill="none" stroke="#d97706" stroke-width="13" stroke-linecap="round"/><path d="M102 118 Q118 120 121 100" fill="none" stroke="#fbbf24" stroke-width="9" stroke-linecap="round"/><circle cx="121" cy="96" r="9" fill="#fbbf24" stroke="#d97706" stroke-width="2.4"/></g>' : '';
+        const arm = side => `<path d="M${side < 0 ? 36 : 104} 112 Q${side < 0 ? 44 : 96} ${cardY + 26} ${side < 0 ? 54 : 86} ${cardY + 20}" fill="none" stroke="#d97706" stroke-width="13" stroke-linecap="round"/><path d="M${side < 0 ? 36 : 104} 112 Q${side < 0 ? 44 : 96} ${cardY + 26} ${side < 0 ? 54 : 86} ${cardY + 20}" fill="none" stroke="#fbbf24" stroke-width="9" stroke-linecap="round"/>`;
+        return `<svg class="mc mc-${mood}" viewBox="0 0 140 150" aria-hidden="true"><g class="mc-body" transform="translate(10 0)">
+            <ellipse cx="60" cy="128" rx="40" ry="30" fill="#d97706"/><ellipse cx="60" cy="128" rx="35" ry="27" fill="#fbbf24"/><ellipse cx="60" cy="134" rx="21" ry="19" fill="#fef3c7"/>
+            ${mane}
             <circle cx="30" cy="40" r="12" fill="#fbbf24"/><circle cx="30" cy="40" r="6" fill="#fda4af"/><circle cx="90" cy="40" r="12" fill="#fbbf24"/><circle cx="90" cy="40" r="6" fill="#fda4af"/>
             <circle cx="60" cy="62" r="35" fill="#fbbf24"/>
             <ellipse cx="60" cy="76" rx="17" ry="13" fill="#fef3c7"/>
@@ -1235,6 +1241,9 @@ class SuperAnki {
             <circle cx="36" cy="70" r="6" fill="#fb7185" opacity=".45"/><circle cx="84" cy="70" r="6" fill="#fb7185" opacity=".45"/>
             ${eyes}${mouth}
             <path d="M34 32 L60 20 L86 32 L60 44 Z" fill="#1e3a8a"/><path d="M46 38 L46 48 Q60 56 74 48 L74 38 L60 44 Z" fill="#1e40af"/><path d="M86 32 L92 46" stroke="#fbbf24" stroke-width="2.4" stroke-linecap="round"/><circle cx="92" cy="48" r="3" fill="#fbbf24"/>
+            <g class="mc-card"><rect x="43" y="${cardY}" width="34" height="26" rx="5" fill="#fff" stroke="#c7d2fe" stroke-width="2.4"/>${sym}</g>
+            ${arm(-1)}${mood === 'ready' ? '' : arm(1)}
+            <circle cx="44" cy="${cardY + 22}" r="6.5" fill="#fbbf24" stroke="#d97706" stroke-width="2.2"/><circle cx="76" cy="${cardY + 22}" r="6.5" fill="#fbbf24" stroke="#d97706" stroke-width="2.2"/>
             ${wave}</g>${extra}</svg>`;
     }
     /* speech bubble next to the mascot, gone after a few seconds */
@@ -1262,6 +1271,23 @@ class SuperAnki {
     }
     /* zen mode: only the card and the answers stay on screen */
     toggleZen() { document.body.classList.toggle('zen'); this.toast(document.body.classList.contains('zen') ? 'Mode zen activé' : 'Mode zen désactivé', 'success'); }
+    /* Léo's eyes follow the finger / mouse */
+    initMascotEyes() {
+        let pend = null;
+        const move = (x, y) => {
+            if (pend) return;
+            pend = requestAnimationFrame(() => {
+                pend = null;
+                $$('.mc').forEach(el => {
+                    const r = el.getBoundingClientRect(); if (!r.width) return;
+                    const dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height * .42), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 220) * 3;
+                    el.style.setProperty('--px', (dx / d * k).toFixed(2) + 'px'); el.style.setProperty('--py', (dy / d * k).toFixed(2) + 'px');
+                });
+            });
+        };
+        document.addEventListener('pointermove', e => move(e.clientX, e.clientY), { passive: true });
+        document.addEventListener('touchmove', e => { const t = e.touches[0]; if (t) move(t.clientX, t.clientY); }, { passive: true });
+    }
     /* the top bar gets a soft shadow once the page is scrolled */
     initScrollShadow() {
         const bar = $('.topbar'); if (!bar) return;
@@ -1464,7 +1490,7 @@ class SuperAnki {
                 <label class="sort-pick"><span class="sr-only">Trier</span><select class="select select-sm" aria-label="Trier les paquets" data-input="deck-sort">${[['recent', 'Plus récents'], ['due', 'À revoir d\'abord'], ['studied', 'Révisés récemment'], ['alpha', 'A → Z'], ['size', 'Plus de cartes']].map(([v, l]) => `<option value="${v}" ${(d.settings.deckSort || 'recent') === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label></div>
                 <div id="dash-find-res" class="panel dl-results hidden"></div>
                 <div id="dash-decks" class="deck-grid ${this.deckCompact() ? 'compact' : ''}">${this.dashboardDeckCards()}</div>`
-                    : `<div class="panel empty">${ic('layers')}<p>Aucun paquet pour l'instant.</p><button class="btn btn-primary" style="margin-top:14px" data-action="new-deck">${ic('folderPlus')}Créer un paquet</button></div>`}
+                    : `<div class="panel empty"><div class="empty-mascot">${this.mascotSvg('calm')}</div><p>Aucun paquet pour l'instant.</p><button class="btn btn-primary" style="margin-top:14px" data-action="new-deck">${ic('folderPlus')}Créer un paquet</button></div>`}
             </div>
             ${libBanner}
             ${this.tipsHtml()}
