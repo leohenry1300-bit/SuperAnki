@@ -220,6 +220,7 @@ function ambPlay() {
     ambApply();
     E.fade.gain.cancelScheduledValues(E.ac.currentTime); E.fade.gain.setTargetAtTime(1, E.ac.currentTime, 0.6);
     E.playing = true;
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch { /* ignore */ }   // the ambiance may go on with the screen locked
     if (E.audio) { const p = E.audio.play(); if (p && p.catch) p.catch(() => { /* needs a tap: the button is one */ }); }
     ambMedia();
     ambTimerArm();
@@ -230,7 +231,7 @@ function ambPause(fast) {
     E.playing = false;
     E.fade.gain.cancelScheduledValues(E.ac.currentTime); E.fade.gain.setTargetAtTime(0, E.ac.currentTime, fast ? 0.05 : 0.7);
     clearTimeout(E.timer); clearInterval(E.tick);
-    setTimeout(() => { if (!E.playing && E.audio) { try { E.audio.pause(); } catch { /* ignore */ } } }, fast ? 200 : 2800);
+    setTimeout(() => { if (!E.playing && E.audio) { try { E.audio.pause(); } catch { /* ignore */ } try { if (navigator.audioSession) navigator.audioSession.type = 'ambient'; } catch { /* ignore */ } } }, fast ? 200 : 2800);
     try { if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused'; } catch { /* ignore */ }
 }
 function ambMedia() {

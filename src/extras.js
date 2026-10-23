@@ -155,7 +155,7 @@ function sfx(name) {
     try { if (navigator.vibrate) { if (name === 'right' || name === 'g3' || name === 'g4') navigator.vibrate(12); else if (name === 'wrong' || name === 'g1') navigator.vibrate([18, 40, 18]); } } catch { /* ignore */ }
     const ac = sndCtx(); if (!ac) return;
     SND_LAST = performance.now(); SND_LAST_NAME = name;
-    if (sndStandalone()) { const c = sndClip(name, SFX[name], name === 'done' ? 3 : 1.6); if (c) { sndPlayClip(c); return; } }   // clip not ready yet: the synth plays this once
+    if (sndClipsOk()) { const c = sndClip(name, SFX[name], name === 'done' ? 3 : 1.6); if (c) { sndPlayClip(c); return; } }   // clip not ready yet: the synth plays this once
     try { SFX[name](ac, sndChain(ac).bus, ac.currentTime + 0.02, SND.vol); } catch { /* ignore */ }
 }
 
@@ -173,7 +173,7 @@ const RINGTONES = {
 function ringPlay(id, repeat = true) {
     const ac = sndCtx(), r = RINGTONES[id] || RINGTONES.bell;
     if (!ac) return;
-    if (sndStandalone()) {
+    if (sndClipsOk()) {
         const key = 'ring:' + id + (repeat ? ':2' : ':1'), c = sndClip(key, (a, o, t, v) => { [0, ...(repeat ? [r.len + 0.5] : [])].forEach(d => r.play(a, o, t + d, Math.max(0.4, v) * 1.1)); }, r.len * (repeat ? 2 : 1) + 1.5);
         if (c) { sndPlayClip(c); return; }
     }
@@ -184,6 +184,7 @@ function ringPlay(id, repeat = true) {
 
 /* Installed web app on iPhone: the ring/silent switch mutes Web Audio but never a real <audio> clip. So there each sound is rendered once
    (same synth, drawn offline into a WAV) and played through a normal audio element: it is heard exactly like in Safari. */
+function sndClipsOk() { return sndStandalone() && !!navigator.audioSession && !!(window.OfflineAudioContext || window.webkitOfflineAudioContext); }
 function sndStandalone() { try { return navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches; } catch { return false; } }
 const SND_CLIPS = {};   // key -> { url } once rendered, 'wait' while rendering
 const SND_ELS = [];     // a few audio elements, unlocked by a real touch, reused for every clip (iOS only allows play() on elements a touch has started)
@@ -235,16 +236,19 @@ function sndPrerender() { ['reveal', 'g1', 'g2', 'g3', 'g4', 'right', 'wrong', '
 /* iPhone: Web Audio is muted by the ring/silent switch and needs a real touch to start.
    On the first tap we (1) ask for the "playback" audio session, (2) play one silent <audio> clip (what makes iOS treat the page as media),
    (3) resume the context and play a silent buffer. After that every sound works, switch or not. */
+/* the audio session decides who wins on the iPhone: "ambient" mixes our small sounds with the music you are listening to (it never stops it),
+   "playback" (used only while the ambiance mixer runs, so it can go on with the screen locked) takes the audio over */
+function sndSession(t) { try { if (navigator.audioSession && navigator.audioSession.type !== t) navigator.audioSession.type = t; } catch { /* ignore */ } }
+sndSession('ambient');
 const SND_UNLOCK = { done: false };
 function sndUnlock() {
-    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch { /* ignore */ }
+    sndSession(typeof AMB_ENG !== 'undefined' && AMB_ENG.playing ? 'playback' : 'ambient');
     const ac = sndCtx(); if (!ac) return;
     try { const b = ac.createBuffer(1, 1, 22050), s = ac.createBufferSource(); s.buffer = b; s.connect(ac.destination); s.start(0); } catch { /* ignore */ }
-    if (sndStandalone()) sndWake();
+    if (sndClipsOk()) sndWake();
     if (SND_UNLOCK.done) return;
     SND_UNLOCK.done = true;
-    if (!(window.OfflineAudioContext || window.webkitOfflineAudioContext)) sndKeepAlive();   // old browsers only: the clip route below needs offline rendering
-    else if (sndStandalone()) sndPrerender();
+    if (sndClipsOk()) sndPrerender();
 }
 /* installed web app on iPhone: Web Audio stays muted unless the page is "playing media". A silent clip played in a loop
    (in the page, not muted, a hair above silence) keeps the "playback" audio session alive, so the sounds are heard like in Safari. */
@@ -300,7 +304,7 @@ Object.assign(SuperAnki.prototype, {
             else if (a === 'ui-toggle') { SND.ui = !SND.ui; sndSave(); if (SND.ui) sfx('on'); }
             else if (a === 'snd-test') {
                 sndUnlock();
-                if (sndStandalone()) {
+                if (sndClipsOk()) {
                     sndClipP('g3', SFX.g3, 1.6).then(async c => {
                         if (!c) { this.toast('Ce téléphone ne peut pas préparer les sons.', 'warning'); return; }
                         const r = await sndPlayClip(c); setTimeout(() => sndPlayClip(SND_CLIPS.g3), 380);
