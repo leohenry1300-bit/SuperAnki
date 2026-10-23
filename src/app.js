@@ -766,9 +766,13 @@ class SuperAnki {
 
     /* ---------- boot ---------- */
     async init() {
+        const barEl = document.querySelector('#boot .boot-bar span');
+        const prog = p => { if (barEl) barEl.style.width = p + '%'; };
+        prog(12);
         injectSprite();
         this.bindGlobalEvents();
         await Storage.init();
+        prog(30);
         let data = null, source = 'seed';
         try {
             const stored = await Storage.load();
@@ -779,6 +783,7 @@ class SuperAnki {
             if (legacy) { data = normalizeState(legacy); source = 'legacy'; }
         }
         if (!data || !data.cards.length && !data.decks.length) { data = seedState(); source = 'seed'; }
+        prog(55);
         this.data = data;
         this.gcMedia(data);
         this.applySettings();
@@ -789,11 +794,14 @@ class SuperAnki {
         this.checkStreak();
         this.writeNow();
         this.autoBackup(source);
-        /* the loading screen stays long enough to be seen (about 1.3 s from launch) and until the fonts are ready, then fades out */
+        /* the loading bar fills up completely (about 1.4 s from launch, and once the fonts are ready) before the app opens */
+        prog(80);
         const bootEl = $('#boot');
         await Promise.race([document.fonts ? document.fonts.ready : null, new Promise(r => setTimeout(r, 1500))]);
-        const wait = 1300 - performance.now();
-        if (wait > 0) await new Promise(r => setTimeout(r, wait));
+        const wait = 900 - performance.now();
+        if (wait > 0) { await new Promise(r => setTimeout(r, wait / 2)); prog(92); await new Promise(r => setTimeout(r, wait / 2)); }
+        prog(100);
+        await new Promise(r => setTimeout(r, 550));
         if (bootEl) { bootEl.classList.add('boot-out'); await new Promise(r => setTimeout(r, 260)); bootEl.remove(); }
         this.go('dashboard');
         if (source === 'legacy') this.toast('Tes cartes et ta progression ont été récupérées', 'success');

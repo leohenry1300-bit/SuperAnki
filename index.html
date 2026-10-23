@@ -1979,10 +1979,10 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .boot-cards i:nth-child(1) { --r: -18deg; } .boot-cards i:nth-child(2) { --r: 12deg; } .boot-cards i:nth-child(3) { --r: -3deg; }
 .boot-name { font-family: var(--font-display, inherit); font-size: 1.25rem; font-weight: 800; letter-spacing: .01em; color: var(--text, inherit); }
 .boot-bar { width: 140px; height: 4px; border-radius: 4px; background: color-mix(in srgb, var(--primary, #4f46e5) 18%, transparent); overflow: hidden; }
-.boot-bar span { display: block; width: 40%; height: 100%; border-radius: 4px; background: var(--primary, #4f46e5); animation: bootBar 1.1s ease-in-out infinite; }
+.boot-bar span { display: block; width: 4%; height: 100%; border-radius: 4px; background: var(--primary, #4f46e5); transition: width .5s ease-out; }
 @keyframes bootBar { 0% { transform: translateX(-100%); } 100% { transform: translateX(260%); } }
 .boot-txt { font-size: .8rem; color: var(--text-faint, #888); }
-@media (prefers-reduced-motion: reduce) { .boot-cards i, .boot-bar span { animation: none; } .boot-cards i:nth-child(1) { transform: rotate(-12deg); } .boot-cards i:nth-child(2) { transform: rotate(8deg); } }
+@media (prefers-reduced-motion: reduce) { .boot-cards i { animation: none; } .boot-cards i:nth-child(1) { transform: rotate(-12deg); } .boot-cards i:nth-child(2) { transform: rotate(8deg); } }
 
 .boot.boot-out { opacity: 0; transition: opacity .25s ease; }
 
@@ -2859,9 +2859,13 @@ class SuperAnki {
 
     /* ---------- boot ---------- */
     async init() {
+        const barEl = document.querySelector('#boot .boot-bar span');
+        const prog = p => { if (barEl) barEl.style.width = p + '%'; };
+        prog(12);
         injectSprite();
         this.bindGlobalEvents();
         await Storage.init();
+        prog(30);
         let data = null, source = 'seed';
         try {
             const stored = await Storage.load();
@@ -2872,6 +2876,7 @@ class SuperAnki {
             if (legacy) { data = normalizeState(legacy); source = 'legacy'; }
         }
         if (!data || !data.cards.length && !data.decks.length) { data = seedState(); source = 'seed'; }
+        prog(55);
         this.data = data;
         this.gcMedia(data);
         this.applySettings();
@@ -2882,11 +2887,14 @@ class SuperAnki {
         this.checkStreak();
         this.writeNow();
         this.autoBackup(source);
-        /* the loading screen stays long enough to be seen (about 1.3 s from launch) and until the fonts are ready, then fades out */
+        /* the loading bar fills up completely (about 1.4 s from launch, and once the fonts are ready) before the app opens */
+        prog(80);
         const bootEl = $('#boot');
         await Promise.race([document.fonts ? document.fonts.ready : null, new Promise(r => setTimeout(r, 1500))]);
-        const wait = 1300 - performance.now();
-        if (wait > 0) await new Promise(r => setTimeout(r, wait));
+        const wait = 900 - performance.now();
+        if (wait > 0) { await new Promise(r => setTimeout(r, wait / 2)); prog(92); await new Promise(r => setTimeout(r, wait / 2)); }
+        prog(100);
+        await new Promise(r => setTimeout(r, 550));
         if (bootEl) { bootEl.classList.add('boot-out'); await new Promise(r => setTimeout(r, 260)); bootEl.remove(); }
         this.go('dashboard');
         if (source === 'legacy') this.toast('Tes cartes et ta progression ont été récupérées', 'success');
