@@ -1139,7 +1139,41 @@ class SuperAnki {
         const restore = mem && prevView !== view && opts.deck === undefined && ['dashboard', 'decks', 'stats', 'settings', 'toeic'].includes(view) && ['dashboard', 'decks', 'stats', 'settings', 'toeic'].includes(prevView);   // coming back to a tab: same place as before
         window.scrollTo({ top: restore ? mem : 0, behavior: 'instant' in window ? 'instant' : 'auto' });
         const el = $(`#view-${view}`); if (el) { el.classList.remove('view-in'); void el.offsetWidth; el.classList.add('view-in'); }
+        if (view === 'dashboard' && prevView !== 'dashboard') this.countUp('#view-dashboard .status-num');
     }
+    /* small motion helpers (skipped when the device asks for reduced motion) */
+    calm() { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+    countUp(sel) {
+        if (this.calm()) return;
+        $$(sel).forEach(el => {
+            const end = parseInt(el.textContent.replace(/\s/g, ''), 10);
+            if (!isFinite(end) || end < 2) return;
+            const t0 = performance.now(), dur = 650;
+            const tick = now => {
+                const k = Math.min(1, (now - t0) / dur), v = Math.round(end * (1 - Math.pow(1 - k, 3)));
+                el.textContent = String(v);
+                if (k < 1) requestAnimationFrame(tick); else el.textContent = String(end);
+            };
+            requestAnimationFrame(tick);
+        });
+    }
+    animCard(kind) {
+        if (this.calm()) return;
+        const el = $('#view-session .flashcard'); if (!el) return;
+        el.classList.remove('anim-flip', 'anim-next'); void el.offsetWidth; el.classList.add(kind === 'flip' ? 'anim-flip' : 'anim-next');
+    }
+    confetti() {
+        if (this.calm()) return;
+        const box = document.createElement('div'); box.className = 'confetti'; box.setAttribute('aria-hidden', 'true');
+        const cols = ['#f43f5e', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#eab308'];
+        for (let i = 0; i < 36; i++) {
+            const c = document.createElement('i');
+            c.style.cssText = `left:${Math.random() * 100}%;background:${cols[i % cols.length]};--dx:${(Math.random() - .5) * 160}px;--r:${Math.random() * 720 - 360}deg;animation-duration:${1.4 + Math.random() * 1.2}s;animation-delay:${Math.random() * .25}s`;
+            box.appendChild(c);
+        }
+        document.body.appendChild(box); setTimeout(() => box.remove(), 3200);
+    }
+
     render() {
         ['dashboard', 'decks', 'stats', 'settings', 'session', 'toeic', 'exam'].forEach(v => $(`#view-${v}`).classList.toggle('hidden', v !== this.view));
         $$('[data-nav]').forEach(b => b.classList.toggle('active', b.dataset.nav === this.view && !b.classList.contains('brand') && !b.classList.contains('streak-chip') && !b.classList.contains('sync-dot')));
@@ -2067,6 +2101,7 @@ class SuperAnki {
         }
         s.current = id; s.revealed = false; s.typed = null; s.cardStart = Date.now();
         this.renderSession();
+        if (s.done > 0) this.animCard('next');
         this.autoPlayAudio('.fc-front');
         if (this.data.settings.autoSpeak) this.speak('front');
         this.armAutoAdvance();
@@ -2180,6 +2215,7 @@ class SuperAnki {
         if (s.answer === 'type') return this.submitTyped();
         s.revealed = true;
         this.renderSession();
+        this.animCard('flip');
         this.autoPlayAudio('.fc-back');
         if (this.data.settings.autoSpeak) this.speak('back');
         this.armAutoAdvance();
@@ -2461,6 +2497,7 @@ class SuperAnki {
         if (s.timer) { clearInterval(s.timer); s.timer = null; }
         const secs = Math.round((Date.now() - s.startedAt) / 1000);
         const acc = s.done ? Math.round(s.correct / s.done * 100) : 0;
+        if (s.done >= 5 && acc >= 80) setTimeout(() => this.confetti(), 250);
         let emoji = acc >= 90 ? '🏆' : acc >= 70 ? '🎉' : acc >= 50 ? '💪' : '📚';
         let title = s.kind === 'srs' ? 'Session terminée !' : s.kind === 'chrono' ? 'Temps écoulé !' : s.kind === 'quiz' ? 'Quiz terminé !' : 'Entraînement terminé !';
         let lead = '';

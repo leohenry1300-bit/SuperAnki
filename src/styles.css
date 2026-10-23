@@ -1962,3 +1962,18 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 @media (prefers-reduced-motion: reduce) { .boot-cards i { animation: none; } .boot-cards i:nth-child(1) { transform: rotate(-12deg); } .boot-cards i:nth-child(2) { transform: rotate(8deg); } }
 
 .boot.boot-out { opacity: 0; transition: opacity .25s ease; }
+
+/* ---- motion: card arrival / flip, growing bars, confetti, flame ---- */
+.flashcard.anim-next { animation: cardNext .26s ease-out; }
+.flashcard.anim-flip { animation: cardFlip .32s ease-out; transform-origin: 50% 40%; }
+@keyframes cardNext { from { opacity: 0; transform: translateX(28px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes cardFlip { 0% { transform: perspective(900px) rotateX(-62deg); opacity: .35; } 100% { transform: perspective(900px) rotateX(0); opacity: 1; } }
+.status-tile .bar i, .progress i, .pbar i { transform-origin: left center; animation: barGrow .7s cubic-bezier(.2,.7,.2,1) both; }
+.pbar i { animation: none; transition: width .3s ease; }
+@keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.confetti { position: fixed; inset: 0; pointer-events: none; z-index: 120; overflow: hidden; }
+.confetti i { position: absolute; top: -12px; width: 8px; height: 14px; border-radius: 2px; opacity: 0; animation: confFall 2s ease-in forwards; }
+@keyframes confFall { 0% { opacity: 1; transform: translate(0, 0) rotate(0); } 100% { opacity: 0; transform: translate(var(--dx, 0), 105vh) rotate(var(--r, 360deg)); } }
+.streak-chip:not(.cold) .i { animation: flame 2.4s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes flame { 0%, 100% { transform: scale(1) rotate(0); } 50% { transform: scale(1.14) rotate(-4deg); } }
+@media (prefers-reduced-motion: reduce) { .flashcard.anim-next, .flashcard.anim-flip, .status-tile .bar i, .progress i, .streak-chip .i { animation: none !important; } }
