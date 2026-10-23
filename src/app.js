@@ -1389,15 +1389,12 @@ class SuperAnki {
         if (prevAlive !== undefined && alive && (!prevAlive || st.streak > prevVal)) this.flameBurst(chip);
         chip.title = alive ? `Série : ${st.streak} j (révision du jour faite)` : `Série : ${st.streak} j. Révise aujourd'hui pour la prolonger !`;
     }
+    /* the cloud state is now only shown in the settings line (the top-bar icon was removed) */
     renderSyncIndicator() {
-        const el = $('#sync-indicator');
-        if (!el || !this.data) return;
-        const on = this.data.settings.cloudSync;
-        el.classList.toggle('hidden', !on);
-        el.classList.remove('ok', 'busy', 'err');
-        if (on && ['ok', 'busy', 'err'].includes(Cloud.status)) el.classList.add(Cloud.status);
-        el.title = { ok: 'Synchronisé avec le cloud', busy: 'Synchronisation...', err: 'Synchronisation impossible (hors ligne ?)', off: 'Synchronisation désactivée' }[Cloud.status] || 'Synchronisation cloud';
-        if (this.view === 'settings') { const st = $('#sync-status'); if (st) st.textContent = el.title + (Cloud.status === 'err' && Cloud.lastError ? ` : ${Cloud.lastError}` : '') + (Cloud.lastSync ? ` · dernière synchro ${fmtAgo(Cloud.lastSync)}` : ''); }
+        if (!this.data || this.view !== 'settings') return;
+        const st = $('#sync-status'); if (!st) return;
+        const title = { ok: 'Synchronisé avec le cloud', busy: 'Synchronisation en cours…', err: 'Synchronisation impossible (hors ligne ?)', off: 'Synchronisation désactivée' }[Cloud.status] || (this.data.settings.cloudSync ? 'En attente de synchronisation' : 'Synchronisation désactivée');
+        st.textContent = title + (Cloud.status === 'err' && Cloud.lastError ? ` : ${Cloud.lastError}` : '') + (Cloud.lastSync ? ` · dernière synchro ${fmtAgo(Cloud.lastSync)}` : '');
     }
 
     /* ---------- Dashboard ---------- */
@@ -2097,7 +2094,7 @@ class SuperAnki {
             <div class="panel panel-pad set-section">
                 <h3>${ic('cloud')} Synchronisation cloud</h3>
                 <div class="set-row">
-                    <div class="txt"><b>Synchroniser entre mes appareils</b><span id="sync-status">...</span></div>
+                    <div class="txt"><b>Synchroniser entre mes appareils</b><span id="sync-status">Synchronisation désactivée</span></div>
                     <div style="display:flex;gap:10px;align-items:center">
                         <button class="btn btn-soft btn-sm" data-action="sync-now" ${s.cloudSync ? '' : 'disabled'}>${ic('refresh')}Synchroniser</button>
                         ${sw('cloudSync', 'Synchronisation cloud')}
