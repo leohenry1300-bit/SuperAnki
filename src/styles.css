@@ -2117,7 +2117,6 @@ html[data-vt="l"]::view-transition-new(root) { animation-name: vtInL; }
 .mascot-bubble.out { opacity: 0; transform: scale(.9); transition: .22s; }
 @keyframes bubbleIn { from { opacity: 0; transform: scale(.6); } }
 .summary-mascot { width: 118px; height: 118px; margin: 4px auto 0; }
-@media (max-width: 480px) { .hero .hero-title { padding-right: 58px; } }
 @media (prefers-reduced-motion: reduce) { .mc *, .mascot-bubble { animation: none !important; } }
 
 /* ---- home tool buttons: equal widths, label centred, chevron on the right edge ---- */
@@ -2154,8 +2153,6 @@ html[data-vt="l"]::view-transition-new(root) { animation-name: vtInL; }
 .mascot .mc { width: 100%; height: 100%; }
 .mascot-bubble { right: 18px; top: 82px; }
 @media (min-width: 768px) { .mascot { right: 40px; top: -44px; width: 150px; height: 162px; } .mascot-bubble { right: 48px; top: 108px; } }
-.hero .hero-kicker, .hero .hero-title { padding-right: 96px; }
-@media (min-width: 768px) { .hero .hero-kicker, .hero .hero-title { padding-right: 150px; } }
 .mc-look { transform: translate(var(--px, 0), var(--py, 0)); transition: transform .12s ease-out; }
 .mc-card { transform-box: fill-box; }
 .mc-happy .mc-card { animation: mcCardUp 1.1s ease-in-out infinite; }
@@ -2186,5 +2183,32 @@ html[data-vt="l"]::view-transition-new(root) { animation-name: vtInL; }
 .tchip b { color: var(--text); margin-left: 4px; }
 .today-note, .today-empty { text-align: center; margin-top: 12px; font-size: .85rem; }
 /* ---- home card on large screens: room for Léo on the right so he never covers the buttons ---- */
-@media (min-width: 768px) { .hero .hero-inner { padding-right: 190px; } .hero .hero-kicker, .hero .hero-title { padding-right: 0; } .mascot { right: 28px; top: -30px; } .mascot-bubble { right: 36px; top: 124px; } }
 @media (min-width: 768px) { .mascot { width: 150px; height: 162px; right: 24px; top: -34px; } .mascot-bubble { right: 30px; top: 128px; } }
+
+/* ---- Léo has his own slot in the home card (grid): he can never cover the text ---- */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "text mascot" "actions actions"; column-gap: 4px; row-gap: 18px; align-items: center; }
+.hero-inner { display: contents; }
+.hero-inner > div:first-child { grid-area: text; min-width: 0; position: relative; z-index: 1; }
+.hero-actions { grid-area: actions; position: relative; z-index: 1; }
+.hero::after { z-index: 0; }
+.hero .mascot { grid-area: mascot; position: relative; right: auto; top: auto; z-index: 2; width: 104px; height: 112px; margin: -22px 0 -6px; align-self: end; }
+@media (min-width: 768px) {
+  .hero { grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "text actions mascot"; column-gap: 28px; }
+  .hero .mascot { width: 150px; height: 162px; margin: -44px 0 -26px; align-self: center; }
+}
+.hero-sub { min-height: 1.4em; }
+.hero-sub.speaking { position: relative; display: inline-block; max-width: 100%; padding: 10px 14px; border-radius: 14px 14px 4px 14px; background: rgba(255,255,255,.95); color: #1f2937; font-weight: 700; opacity: 1; animation: bubbleIn .25s cubic-bezier(.3,1.5,.5,1); transform-origin: bottom right; }
+.hero-sub.speaking::after { content: ""; position: absolute; right: -7px; bottom: 6px; border: 7px solid transparent; border-left-color: rgba(255,255,255,.95); border-right: 0; }
+.mascot.roar .mc-body { animation: mcRoar .9s ease-in-out; transform-origin: 60px 90px; }
+@keyframes mcRoar { 0%, 100% { transform: translate(0, 0) scale(1); } 15% { transform: translate(-3px, 0) scale(1.12); } 30% { transform: translate(3px, 0) scale(1.12); } 45% { transform: translate(-3px, 0) scale(1.1); } 60% { transform: translate(3px, 0) scale(1.1); } 80% { transform: scale(1.04); } }
+.mc-tassel { transform-box: fill-box; transform-origin: 50% 0; animation: mcTassel 3.2s ease-in-out infinite; }
+@keyframes mcTassel { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(9deg); } }
+.mc-ear { transform-box: fill-box; transform-origin: 50% 90%; animation: mcEar 7s ease-in-out infinite; }
+.mc-ear.r { animation-delay: 2.4s; }
+@keyframes mcEar { 0%, 90%, 100% { transform: rotate(0); } 94% { transform: rotate(-9deg); } 97% { transform: rotate(5deg); } }
+.mc-medal { transform-box: fill-box; transform-origin: 50% 0; animation: mcMedal 3.6s ease-in-out infinite; }
+@keyframes mcMedal { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(4deg); } }
+.mc-shadow { transform-box: fill-box; transform-origin: center; }
+.mc-happy .mc-shadow { animation: mcShadow 1.1s ease-in-out infinite; }
+@keyframes mcShadow { 0%, 100% { transform: scale(1); opacity: .18; } 45% { transform: scale(.8); opacity: .1; } }
+@media (prefers-reduced-motion: reduce) { .mc-tassel, .mc-ear, .mc-medal, .mc-shadow, .mascot.roar .mc-body, .hero-sub.speaking { animation: none !important; } }

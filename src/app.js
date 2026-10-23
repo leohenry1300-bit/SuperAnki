@@ -1211,7 +1211,8 @@ class SuperAnki {
         }, { passive: true });
     }
     /* Léo the lion cub: an animated SVG character (head, shoulders, paws and a flashcard) with four moods */
-    mascotSvg(mood = 'ready') {
+    mascotSvg(mood = 'ready', opts = {}) {
+        const uid = 'mg' + (this._mgN = (this._mgN || 0) + 1);
         const eyes = {
             ready: '<g class="mc-eye"><g class="mc-look"><ellipse cx="46" cy="58" rx="4.8" ry="6.4" fill="#1f2937"/><circle cx="47.7" cy="55.6" r="1.8" fill="#fff"/></g></g><g class="mc-eye"><g class="mc-look"><ellipse cx="74" cy="58" rx="4.8" ry="6.4" fill="#1f2937"/><circle cx="75.7" cy="55.6" r="1.8" fill="#fff"/></g></g>',
             happy: '<path d="M40 61 Q46 51 52 61" fill="none" stroke="#1f2937" stroke-width="3.4" stroke-linecap="round"/><path d="M68 61 Q74 51 80 61" fill="none" stroke="#1f2937" stroke-width="3.4" stroke-linecap="round"/>',
@@ -1231,29 +1232,41 @@ class SuperAnki {
             : mood === 'calm' ? '<g class="mc-z"><text x="104" y="30" font-size="16" font-weight="800" fill="#fff" opacity=".9">z</text><text x="116" y="18" font-size="11" font-weight="800" fill="#fff" opacity=".7">z</text></g>' : '';
         const wave = mood === 'ready' ? '<g class="mc-wave"><path d="M102 118 Q118 120 121 100" fill="none" stroke="#d97706" stroke-width="13" stroke-linecap="round"/><path d="M102 118 Q118 120 121 100" fill="none" stroke="#fbbf24" stroke-width="9" stroke-linecap="round"/><circle cx="121" cy="96" r="9" fill="#fbbf24" stroke="#d97706" stroke-width="2.4"/></g>' : '';
         const arm = side => `<path d="M${side < 0 ? 36 : 104} 112 Q${side < 0 ? 44 : 96} ${cardY + 26} ${side < 0 ? 54 : 86} ${cardY + 20}" fill="none" stroke="#d97706" stroke-width="13" stroke-linecap="round"/><path d="M${side < 0 ? 36 : 104} 112 Q${side < 0 ? 44 : 96} ${cardY + 26} ${side < 0 ? 54 : 86} ${cardY + 20}" fill="none" stroke="#fbbf24" stroke-width="9" stroke-linecap="round"/>`;
-        return `<svg class="mc mc-${mood}" viewBox="0 0 140 150" aria-hidden="true"><g class="mc-body" transform="translate(10 0)">
-            <ellipse cx="60" cy="128" rx="40" ry="30" fill="#d97706"/><ellipse cx="60" cy="128" rx="35" ry="27" fill="#fbbf24"/><ellipse cx="60" cy="134" rx="21" ry="19" fill="#fef3c7"/>
+        const streak = opts.streak || 0;
+        const medal = streak >= 3 ? `<g class="mc-medal"><path d="M52 112 L60 124 L68 112" fill="none" stroke="#ef4444" stroke-width="3"/><circle cx="60" cy="128" r="${streak >= 7 ? 8 : 6.5}" fill="#fde047" stroke="#d97706" stroke-width="2"/><path d="M60 122.5 l1.7 3.6 3.9 .5 -2.9 2.7 .8 3.9 -3.5 -2 -3.5 2 .8 -3.9 -2.9 -2.7 3.9 -.5z" fill="#d97706"/></g>` : '';
+        return `<svg class="mc mc-${mood}" viewBox="0 0 140 150" aria-hidden="true"><defs><radialGradient id="${uid}f" cx=".38" cy=".3" r=".9"><stop offset="0" stop-color="#fde68a"/><stop offset=".55" stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/></radialGradient></defs><g class="mc-body" transform="translate(10 0)">
+            <ellipse class="mc-shadow" cx="60" cy="150" rx="46" ry="6" fill="#000" opacity=".18"/><ellipse cx="60" cy="128" rx="40" ry="30" fill="#d97706"/><ellipse cx="60" cy="128" rx="35" ry="27" fill="url(#${uid}f)"/><ellipse cx="60" cy="134" rx="21" ry="19" fill="#fef3c7"/>${medal}
             ${mane}
-            <circle cx="30" cy="40" r="12" fill="#fbbf24"/><circle cx="30" cy="40" r="6" fill="#fda4af"/><circle cx="90" cy="40" r="12" fill="#fbbf24"/><circle cx="90" cy="40" r="6" fill="#fda4af"/>
-            <circle cx="60" cy="62" r="35" fill="#fbbf24"/>
+            <g class="mc-ear l"><circle cx="30" cy="40" r="12" fill="#fbbf24"/><circle cx="30" cy="40" r="6" fill="#fda4af"/></g><g class="mc-ear r"><circle cx="90" cy="40" r="12" fill="#fbbf24"/><circle cx="90" cy="40" r="6" fill="#fda4af"/></g>
+            <circle cx="60" cy="62" r="35" fill="url(#${uid}f)"/><ellipse cx="46" cy="42" rx="12" ry="7" fill="#fff" opacity=".18" transform="rotate(-20 46 42)"/>
             <ellipse cx="60" cy="76" rx="17" ry="13" fill="#fef3c7"/>
             <path d="M55 68 Q60 65 65 68 Q63 73 60 74 Q57 73 55 68Z" fill="#92400e"/>
             <circle cx="36" cy="70" r="6" fill="#fb7185" opacity=".45"/><circle cx="84" cy="70" r="6" fill="#fb7185" opacity=".45"/>
             ${eyes}${mouth}
-            <path d="M34 32 L60 20 L86 32 L60 44 Z" fill="#1e3a8a"/><path d="M46 38 L46 48 Q60 56 74 48 L74 38 L60 44 Z" fill="#1e40af"/><path d="M86 32 L92 46" stroke="#fbbf24" stroke-width="2.4" stroke-linecap="round"/><circle cx="92" cy="48" r="3" fill="#fbbf24"/>
+            <path d="M34 32 L60 20 L86 32 L60 44 Z" fill="#1e3a8a"/><path d="M46 38 L46 48 Q60 56 74 48 L74 38 L60 44 Z" fill="#1e40af"/><g class="mc-tassel"><path d="M86 32 L92 46" stroke="#fbbf24" stroke-width="2.4" stroke-linecap="round"/><circle cx="92" cy="48" r="3" fill="#fbbf24"/></g>
             <g class="mc-card"><rect x="43" y="${cardY}" width="34" height="26" rx="5" fill="#fff" stroke="#c7d2fe" stroke-width="2.4"/>${sym}</g>
             ${arm(-1)}${mood === 'ready' ? '' : arm(1)}
             <circle cx="44" cy="${cardY + 22}" r="6.5" fill="#fbbf24" stroke="#d97706" stroke-width="2.2"/><circle cx="76" cy="${cardY + 22}" r="6.5" fill="#fbbf24" stroke="#d97706" stroke-width="2.2"/>
             ${wave}</g>${extra}</svg>`;
     }
-    /* speech bubble next to the mascot, gone after a few seconds */
-    mascotSay(text) {
-        const hero = $('.hero'); if (!hero) return;
-        const old = $('.mascot-bubble'); if (old) old.remove();
-        const b = document.createElement('div'); b.className = 'mascot-bubble'; b.textContent = text; b.setAttribute('role', 'status');
-        hero.appendChild(b); clearTimeout(this._bubbleT); this._bubbleT = setTimeout(() => { b.classList.add('out'); setTimeout(() => b.remove(), 250); }, 3200);
+    /* Léo's mood follows the day: asleep late at night or when everything is done, cheering once today's review is done */
+    mascotMood(toStudy) {
+        const h = new Date().getHours(), done = this.data.stats.lastStudyDate === dayKey();
+        if (toStudy === 0) return 'calm';
+        if ((h >= 23 || h < 5) && !done) return 'calm';
+        return done ? 'happy' : 'ready';
     }
-    /* switching tabs: the browser cross-fades and slides two snapshots of the page (GPU, no jank); older browsers use the CSS slide */
+    /* Léo talks: his words replace the sub-title of the home card for a few seconds (typed letter by letter), so he never covers anything */
+    mascotSay(text) {
+        const sub = $('.hero .hero-sub'); if (!sub) return;
+        if (!sub.dataset.orig) sub.dataset.orig = sub.innerHTML;
+        clearInterval(this._typeT); clearTimeout(this._bubbleT);
+        sub.classList.add('speaking'); sub.textContent = '';
+        let i = 0; const full = [...text];
+        const done = () => { this._bubbleT = setTimeout(() => { if (sub.isConnected && sub.dataset.orig) { sub.classList.remove('speaking'); sub.innerHTML = sub.dataset.orig; delete sub.dataset.orig; } }, 4200); };
+        if (this.calm()) { sub.textContent = text; done(); return; }
+        this._typeT = setInterval(() => { sub.textContent = full.slice(0, ++i).join(''); if (i >= full.length) { clearInterval(this._typeT); done(); } }, 28);
+    }
     tabGo(view) { this.go(view); }   // (a browser view transition froze the page while heavy tabs were drawn: a light CSS slide is used instead)
     /* fallback for browsers without view transitions: a veil of the old background fades out over the new theme */
     themeVeil(swap) {
@@ -1427,7 +1440,7 @@ class SuperAnki {
         $('#view-dashboard').innerHTML = `
         <div class="stack">
             <div class="hero">
-                <button class="mascot" data-action="mascot" aria-label="Léo, ta mascotte : touche-le pour un encouragement" data-mood="${toStudy === 0 ? 'calm' : (this.data.stats.lastStudyDate === dayKey() ? 'happy' : 'ready')}">${this.mascotSvg(toStudy === 0 ? 'calm' : (this.data.stats.lastStudyDate === dayKey() ? 'happy' : 'ready'))}</button>
+                <button class="mascot" data-action="mascot" aria-label="Léo, ta mascotte : touche-le pour un encouragement" data-mood="${this.mascotMood(toStudy)}">${this.mascotSvg(this.mascotMood(toStudy), { streak: this.data.stats.streak })}</button>
                 <div class="hero-inner">
                     <div>
                         <span class="hero-kicker">${hello} 👋${goal ? ` · <b>${esc(goal.name)} : ${goal.days > 0 ? `J-${goal.days}` : goal.days === 0 ? 'c\'est aujourd\'hui !' : 'terminé'}</b>` : ''}</span>
@@ -3823,9 +3836,16 @@ class SuperAnki {
                 this.setSetting('cardSize', ks[i]); if (this.session && this.session.current) this.renderSession(); break;
             }
             case 'mascot': {
-                const m = el.dataset ? el.dataset.mood : 'ready';
-                const say = { ready: ['On y va ? Quelques cartes suffisent !', 'Une petite session et c\'est lancé 💪', 'Ta série compte sur toi 🔥'], happy: ['Bien joué, tu as déjà révisé aujourd\'hui !', 'Ta série est sauvée 🔥', 'Continue si tu as encore de l\'énergie !'], calm: ['Tout est à jour, profite 😌', 'Rien à réviser : repose-toi !', 'Une révision libre pour s\'amuser ?'] }[m] || [];
-                this.mascotSay(say[Math.floor(Math.random() * say.length)] || 'Allez !');
+                const m = el.dataset ? el.dataset.mood : 'ready', now = Date.now();
+                this._mTaps = (this._mTaps || []).filter(t => now - t < 2500); this._mTaps.push(now);
+                const h = new Date().getHours();
+                const say = {
+                    ready: ['On y va ? Quelques cartes suffisent !', 'Une petite session et c\'est lancé 💪', 'Ta série compte sur toi 🔥', 'Je t\'ai gardé tes cartes au chaud 📚'],
+                    happy: ['Bien joué, tu as déjà révisé aujourd\'hui !', 'Ta série est sauvée 🔥', 'Continue si tu as encore de l\'énergie !', 'Fier de toi, Léo ! 🦁'],
+                    calm: h >= 23 || h < 5 ? ['Il est tard… une petite révision et au lit 🌙', 'Zzz… tu devrais dormir, la mémoire adore ça 😴'] : ['Tout est à jour, profite 😌', 'Rien à réviser : repose-toi !', 'Une révision libre pour s\'amuser ?']
+                }[m] || [];
+                if (this._mTaps.length >= 5) { this._mTaps = []; this.mascotSay('GRRRR ! 🦁 Je rugis de fierté !'); el.classList.add('roar'); setTimeout(() => el.classList.remove('roar'), 900); }
+                else this.mascotSay(say[Math.floor(Math.random() * say.length)] || 'Allez !');
                 el.classList && el.classList.remove('hop'); void (el.offsetWidth); el.classList && el.classList.add('hop');
                 break;
             }
