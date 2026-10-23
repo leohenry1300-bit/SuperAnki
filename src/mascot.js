@@ -1,23 +1,25 @@
-/* Léo the lion cub: a 3D-rendered character (poses cut out of the character video, see mascot-img.js) with live effects around him:
-   a warm glow, floating golden stars, blinking (a wink), talking (mouth opens while he types his words), breathing and a little parallax towards the pointer.
-   Moods: ready (waits, holds the card), happy (cheers, arms up), calm (eyes closed), tough (alert, encouraging). */
+/* Léo the lion cub: a clay-style character built as a layered puppet (body, tail, irises, lids, mouth; art in mascot-img.js, geometry in styles.css).
+   Everything moves live: breathing, tail, blinking, glances, eyes that follow the pointer, a mouth that opens while he talks, a wink on tap, hops when happy;
+   the glow takes the colour of the app's theme. Moods: ready (waits), happy (cheers), calm (asleep), tough (determined). */
+function leoInstall() {
+    if (document.getElementById('leo-art')) return;
+    const st = document.createElement('style'); st.id = 'leo-art';
+    st.textContent = `.lf-base{background-image:url(${LEO_ASSET.base})}.lf-tail{background-image:url(${LEO_ASSET.tail})}.lf-eye.L .lf-ir{background-image:url(${LEO_ASSET.irisL})}.lf-eye.R .lf-ir{background-image:url(${LEO_ASSET.irisR})}`;
+    document.head.appendChild(st);
+}
 function leoSvg(mood = 'ready', opts = {}) {
-    const key = ['ready', 'happy', 'calm', 'tough'].includes(mood) ? mood : 'ready';
-    const motion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const still = `<img class="leo-img leo-still" src="${LEO_IMG[key][0]}" alt="" decoding="async" draggable="false">`;
-    const live = (cls, file, lazy) => (motion ? `<img class="leo-img ${cls}" ${lazy ? `data-src="${file}"` : `src="${file}"`} alt="" decoding="async" draggable="false" onload="this.closest('.leo-pose').classList.add('${cls === 'leo-talk' ? 'talk-ok' : 'loaded'}')">` : '');
-    // ready: the idle loop from the video (blinks, winks, smiles) + a talking loop; happy: the cheering loop; calm / tough: stills
-    const anim = key === 'ready' ? live('leo-ani', 'mascot/idle.webp') + live('leo-talk', 'mascot/talk.webp', true) : key === 'happy' ? live('leo-ani', 'mascot/cheer.webp') : '';
-    const rel = key === 'happy' ? 112 : 100;
+    leoInstall();
     let stars = '';
     const n = mood === 'happy' ? 14 : 8;
     for (let i = 0; i < n; i++) {
         const a = (i / n) * 6.283 + (i % 3) * .4, r = 52 + (i * 37 % 26);
         stars += `<i class="leo-star" style="--x:${(50 + Math.cos(a) * r).toFixed(1)}%;--y:${(46 + Math.sin(a) * r * .9).toFixed(1)}%;--d:${(i * .43 % 3).toFixed(2)}s;--s:${(6 + (i * 5 % 9)).toFixed(0)}px"></i>`;
     }
+    const bd = (1.2 + Math.random() * 4).toFixed(2) + 's';
+    const eye = k => `<i class="lf-eye ${k}"><i class="lf-in"><i class="lf-gl"><i class="lf-ir"></i></i></i></i>`;
     const extra = mood === 'calm' ? '<span class="leo-z z1">z</span><span class="leo-z z2">Z</span>' : '';
-    return `<div class="leo3d leo-${mood}" aria-hidden="true"><span class="leo-glow"></span>${stars}
-        <span class="leo-pose" style="height:${rel}%"><span class="leo-anim">${still}${anim}</span></span>${extra}</div>`;
+    return `<div class="leo3d leo-${mood}" aria-hidden="true" style="--bd:${bd}"><span class="leo-glow"></span>${stars}<span class="leo-shadow"></span>
+        <span class="leo-pose"><span class="leo-fig"><i class="lf-tail"></i><i class="lf-base"></i>${eye('L')}${eye('R')}<i class="lf-lid L"></i><i class="lf-lid R"></i><i class="lf-mouth"><i class="lf-mo"></i></i></span></span>${extra}</div>`;
 }
 
 /* ---------- What Léo says: a big bank of short lines (encouraging, a bit teasing, student-to-student), picked without repeats ---------- */

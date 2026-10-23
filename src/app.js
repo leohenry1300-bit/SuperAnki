@@ -1258,7 +1258,7 @@ class SuperAnki {
         } else { if (!sub.dataset.orig) sub.dataset.orig = sub.innerHTML; sub.classList.add('speaking'); }
         box.textContent = '';
         const pose = $('.leo-ready .leo-pose');
-        if (pose && !this.calm()) { pose.classList.add('talk'); const t = pose.querySelector('.leo-talk'); if (t && !t.getAttribute('src') && t.dataset.src) t.src = t.dataset.src; }
+        if (pose && !this.calm()) pose.classList.add('talk');
         const stopTalk = () => { const q = $('.leo-ready .leo-pose'); if (q) q.classList.remove('talk'); };
         let i = 0; const full = [...text];
         const end = () => { stopTalk(); this._bubbleT = setTimeout(() => {
@@ -1294,8 +1294,8 @@ class SuperAnki {
                 pend = null;
                 $$('.leo3d').forEach(el => {
                     const r = el.getBoundingClientRect(); if (!r.width) return;
-                    const dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height * .42), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 220) * 4.5;
-                    el.style.setProperty('--px', (dx / d * k * .9).toFixed(2) + 'px'); el.style.setProperty('--py', (dy / d * k * .5).toFixed(2) + 'px'); el.style.setProperty('--rot', (dx / d * k * .35).toFixed(2) + 'deg');
+                    const dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height * .4), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 160);
+                    el.style.setProperty('--ex', (dx / d * k).toFixed(2)); el.style.setProperty('--ey', (dy / d * k).toFixed(2)); el.style.setProperty('--rot', (dx / d * k * 1.6).toFixed(2) + 'deg');
                 });
             });
         };
@@ -3843,6 +3843,7 @@ class SuperAnki {
                 else if (this._mTaps.length >= 3) this.mascotSay(leoPick('tap'), { sound: 'leotickle' });
                 else this.mascotSay(leoPick(m === 'calm' && (h >= 23 || h < 5) ? 'night' : m));
                 el.classList && el.classList.remove('hop'); void (el.offsetWidth); el.classList && el.classList.add('hop');
+                const pose = el.querySelector && el.querySelector('.leo-pose'); if (pose && m !== 'calm') { pose.classList.remove('wink'); void pose.offsetWidth; pose.classList.add('wink'); setTimeout(() => pose.classList.remove('wink'), 700); }
                 break;
             }
             case 'undo': this.undo(); break;
