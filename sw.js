@@ -1,5 +1,5 @@
-/* LH Cards service worker: makes the app work offline. Version: ae7badf51f */
-const CACHE = 'superanki-ae7badf51f';
+/* LH Cards service worker: makes the app work offline. Version: 1505c58753 */
+const CACHE = 'superanki-1505c58753';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -17,9 +17,12 @@ self.addEventListener('fetch', e => {
     if (url.hostname === 'api.mymemory.translated.net') return;            // translations: always live, never cached
     const sameOrigin = url.origin === location.origin;
     if (sameOrigin && (req.mode === 'navigate' || url.pathname.endsWith('index.html'))) {
-        // newest version when online, cached copy when offline
-        e.respondWith(fetch(req).then(res => { const copy = res.clone(); caches.open(CACHE).then(c => c.put('./index.html', copy)); return res; })
-            .catch(() => caches.match('./index.html').then(r => r || caches.match('./'))));
+        // instant start: the cached copy is served at once and refreshed in the background (the new version is used on the next launch)
+        e.respondWith(caches.match('./index.html').then(hit => {
+            const net = fetch(req).then(res => { if (res && res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put('./index.html', copy)); } return res; }).catch(() => hit || caches.match('./'));
+            if (hit) e.waitUntil(net.catch(() => {}));
+            return hit || net;
+        }));
         return;
     }
     // fonts and libraries: cached copy first, refreshed in the background
