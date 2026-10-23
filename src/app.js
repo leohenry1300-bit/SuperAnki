@@ -362,7 +362,7 @@ function normalizeCard(c) {
         created: num(c.created, 0), state, step: Math.max(0, num(c.step, 0)), interval,
         ease: clamp(num(c.ease ?? c.easeFactor, 2.5), 1.3, 5), due, reps, lapses,
         lastReview: c.lastReview ? num(c.lastReview, null) : null,
-        errors: Math.max(0, num(c.errors, lapses >= 2 ? 1 : 0)), wrong: num(c.wrong, 0), right: num(c.right, 0),
+        errors: Math.max(0, num(c.errors, lapses >= 2 ? 1 : 0)), wrong: num(c.wrong, 0), right: num(c.right, 0), ps: Math.max(0, num(c.ps, 0)),
         suspended: !!c.suspended, flag: clamp(Math.round(num(c.flag, 0)), 0, 7), marked: !!c.marked, buriedUntil: num(c.buriedUntil, 0),
         nid: c.nid ? String(c.nid) : '', kind: ['rev', 'cloze', 'occl', 'custom'].includes(c.kind) ? c.kind : 'basic', ord: Math.max(0, num(c.ord, 0)),
         nf: c.nf && typeof c.nf === 'object' ? { front: sanitizeHtml(c.nf.front || ''), back: sanitizeHtml(c.nf.back || ''), text: sanitizeHtml(c.nf.text || ''), extra: sanitizeHtml(c.nf.extra || ''), ...(c.nf.t ? { t: String(c.nf.t), f: Object.fromEntries(Object.entries(c.nf.f && typeof c.nf.f === 'object' ? c.nf.f : {}).map(([k, v]) => [String(k).slice(0, 40), sanitizeHtml(v || '')])) } : {}) } : null,
@@ -447,7 +447,7 @@ function normalizeState(raw) {
     return { version: 6, decks, cards, presets, stats: normalizeStats(raw.stats), settings, revlog, deleted, toeic: normalizeToeic(raw.toeic), media: normalizeMedia(raw.media), noteTypes: normalizeNoteTypes(raw.noteTypes), trash: normalizeTrash(raw.trash), updatedAt: num(raw.updatedAt, 0) };
 }
 function cardSig(c) {
-    return [c.deckId, c.state, c.step, c.due, c.interval, c.ease, c.reps, c.lapses, c.suspended ? 1 : 0, c.flag, c.marked ? 1 : 0, c.buriedUntil, c.errors, c.wrong, c.right,
+    return [c.deckId, c.state, c.step, c.due, c.interval, c.ease, c.reps, c.lapses, c.suspended ? 1 : 0, c.flag, c.marked ? 1 : 0, c.buriedUntil, c.errors, c.wrong, c.right, c.ps,
         c.front.length, c.back.length, c.hint.length, c.detail.length, c.tags.join(','), c.fs ? c.fs.s.toFixed(3) : '', c.lastReview, c.nid, c.kind, c.ord, c.kind === 'occl' && c.nf ? mediaHash(c.nf.back + c.nf.front) : c.kind === 'custom' && c.nf ? mediaHash(c.nf.t + JSON.stringify(c.nf.f)) : ''].join('|');
 }
 const deckSig = d => JSON.stringify([d.name, d.emoji, d.description, d.parent, d.preset, d.limits]);
@@ -978,17 +978,25 @@ class SuperAnki {
     /* One pass over all cards: per deck, counts including every sub-deck below it */
     deckStats() {
         const now = Date.now(), eod = endOfDay(now), by = new Map(this.data.decks.map(d => [d.id, d])), out = new Map();
-        by.forEach((d, id) => out.set(id, { total: 0, seen: 0, new: 0, learn: 0, due: 0, mature: 0, susp: 0 }));
+        by.forEach((d, id) => out.set(id, { total: 0, seen: 0, new: 0, learn: 0, due: 0, mature: 0, susp: 0, tried: 0, acq: 0, weak: 0, prog: 0 }));
         this.data.cards.forEach(c => {
             const k = c.state === 'new' ? 'new' : c.state === 'review' ? (c.due <= eod ? 'due' : c.interval >= MATURE_IVL ? 'mature' : 'learn') : (c.due <= now ? 'due' : 'learn');
+            const tried = (c.right || 0) + (c.wrong || 0) > 0, acq = (c.ps || 0) >= 2 || (tried && k === 'mature'), weak = tried && !acq && !(c.ps > 0), prog = tried && !acq && c.ps > 0;   // free revision: "acquired" = right twice in a row
             let d = by.get(c.deckId), n = 0;
             while (d && n++ < 10) {
                 const st = out.get(d.id);
                 st.total++; st[k]++; if (k !== 'new') st.seen++; if (c.suspended) st.susp++;
+                if (tried) st.tried++; if (acq) st.acq++; if (weak) st.weak++; if (prog) st.prog++;
                 d = d.parent ? by.get(d.parent) : null;
             }
         });
         return out;
+    }
+    /* Progress of free revision (does not touch the schedule): acquired = right twice in a row */
+    trainHtml(st, mini = false) {
+        if (!st || !st.tried) return '';
+        const t = st.total || 1, never = st.total - st.acq - st.weak - st.prog;
+        return `<div class="train ${mini ? 'mini' : ''}" title="Acquises : réussies 2 fois de suite · En cours : réussies 1 fois · À retravailler : ratées"><div class="progress"><i style="width:${st.acq / t * 100}%;background:var(--mature)"></i><i style="width:${st.prog / t * 100}%;background:var(--learn)"></i><i style="width:${st.weak / t * 100}%;background:var(--due)"></i></div><small><b style="color:var(--mature)">✔ ${st.acq}</b> acquises${st.prog ? ` · <b style="color:var(--learn)">◐ ${st.prog}</b> en cours` : ''}${st.weak ? ` · <b style="color:var(--due)">↺ ${st.weak}</b> à retravailler` : ''}${never > 0 ? ` · ${never} jamais vues` : ''}</small></div>`;
     }
     progressHtml(st, cls = '') {
         const t = st.total || 1;
@@ -1282,7 +1290,7 @@ class SuperAnki {
             return `<div class="sub-row" style="--d:${depth}">
                 ${kids.length ? `<button class="dl-chev ${isOpen ? 'open' : ''}" data-action="dash-toggle" data-deck="${esc(k.id)}" aria-label="${isOpen ? 'Replier' : 'Déplier'}" aria-expanded="${isOpen}">${ic('chevronRight')}</button>` : '<span class="dl-chev ph"></span>'}
                 <button class="sub-name" data-action="open-deck" data-deck="${esc(k.id)}" title="Voir les cartes"><span>${esc(k.emoji)}</span><b>${esc(k.name)}</b></button>
-                <span class="sub-bar">${this.progressHtml(st)}<small>${this.pctSeen(st)} % vu · ${this.pctMature(st)} % maîtrisé · ${st.total}</small></span>
+                <span class="sub-bar">${this.progressHtml(st)}<small>${st.tried ? `<b style="color:var(--mature)">✔ ${st.acq}</b>/${st.total} acquises${st.weak ? ` · <b style="color:var(--due)">↺ ${st.weak}</b>` : ''}` : `${this.pctSeen(st)} % vu · ${this.pctMature(st)} % maîtrisé · ${st.total}`}</small></span>
                 ${st.due ? `<span class="due-badge" title="À revoir">${st.due}</span>` : '<span class="due-badge ph"></span>'}
                 <button class="icon-btn icon-btn-sm" title="Réviser ce sous-paquet" data-action="study" data-deck="${esc(k.id)}">${ic('play')}</button>
                 <button class="icon-btn icon-btn-sm" title="Révision libre : toutes les cartes, sans toucher au planning" data-action="free-deck" data-deck="${esc(k.id)}">${ic('repeat')}</button>
@@ -1306,6 +1314,7 @@ class SuperAnki {
                     <span style="color:var(--mature)" title="Maîtrisées">${ic('award')}${c.mature}</span>
                 </div>
                 ${this.progressHtml(st)}
+                ${this.trainHtml(st)}
                 ${kids.length ? `<button class="sub-toggle ${isOpen ? 'open' : ''}" data-action="dash-toggle" data-deck="${esc(deck.id)}" aria-expanded="${isOpen}">${ic('chevronRight')}<span>${plural(nSub, 'sous-paquet')}${isOpen ? '' : ' : voir l\'avancée'}</span></button>` : ''}
                 ${kids.length && isOpen ? `<div class="sub-tree">${subRows(deck.id, 0)}</div>` : ''}
                 <div class="deck-foot">
@@ -1650,7 +1659,7 @@ class SuperAnki {
         if (deck) {
             const stats = this.deckStats(), st = stats.get(deck.id), kids = this.childrenOf(deck.id);
             progBlock = `<div class="deck-prog">
-                <div class="deck-prog-main">${this.progressHtml(st, 'lg')}<div class="small muted"><b>${this.pctSeen(st)} %</b> vu · <b>${this.pctMature(st)} %</b> maîtrisé · ${st.due ? `<b style="color:var(--due)">${st.due}</b> à revoir · ` : ''}${st.new} nouvelle${st.new > 1 ? 's' : ''}</div></div>
+                <div class="deck-prog-main">${this.trainHtml(st) || this.progressHtml(st, 'lg')}<div class="small muted"><b>${this.pctSeen(st)} %</b> vu · <b>${this.pctMature(st)} %</b> maîtrisé · ${st.due ? `<b style="color:var(--due)">${st.due}</b> à revoir · ` : ''}${st.new} nouvelle${st.new > 1 ? 's' : ''}</div></div>
                 ${kids.length ? `<div class="sub-progress"><h5>Sous-paquets</h5>${kids.map(k => { const ks = stats.get(k.id), n = this.childrenOf(k.id).length; return `<button class="sub-card" data-action="select-deck" data-deck="${esc(k.id)}"><span class="sc-top"><span>${esc(k.emoji)}</span><b>${esc(k.name)}</b>${ks.due ? `<span class="due-badge">${ks.due}</span>` : ''}</span>${this.progressHtml(ks)}<small>${this.pctSeen(ks)} % vu · ${this.pctMature(ks)} % maîtrisé · ${plural(ks.total, 'carte')}${n ? ` · ${plural(n, 'sous-paquet')}` : ''}</small></button>`; }).join('')}</div>` : ''}
             </div>`;
         }
@@ -2168,9 +2177,9 @@ class SuperAnki {
         if (!s || s.kind !== 'practice' || !s.revealed) return;
         const card = this.card(s.current);
         this.snapshot();
-        if (ok) { card.right++; card.errors = Math.max(0, card.errors - 1); s.correct++; }
+        if (ok) { card.right++; card.ps = (card.ps || 0) + 1; card.errors = Math.max(0, card.errors - 1); s.correct++; }
         else {
-            card.wrong++; card.errors++;
+            card.wrong++; card.errors++; card.ps = 0;
             if (!s.missed.includes(card.id)) s.missed.push(card.id);
             s.retries[card.id] = (s.retries[card.id] || 0) + 1;
             if (s.retries[card.id] <= 2) s.queue.push(card.id);   // missed cards come back at the very end, not right away
@@ -2320,9 +2329,9 @@ class SuperAnki {
         s.done++;
         if (opt.ok) {
             s.score++; s.correct++;
-            card.right++; card.errors = Math.max(0, card.errors - 1);
+            card.right++; card.ps = (card.ps || 0) + 1; card.errors = Math.max(0, card.errors - 1);
         } else {
-            card.wrong++; card.errors++;
+            card.wrong++; card.errors++; card.ps = 0;
             if (!s.missed.includes(card.id)) s.missed.push(card.id);
         }
         this.save();   // only the error counters change: no scheduling, stats, streak or history
