@@ -10068,7 +10068,7 @@ function sfx(name) {
     try { if (navigator.vibrate) { if (name === 'right' || name === 'g3' || name === 'g4') navigator.vibrate(12); else if (name === 'wrong' || name === 'g1') navigator.vibrate([18, 40, 18]); } } catch { /* ignore */ }
     const ac = sndCtx(); if (!ac) return;
     SND_LAST = performance.now(); SND_LAST_NAME = name;
-    if (sndStandalone()) { const c = sndClip(name, SFX[name], name === 'done' ? 3 : 1.6); if (c && sndPlayClip(c)) return; }   // clip not ready yet: the synth plays this once
+    if (sndStandalone()) { const c = sndClip(name, SFX[name], name === 'done' ? 3 : 1.6); if (c) { sndPlayClip(c); return; } }   // clip not ready yet: the synth plays this once
     try { SFX[name](ac, sndChain(ac).bus, ac.currentTime + 0.02, SND.vol); } catch { /* ignore */ }
 }
 
@@ -10098,7 +10098,9 @@ function ringPlay(id, repeat = true) {
 /* Installed web app on iPhone: the ring/silent switch mutes Web Audio but never a real <audio> clip. So there each sound is rendered once
    (same synth, drawn offline into a WAV) and played through a normal audio element: it is heard exactly like in Safari. */
 function sndStandalone() { try { return navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches; } catch { return false; } }
-const SND_CLIPS = {};   // key -> { url, pool, idx } once rendered, 'wait' while rendering
+const SND_CLIPS = {};   // key -> { url } once rendered, 'wait' while rendering
+const SND_ELS = [];     // a few audio elements, unlocked by a real touch, reused for every clip (iOS only allows play() on elements a touch has started)
+let SND_ELI = 0;
 function sndWav(buf) {
     const ch = Math.min(2, buf.numberOfChannels), n = buf.length, out = new ArrayBuffer(44 + n * ch * 2), v = new DataView(out), w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
     w(0, 'RIFF'); v.setUint32(4, 36 + n * ch * 2, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, ch, true);
@@ -10114,17 +10116,32 @@ async function sndRender(key, play, secs) {
     const buf = await oac.startRendering();
     return URL.createObjectURL(sndWav(buf));
 }
-function sndClip(key, play, secs) {   // returns the clip when ready, else starts rendering it
-    const c = SND_CLIPS[key];
-    if (c && c !== 'wait') return c;
-    if (!c) {
-        SND_CLIPS[key] = 'wait';
-        sndRender(key, play, secs).then(url => { SND_CLIPS[key] = url ? { url, pool: [new Audio(url), new Audio(url)], idx: 0 } : 'wait'; }).catch(() => { SND_CLIPS[key] = 'wait'; });
-    }
-    return null;
+const SND_PROM = {};
+function sndClipP(key, play, secs) {   // promise of the clip (rendered once)
+    if (!SND_PROM[key]) SND_PROM[key] = sndRender(key, play, secs).then(url => { if (url) SND_CLIPS[key] = { url }; return SND_CLIPS[key] || null; }).catch(() => null);
+    return SND_PROM[key];
 }
+function sndClip(key, play, secs) { const c = SND_CLIPS[key]; if (c) return c; sndClipP(key, play, secs); return null; }
+/* called on a real touch: wakes the audio elements with a silent clip so later plays (timers, auto-advance, after rendering) are allowed */
+function sndWake() {
+    try {
+        if (SND_ELS.length) return;
+        const n = 2205, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf), w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+        w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+        v.setUint32(24, 22050, true); v.setUint32(28, 44100, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
+        const url = URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+        for (let i = 0; i < 6; i++) { const a = new Audio(url); a.setAttribute('playsinline', ''); a.volume = 0.01; SND_ELS.push(a); const p = a.play(); if (p && p.then) p.then(() => a.pause()).catch(() => { SND_ELS.length = 0; }); }
+    } catch { SND_ELS.length = 0; }
+}
+/* plays a clip; resolves to 'ok' or to the name of the error (NotAllowedError = blocked by iOS) */
 function sndPlayClip(c) {
-    try { const a = c.pool[c.idx = (c.idx + 1) % c.pool.length]; a.setAttribute('playsinline', ''); a.volume = Math.max(0.05, Math.min(1, SND.vol / 0.8)); a.currentTime = 0; const p = a.play(); if (p && p.catch) p.catch(() => { }); return true; } catch { return false; }
+    try {
+        if (!SND_ELS.length) sndWake();
+        const a = SND_ELS[SND_ELI = (SND_ELI + 1) % Math.max(1, SND_ELS.length)]; if (!a) return Promise.resolve('noelement');
+        if (a.src !== c.url) a.src = c.url;
+        a.volume = Math.max(0.05, Math.min(1, SND.vol / 0.8)); a.currentTime = 0;
+        const p = a.play(); return p && p.then ? p.then(() => 'ok', e => (e && e.name) || 'error') : Promise.resolve('ok');
+    } catch (e) { return Promise.resolve((e && e.name) || 'error'); }
 }
 function sndPrerender() { ['reveal', 'g1', 'g2', 'g3', 'g4', 'right', 'wrong', 'done', 'tap', 'pop'].forEach((n, i) => setTimeout(() => SFX[n] && sndClip(n, SFX[n], n === 'done' ? 3 : 1.6), 300 + i * 120)); }
 
@@ -10136,6 +10153,7 @@ function sndUnlock() {
     try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch { /* ignore */ }
     const ac = sndCtx(); if (!ac) return;
     try { const b = ac.createBuffer(1, 1, 22050), s = ac.createBufferSource(); s.buffer = b; s.connect(ac.destination); s.start(0); } catch { /* ignore */ }
+    if (sndStandalone()) sndWake();
     if (SND_UNLOCK.done) return;
     SND_UNLOCK.done = true;
     if (!(window.OfflineAudioContext || window.webkitOfflineAudioContext)) sndKeepAlive();   // old browsers only: the clip route below needs offline rendering
@@ -10193,7 +10211,16 @@ Object.assign(SuperAnki.prototype, {
             if (a === 'upd') this.updNow();
             else if (a === 'snd-toggle') { SND.on = !SND.on; sndSave(); this.updRefresh(); this.extrasSoundRefresh(); if (SND.on) sfx('pop'); }
             else if (a === 'ui-toggle') { SND.ui = !SND.ui; sndSave(); if (SND.ui) sfx('on'); }
-            else if (a === 'snd-test') { sndUnlock(); sfx('g3'); setTimeout(() => sfx('right'), 450); setTimeout(() => { const st = window.app && window.app.audioCtx ? window.app.audioCtx.state : 'absent'; this.toast(st === 'running' ? 'Son actif. Si tu n\'entends rien : volume des médias, mode silencieux de l\'iPhone.' : 'Son bloqué par iOS : touche l\'écran puis réessaie.', st === 'running' ? 'success' : 'warning'); }, 700); }
+            else if (a === 'snd-test') {
+                sndUnlock();
+                if (sndStandalone()) {
+                    sndClipP('g3', SFX.g3, 1.6).then(async c => {
+                        if (!c) { this.toast('Ce téléphone ne peut pas préparer les sons.', 'warning'); return; }
+                        const r = await sndPlayClip(c); setTimeout(() => sndPlayClip(SND_CLIPS.g3), 380);
+                        this.toast(r === 'ok' ? 'Son envoyé. Si tu n\'entends rien : monte le volume (boutons du côté) et vérifie l\'interrupteur silencieux.' : `Son refusé par iOS (${r}). Touche l\'écran puis réessaie.`, r === 'ok' ? 'success' : 'warning');
+                    });
+                } else { sfx('g3'); setTimeout(() => sfx('right'), 450); }
+            }
             else if (a === 'snd-play') { const was = SND.on; SND.on = true; sfx(b.dataset.n); SND.on = was; }
             else if (a === 'ring-test') ringPlay(b.dataset.id, false);
         });
