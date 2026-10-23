@@ -1263,7 +1263,8 @@ class SuperAnki {
     recentsHtml() {
         const ids = (this.data.settings.recentDecks || []).filter(id => this.deck(id)).slice(0, 6);
         if (!ids.length) return '';
-        return `<div><div class="section-head"><h3 class="section-title">Récemment</h3><button class="link" data-action="recent-clear" title="Vider la liste des paquets récents">${ic('trash')}Effacer</button></div><div class="recents">${ids.map(id => { const d = this.deck(id), path = this.deckPath(id).split(' › '); return `<div class="recent-item"><button class="recent-chip" data-action="open-deck" data-deck="${esc(id)}" title="${esc(this.deckPath(id))}"><span>${esc(d.emoji)}</span><span class="nm">${esc(d.name)}</span>${path.length > 1 ? `<small>${esc(path[path.length - 2])}</small>` : ''}</button><button class="recent-x" data-action="recent-del" data-deck="${esc(id)}" aria-label="Retirer ${esc(d.name)} des récents" title="Retirer">${ic('x')}</button></div>`; }).join('')}</div></div>`;
+        const open = this.homeOpen('recents', true);
+        return `<div>${this.secToggle('recents', 'Récemment', '', true)}<div class="recents${open ? '' : ' hidden'}">${ids.map(id => { const d = this.deck(id), path = this.deckPath(id).split(' › '); return `<div class="recent-item"><button class="recent-chip" data-action="open-deck" data-deck="${esc(id)}" title="${esc(this.deckPath(id))}"><span>${esc(d.emoji)}</span><span class="nm">${esc(d.name)}</span>${path.length > 1 ? `<small>${esc(path[path.length - 2])}</small>` : ''}</button><button class="recent-x" data-action="recent-del" data-deck="${esc(id)}" aria-label="Retirer ${esc(d.name)} des récents" title="Retirer">${ic('x')}</button></div>`; }).join('')}</div></div>`;
     }
     deckCompact() {
         const v = this.data.settings.deckView;
@@ -1390,9 +1391,9 @@ class SuperAnki {
         this.save(false);
     }
     /* foldable home sections (closed by default, remembered) */
-    homeOpen(key) { const o = this.data.settings.homeOpen || {}; return o[key] === true; }
-    secToggle(key, title, extra = '') {
-        const open = this.homeOpen(key);
+    homeOpen(key, def = false) { const o = this.data.settings.homeOpen || {}; return o[key] === undefined ? def : o[key] === true; }
+    secToggle(key, title, extra = '', def = false) {
+        const open = this.homeOpen(key, def);
         return `<div class="section-head"><button class="sec-toggle ${open ? 'open' : ''}" data-action="home-toggle" data-sec="${key}" aria-expanded="${open}">${ic('chevronRight')}<h3 class="section-title">${title}</h3></button>${open ? extra : ''}</div>`;
     }
     resumeHtml() {
@@ -3291,7 +3292,6 @@ class SuperAnki {
             }
             case 'sync-now': Cloud.sync(true); break;
             case 'recent-del': this.data.settings.recentDecks = (this.data.settings.recentDecks || []).filter(x => x !== ds.deck); this.save(false); this.renderDashboard(); break;
-            case 'recent-clear': this.data.settings.recentDecks = []; this.save(false); this.renderDashboard(); this.toast('Liste « Récemment » vidée', 'success'); break;
             case 'deck-admin': {
                 const id = el.dataset.deck;
                 this.showMenu(el, [
@@ -3315,7 +3315,7 @@ class SuperAnki {
                 break;
             }
             case 'home-toggle': {
-                const o = { ...(this.data.settings.homeOpen || {}) }; o[ds.sec] = !(o[ds.sec] === true);
+                const o = { ...(this.data.settings.homeOpen || {}) }; o[ds.sec] = !this.homeOpen(ds.sec, ds.sec === 'recents');
                 this.setSetting('homeOpen', o); this.renderDashboard(); break;
             }
             case 'resume-last': {

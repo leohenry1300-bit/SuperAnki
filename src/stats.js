@@ -62,14 +62,15 @@ function barsSVG(W, o) {
     }
     if (o.line && o.line.values.some(v => v !== null && v !== undefined)) {
         const L = o.line, lMax = L.max ?? niceMax(Math.max(1, ...L.values.filter(v => v !== null && v !== undefined)), 1);
-        let d = '', started = false;
+        let d = '', dots = '', started = false;
         L.values.forEach((v, i) => {
-            if (v === null || v === undefined) { started = false; return; }
+            if (v === null || v === undefined) { if (!L.bridge) started = false; return; }
             const x = padL + i * bw + bw / 2, y = padT + ph - (v / lMax) * ph;
             d += `${started ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)} `;
+            if (L.dots) dots += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.8" style="fill:${L.color}"/>`;
             started = true;
         });
-        g += `<path d="${d}" fill="none" style="stroke:${L.color}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>`;
+        g += `<path d="${d}" fill="none" style="stroke:${L.color}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>${dots}`;
         for (let k = 0; k <= 4; k++) {
             const v = lMax * k / 4, y = padT + ph - (v / lMax) * ph;
             g += `<text x="${padL + pw + 7}" y="${(y + 3.5).toFixed(1)}" text-anchor="start" style="fill:${L.color}">${(L.fmt || fmtNum)(v)}</text>`;
@@ -481,7 +482,7 @@ Object.assign(SuperAnki.prototype, {
         const best = total ? cnt.map((c, i) => [c >= 3 ? rate[i] : -1, i]).sort((a, b) => b[0] - a[0])[0] : null;
         this.chartDefs.hourly = W => barsSVG(W, {
             n: 24, series: [{ key: 'c', label: 'Révisions', color: 'color-mix(in srgb, var(--primary) 55%, var(--surface))', values: cnt }], minMax: 4,
-            line: { values: rate, max: 100, color: 'var(--primary)', fmt: v => `${Math.round(v)}%` },
+            line: { values: rate, max: 100, bridge: true, dots: true, color: 'var(--primary)', fmt: v => `${Math.round(v)}%` },
             xLabel: i => `${i}h`, labelWidth: 30,
             tooltip: i => tipRows(`De ${i}h à ${i + 1}h`, [{ label: 'Révisions', value: cnt[i], color: 'color-mix(in srgb, var(--primary) 55%, var(--surface))' }, { label: 'Réussite', value: rate[i] === null ? 'N/A' : `${fmtNum(rate[i])} %`, color: 'var(--primary)' }])
         });
