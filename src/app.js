@@ -1245,7 +1245,7 @@ class SuperAnki {
                         <button class="icon-btn icon-btn-sm" data-action="deck-view" title="${this.deckCompact() ? 'Vue détaillée' : 'Vue compacte'}" aria-label="Changer l'affichage des paquets">${ic(this.deckCompact() ? 'layers' : 'list')}</button>
                         <label class="sort-pick"><span class="sr-only">Trier les paquets</span>${ic('sliders')}<select class="select select-sm" data-input="deck-sort">${[['recent', 'Plus récents'], ['due', 'À revoir d\'abord'], ['studied', 'Révisés récemment'], ['alpha', 'A → Z'], ['size', 'Plus de cartes']].map(([v, l]) => `<option value="${v}" ${(d.settings.deckSort || 'recent') === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label><button class="link" data-action="open-library">${ic('layers')}Bibliothèque</button><button class="link" data-nav="decks">Gérer ${ic('chevronRight')}</button></span>
                 </div>
-                ${d.decks.length ? `<label class="input-icon dash-find">${ic('search')}<span class="sr-only">Aller à un paquet</span><input class="input" type="search" placeholder="Aller à un paquet ou un cours… (ex. incoterms, R5.11)" data-input="dash-find" autocomplete="off" spellcheck="false"></label>
+                ${d.decks.length ? `<label class="input-icon dash-find">${ic('search')}<span class="sr-only">Rechercher un paquet</span><input class="input" type="search" placeholder="Rechercher un paquet..." data-input="dash-find" autocomplete="off" spellcheck="false"></label>
                 <div id="dash-find-res" class="panel dl-results hidden"></div>
                 <div id="dash-decks" class="deck-grid ${this.deckCompact() ? 'compact' : ''}">${this.dashboardDeckCards()}</div>`
                     : `<div class="panel empty">${ic('layers')}<p>Aucun paquet pour l'instant.</p><button class="btn btn-primary" style="margin-top:14px" data-action="new-deck">${ic('folderPlus')}Créer un paquet</button></div>`}
@@ -1423,7 +1423,7 @@ class SuperAnki {
         box.classList.toggle('collapsed', this.ui.treeOpen === false || (this.ui.treeOpen === undefined && ui.deck !== 'all'));
         const pick = $('#deck-pick'); if (pick) pick.querySelector('b').textContent = this.deckLabel(ui.deck);
         box.innerHTML = `
-            <div class="dl-find"><label class="input-icon">${ic('search')}<span class="sr-only">Chercher un paquet</span><input class="input" id="deck-find" type="search" placeholder="Chercher un paquet ou un cours…" data-input="deck-find" autocomplete="off" spellcheck="false" value="${esc(ui.deckQ || '')}"></label></div>
+            <div class="dl-find"><label class="input-icon">${ic('search')}<span class="sr-only">Rechercher un paquet</span><input class="input" id="deck-find" type="search" placeholder="Rechercher un paquet..." data-input="deck-find" autocomplete="off" spellcheck="false" value="${esc(ui.deckQ || '')}"></label></div>
             <div id="deck-find-res" class="${ui.deckQ ? '' : 'hidden'}">${this.deckFinderHtml(ui.deckQ || '')}</div>
             <div id="deck-tree" class="${ui.deckQ ? 'hidden' : ''}">
             <div class="dl-title"><span>${q ? 'Résultats par paquet' : 'Paquets'}</span>${anyTree ? `<span class="dl-tools"><button data-action="tree-all" data-key="side" data-open="1" title="Tout déplier">${ic('chevronDown')}</button><button data-action="tree-all" data-key="side" data-open="0" title="Tout replier" style="transform:rotate(180deg)">${ic('chevronDown')}</button></span>` : ''}</div>
@@ -1750,7 +1750,7 @@ class SuperAnki {
                 <p class="small muted">Chaque objectif a son compte à rebours sur l'accueil. Ajoute-en autant que tu veux.</p>
                 <div class="goal-list">${this.goalsAll().map(g => `<div class="goal-row ${g.days < 0 ? 'past' : ''}"><div class="gr-main"><b>${esc(g.name)}</b><span class="small muted">${esc(this.goalDateLabel(g.date))}</span></div><span class="goal-days ${g.days <= 7 && g.days >= 0 ? 'soon' : ''}">${g.days > 0 ? `J-${g.days}` : g.days === 0 ? 'Aujourd\'hui' : 'Terminé'}</span><button class="icon-btn" data-action="goal-del" data-id="${esc(g.id)}" title="Supprimer cet objectif" aria-label="Supprimer ${esc(g.name)}">${ic('trash')}</button></div>`).join('') || '<p class="small muted" style="margin:6px 0">Aucun objectif pour l\'instant.</p>'}</div>
                 <div class="goal-add">
-                    <input class="input" id="goal-name" placeholder="Nom (ex. Partiel R5.11)" aria-label="Nom de l'objectif" maxlength="40">
+                    <input class="input" id="goal-name" placeholder="Nom de l'objectif" aria-label="Nom de l'objectif" maxlength="40">
                     <input class="input" id="goal-date" aria-label="Date de l'objectif" type="date">
                     <button class="btn btn-primary btn-sm" data-action="goal-add">${ic('plus')}Ajouter</button>
                 </div>
