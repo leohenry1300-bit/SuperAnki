@@ -1963,6 +1963,23 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 @media (max-width: 420px) { .tool-btn { font-size: .8rem; gap: 6px; padding: 8px; } .tool-btn > .i:first-child { display: none; } }
 .tool-head { justify-content: flex-end; margin-bottom: 8px; }
 
+/* ---- loading screen: three cards fanning out + a sliding bar ---- */
+.boot { min-height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; }
+.boot-cards { position: relative; width: 84px; height: 108px; margin-bottom: 14px; }
+.boot-cards i { position: absolute; inset: 0; border-radius: 16px; background: var(--surface, #fff); border: 2px solid var(--primary, #4f46e5); box-shadow: var(--shadow, 0 8px 24px rgba(0,0,0,.15)); transform-origin: 50% 90%; animation: bootFan 1.8s ease-in-out infinite; }
+.boot-cards i:nth-child(1) { opacity: .45; animation-delay: .0s; }
+.boot-cards i:nth-child(2) { opacity: .7; animation-delay: .12s; }
+.boot-cards i:nth-child(3) { background: var(--hero, linear-gradient(135deg, #4f46e5, #7c3aed)); border-color: transparent; animation-delay: .24s; }
+.boot-cards i:nth-child(3)::after { content: ""; position: absolute; left: 50%; top: 50%; width: 22px; height: 12px; border-left: 4px solid #fff; border-bottom: 4px solid #fff; transform: translate(-50%, -62%) rotate(-45deg); border-radius: 2px; }
+@keyframes bootFan { 0%, 100% { transform: rotate(0) translateY(0); } 40%, 60% { transform: rotate(var(--r, -14deg)) translateY(-4px); } }
+.boot-cards i:nth-child(1) { --r: -18deg; } .boot-cards i:nth-child(2) { --r: 12deg; } .boot-cards i:nth-child(3) { --r: -3deg; }
+.boot-name { font-family: var(--font-display, inherit); font-size: 1.25rem; font-weight: 800; letter-spacing: .01em; color: var(--text, inherit); }
+.boot-bar { width: 140px; height: 4px; border-radius: 4px; background: color-mix(in srgb, var(--primary, #4f46e5) 18%, transparent); overflow: hidden; }
+.boot-bar span { display: block; width: 40%; height: 100%; border-radius: 4px; background: var(--primary, #4f46e5); animation: bootBar 1.1s ease-in-out infinite; }
+@keyframes bootBar { 0% { transform: translateX(-100%); } 100% { transform: translateX(260%); } }
+.boot-txt { font-size: .8rem; color: var(--text-faint, #888); }
+@media (prefers-reduced-motion: reduce) { .boot-cards i, .boot-bar span { animation: none; } .boot-cards i:nth-child(1) { transform: rotate(-12deg); } .boot-cards i:nth-child(2) { transform: rotate(8deg); } }
+
 </style>
 </head>
 <body>
@@ -1991,7 +2008,7 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 </header>
 
 <main class="main" id="main">
-    <div id="boot" class="empty">Chargement de tes cartes...</div>
+    <div id="boot" class="empty boot" role="status" aria-live="polite"><div class="boot-cards" aria-hidden="true"><i></i><i></i><i></i></div><b class="boot-name">LH Cards</b><div class="boot-bar" aria-hidden="true"><span></span></div><span class="boot-txt">Chargement de tes cartes…</span></div>
     <section id="view-dashboard" class="view hidden" aria-label="Accueil"></section>
     <section id="view-decks" class="view hidden" aria-label="Paquets et cartes"></section>
     <section id="view-stats" class="view hidden" aria-label="Statistiques"></section>
