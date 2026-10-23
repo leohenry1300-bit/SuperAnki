@@ -1606,3 +1606,9 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
   .mode-tile.filter-tile p { display: block; }
   .mode-tile.filter-tile h4 { font-size: .95rem; }
 }
+
+.deck-foot { flex-wrap: wrap; }
+.deck-foot .modes { gap: 6px; align-items: center; }
+.deck-foot .modes .btn { flex: none; padding-left: 10px; padding-right: 10px; }
+.deck-foot .modes .icon-btn { width: 36px; height: 36px; }
+@media (max-width: 767px) { .deck-foot .btn-primary { flex: 1 1 100%; } .deck-foot .modes { flex: 1 1 100%; } .deck-foot .modes .btn { flex: 1; } }

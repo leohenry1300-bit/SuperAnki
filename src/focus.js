@@ -128,7 +128,7 @@ Object.assign(SuperAnki.prototype, {
         el.dataset.phase = f.phase;
         $$('[data-action="focus-toggle"]').forEach(btn => btn.classList.toggle('active', f.open));
         const act = (f.phase === 'study' ? `${f.study}/${f.brk}` : '');
-        el.innerHTML = `<div class="fw-head"><span class="fw-ico">${ic('brain')}</span>
+        el.innerHTML = `<div class="fw-head"><span class="fw-ico">${ic('timer')}</span>
             <div class="fw-title"><small>Temps de concentration</small><b id="fw-time">${this.focusFmt(this.focusLeft())}</b><span class="fw-phase">${f.phase === 'study' ? 'Étude' : 'Pause'}</span></div>
             <button class="icon-btn" data-fw="toggle" aria-label="${f.running ? 'Pause' : 'Démarrer'}" title="${f.running ? 'Mettre en pause' : 'Démarrer'}">${ic(f.running ? 'pause' : 'play')}</button>
             <button class="icon-btn fw-chev" data-fw="collapse" aria-label="Réduire ou agrandir" title="Réduire / agrandir">${ic('chevronDown')}</button>

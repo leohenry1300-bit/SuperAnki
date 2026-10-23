@@ -1304,11 +1304,9 @@ class SuperAnki {
                     ${todo > 0 ? `<button class="btn btn-primary btn-sm" data-action="study" data-deck="${esc(deck.id)}">${ic('play')}Réviser (${todo})</button>`
                         : `<button class="btn btn-soft btn-sm" data-action="practice-deck" data-deck="${esc(deck.id)}">${ic('check')}À jour</button>`}
                     <div class="modes">
-                        <button class="icon-btn icon-btn-sm" title="Révision libre : toutes les cartes, sans toucher au planning" data-action="free-deck" data-deck="${esc(deck.id)}">${ic('repeat')}</button>
-                        <button class="icon-btn icon-btn-sm" title="Étudier dans l'ordre" data-action="ordered-deck" data-deck="${esc(deck.id)}">${ic('list')}</button>
-                        <button class="icon-btn icon-btn-sm" title="Écrire" data-action="mode" data-mode="write" data-deck="${esc(deck.id)}">${ic('keyboard')}</button>
-                        <button class="icon-btn icon-btn-sm" title="Quiz" data-action="mode" data-mode="quiz" data-deck="${esc(deck.id)}">${ic('quiz')}</button>
-                        <button class="icon-btn icon-btn-sm" title="Chrono" data-action="mode" data-mode="chrono" data-deck="${esc(deck.id)}">${ic('timer')}</button>
+                        <button class="btn btn-soft btn-sm" title="Révision libre : toutes les cartes, sans toucher au planning" data-action="free-deck" data-deck="${esc(deck.id)}">${ic('repeat')}Libre</button>
+                        <button class="btn btn-soft btn-sm" title="Étudier dans l'ordre, sans toucher au planning" data-action="ordered-deck" data-deck="${esc(deck.id)}">${ic('list')}Ordre</button>
+                        <button class="icon-btn icon-btn-sm" title="Écrire, Quiz, Chrono…" aria-label="Autres modes" data-action="deck-more" data-deck="${esc(deck.id)}">${ic('more')}</button>
                     </div>
                 </div>
             </div>`;
@@ -1868,15 +1866,23 @@ class SuperAnki {
     }
     /* Free revision: every card of the deck and its sub-decks, in random order, no impact on the schedule.
        Missed cards are put back at the end of the queue (see practiceAnswer). */
-    startFree(deckId, ordered = false) {
+    async startFree(deckId, ordered = false) {
         const d = this.deck(deckId), name = d ? this.deckPath(d.id) : '';
         if (!ordered) { this.startPractice([deckId], this.data.settings.answerMode, 9999, `Révision libre · ${name}`); return; }
         /* in order: sub-decks as listed (depth first), cards in the order they were written, then cloze number */
         const rank = new Map(); let n = 0;
         const walk = id => { rank.set(id, n++); this.childrenOf(id).forEach(k => walk(k.id)); };
         walk(deckId);
-        const ids = this.poolFor([deckId]).sort((a, b) => (rank.get(a.deckId) - rank.get(b.deckId)) || (a.created - b.created) || ((a.ord || 0) - (b.ord || 0))).map(c => c.id);
-        this.startPractice([deckId], this.data.settings.answerMode, 9999, `Dans l'ordre · ${name}`, ids, true);
+        const all = this.poolFor([deckId]).sort((a, b) => (rank.get(a.deckId) - rank.get(b.deckId)) || (a.created - b.created) || ((a.ord || 0) - (b.ord || 0))).map(c => c.id);
+        const pos = (this.data.settings.ordPos || {})[deckId];
+        let from = 0;
+        if (pos && pos.i > 0 && pos.i < all.length && pos.n === all.length) {
+            const pick = await this.choose({ title: 'Reprendre où tu t\'étais arrêté ?', message: `Tu en étais à la carte <b>${pos.i + 1} sur ${all.length}</b> de « ${esc(name)} ».`, options: [{ label: 'Recommencer au début', value: 'restart' }, { label: `Reprendre (carte ${pos.i + 1})`, value: 'resume', primary: true }] });
+            if (pick === null) return;
+            if (pick === 'resume') from = pos.i;
+        }
+        this.startPractice([deckId], this.data.settings.answerMode, 9999, `Dans l'ordre · ${name}`, all.slice(from), true);
+        if (this.session) { this.session.ordKey = deckId; this.session.ordAll = all; this.session.ordMax = from - 1; }
     }
     poolFor(deckIds) {
         if (deckIds === 'errors') return this.errorCards();
@@ -2004,7 +2010,7 @@ class SuperAnki {
                 <button class="icon-btn" title="Écouter" data-action="speak">${ic('volume')}</button>
                 <button class="icon-btn" title="Annuler la dernière réponse (Z)" data-action="undo" ${s.history.length ? '' : 'disabled style="opacity:.35"'}>${ic('undo')}</button>
                 <button class="icon-btn" title="Modifier la carte (E)" data-action="edit-current">${ic('pencil')}</button>
-                <button class="icon-btn" title="Minuteur de concentration" aria-label="Minuteur" data-action="focus-toggle">${ic('brain')}</button>
+                <button class="icon-btn" title="Minuteur de concentration" aria-label="Minuteur" data-action="focus-toggle">${ic('timer')}</button>
                 <button class="icon-btn" title="Plus d'actions" data-action="session-menu" aria-label="Plus d'actions">${ic('more')}</button>
             </div>
             <div class="pbar"><i style="width:${progress}%"></i></div>
@@ -2128,6 +2134,12 @@ class SuperAnki {
             s.retries[card.id] = (s.retries[card.id] || 0) + 1;
             if (s.retries[card.id] <= 2) s.queue.push(card.id);   // missed cards come back at the very end, not right away
         }
+        if (s.ordKey) {   // "in order" session: remember how far the user got, to offer to resume next time
+            s.ordMax = Math.max(s.ordMax, s.ordAll.indexOf(card.id));
+            const op = { ...(this.data.settings.ordPos || {}) };
+            op[s.ordKey] = { i: s.ordMax + 1, n: s.ordAll.length, t: Date.now() };
+            this.data.settings.ordPos = op;
+        }
         s.done++;   // only the error counters are updated: no scheduling, stats, streak or history
         this.save();
         this.nextCard();
@@ -2230,7 +2242,7 @@ class SuperAnki {
                 <button class="icon-btn" title="Quitter (Échap)" data-action="quit-session">${ic('x')}</button>
                 <div class="session-title"><h3>${esc(s.title)}</h3><p>${chrono ? 'Bonne réponse +1 · erreur -3 s' : 'Choisis la bonne réponse · sans impact sur le planning'}</p></div>
                 ${chrono ? '' : `<div class="session-counts"><span>${Math.min(s.done + 1, s.total)}<span class="faint">/${s.total}</span></span></div>`}
-                <button class="icon-btn" title="Minuteur de concentration" aria-label="Minuteur" data-action="focus-toggle">${ic('brain')}</button>
+                <button class="icon-btn" title="Minuteur de concentration" aria-label="Minuteur" data-action="focus-toggle">${ic('timer')}</button>
             </div>
             ${hud}
             <div class="panel flashcard" style="min-height:0">
@@ -2401,6 +2413,19 @@ class SuperAnki {
             });
             m.querySelector('[data-ok]').addEventListener('click', () => { answered = true; this.closeModal(m); resolve(true); });
             setTimeout(() => m.querySelector('[data-ok]').focus(), 30);
+        });
+    }
+
+    /* Several-button question: resolves with the chosen value, or null when dismissed */
+    choose({ title, message, options }) {
+        return new Promise(resolve => {
+            let answered = false;
+            const m = this.openModal({
+                title, size: 'narrow', body: `<p class="muted">${message}</p>`,
+                foot: options.map((o, i) => `<button class="btn ${o.primary ? 'btn-primary' : 'btn-soft'}" data-pick-i="${i}">${o.label}</button>`).join(''),
+                onClose: () => { if (!answered) resolve(null); }
+            });
+            m.querySelectorAll('[data-pick-i]').forEach(b => b.addEventListener('click', () => { answered = true; this.closeModal(m); resolve(options[Number(b.dataset.pickI)].value); }));
         });
     }
 
@@ -3168,6 +3193,17 @@ class SuperAnki {
                 break;
             }
             case 'sync-now': Cloud.sync(true); break;
+            case 'deck-more': {
+                const id = el.dataset.deck;
+                this.showMenu(el, [
+                    { icon: 'keyboard', label: 'Écrire la réponse', fn: () => this.openModeLauncher('write', id) },
+                    { icon: 'quiz', label: 'Quiz (QCM)', fn: () => this.openModeLauncher('quiz', id) },
+                    { icon: 'timer', label: 'Chrono', fn: () => this.openModeLauncher('chrono', id) },
+                    { sep: true },
+                    { icon: 'reset', label: 'Remettre à zéro…', fn: () => this.handleAction('reset-deck', { dataset: { deck: id } }) }
+                ]);
+                break;
+            }
             case 'pin-deck': {
                 const pins = [...(this.data.settings.pinnedDecks || [])], i = pins.indexOf(ds.deck);
                 if (i >= 0) pins.splice(i, 1); else pins.unshift(ds.deck);
