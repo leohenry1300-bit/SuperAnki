@@ -1206,6 +1206,7 @@ class SuperAnki {
             </div>
 
             ${this.resumeHtml()}
+            ${this.goalsHtml()}
             <div class="status-grid">
                 ${['new', 'learn', 'due', 'mature'].map(k => `
                 <button class="panel status-tile" style="--c:${STATUS[k].color}" data-action="goto-filter" data-filter="${k}">
@@ -1215,13 +1216,8 @@ class SuperAnki {
                 </button>`).join('')}
             </div>
 
-            ${this.goalsHtml()}
-            <div class="tool-row" role="group" aria-label="Outils">
-                <button class="tool-btn ${this.toolOpen('modes') ? 'on' : ''}" data-action="tool-toggle" data-tool="modes" aria-expanded="${this.toolOpen('modes')}">${ic('target')}<span>Modes d'entraînement</span>${ic('chevronDown', 'tb-chev')}</button>
-                <button class="tool-btn ${this.toolOpen('filters') ? 'on' : ''}" data-action="tool-toggle" data-tool="filters" aria-expanded="${this.toolOpen('filters')}">${ic('filter')}<span>Paquets filtrés</span>${ic('chevronDown', 'tb-chev')}</button>
-            </div>
-            <div class="${this.toolOpen('modes') ? '' : 'hidden'}">
-                <div class="section-head tool-head"><button class="link" data-action="custom-study">${ic('sliders')}Révisions personnalisées</button></div>
+            <div>
+                <div class="section-head"><h3 class="section-title">Modes d'entraînement</h3><button class="link" data-action="custom-study">${ic('sliders')}Révisions personnalisées</button></div>
                 <div class="mode-grid">
                     <button class="panel mode-tile" style="--c:#0ea5e9" data-action="mode" data-mode="write">
                         <span class="mode-ico">${ic('keyboard')}</span>
@@ -1393,8 +1389,6 @@ class SuperAnki {
         this.data.settings.lastRun = { kind, deck: deckId || '', at: Date.now() };
         this.save(false);
     }
-    /* one tool panel at a time under the two buttons (Modes d'entraînement / Paquets filtrés), closed by default */
-    toolOpen(key) { return (this.data.settings.homeOpen || {}).tool === key; }
     /* foldable home sections (closed by default, remembered) */
     homeOpen(key, def = false) { const o = this.data.settings.homeOpen || {}; return o[key] === undefined ? def : o[key] === true; }
     secToggle(key, title, extra = '', def = false) {
@@ -3354,10 +3348,6 @@ class SuperAnki {
                 if (!this.deck(ds.deck)) break;
                 if (ds.mode === 'ordered') this.startFree(ds.deck, true, true); else this.startFree(ds.deck);
                 break;
-            }
-            case 'tool-toggle': {
-                const o = { ...(this.data.settings.homeOpen || {}) }; o.tool = o.tool === ds.tool ? '' : ds.tool;
-                this.setSetting('homeOpen', o); this.renderDashboard(); break;
             }
             case 'home-toggle': {
                 const o = { ...(this.data.settings.homeOpen || {}) }; o[ds.sec] = !this.homeOpen(ds.sec, ds.sec === 'recents' || ds.sec === 'goals');
