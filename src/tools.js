@@ -31,7 +31,7 @@ Object.assign(SuperAnki.prototype, {
     },
     filtersHtml() {
         const fl = this.data.settings.filters || [];
-        if (!fl.length) return '';
+        if (!fl.length) return `<div><div class="section-head"><h3 class="section-title">Paquets filtrés</h3><button class="link" data-action="filter-edit" data-id="">${ic('plus')}Nouveau</button></div><p class="small muted" style="margin-top:-6px">Un paquet filtré rassemble les cartes qui correspondent à une recherche (un tag, un mot…), même si elles sont dans plusieurs paquets.</p></div>`;
         const eod = endOfDay(), now = Date.now();
         return `<div><div class="section-head"><h3 class="section-title">Paquets filtrés</h3><button class="link" data-action="filter-edit" data-id="">${ic('plus')}Nouveau</button></div>
             <div class="mode-grid filter-grid">${fl.map(f => {
