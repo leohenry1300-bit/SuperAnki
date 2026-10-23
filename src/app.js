@@ -2138,9 +2138,10 @@ class SuperAnki {
                     </div>
                 </div>
                 <div class="set-row" style="align-items:flex-start">
-                    <div class="txt"><b>Sauvegardes automatiques</b><span>Une copie est faite chaque jour dans ton navigateur (7 gardées). Utile en cas d'erreur.</span><div id="backup-list" class="backup-list"></div></div>
+                    <div class="txt"><b>Sauvegardes automatiques</b><span>Une copie est faite chaque jour dans ton navigateur (7 gardées). Utile en cas d'erreur.</span></div>
                     <div style="display:flex;gap:10px;align-items:center">${sw('autoBackup', 'Sauvegardes automatiques')}<button class="btn btn-soft btn-sm" data-action="backup-now">${ic('plus')}Maintenant</button></div>
                 </div>
+                <div id="backup-list" class="backup-list" style="margin:-2px 0 6px"></div>
                 <div class="set-row">
                     <div class="txt"><b>Réviser par petits groupes</b><span>Coupe la session après N cartes ; tu peux enchaîner avec le groupe suivant. « Tout » = pas de coupure.</span></div>
                     ${seg('sessionSize', [[0, 'Tout'], [10, '10'], [20, '20'], [30, '30'], [50, '50']])}
