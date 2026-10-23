@@ -2212,3 +2212,31 @@ html[data-vt="l"]::view-transition-new(root) { animation-name: vtInL; }
 .mc-happy .mc-shadow { animation: mcShadow 1.1s ease-in-out infinite; }
 @keyframes mcShadow { 0%, 100% { transform: scale(1); opacity: .18; } 45% { transform: scale(.8); opacity: .1; } }
 @media (prefers-reduced-motion: reduce) { .mc-tassel, .mc-ear, .mc-medal, .mc-shadow, .mascot.roar .mc-body, .hero-sub.speaking { animation: none !important; } }
+
+/* ---- Léo v2: motion of the new drawing (origins are in the 220x240 viewBox) ---- */
+.mc .mc-wave { transform-box: view-box; transform-origin: 150px 160px; }
+.mc .mc-tail { transform-box: view-box; transform-origin: 148px 212px; animation: mcWag 3.2s ease-in-out infinite; }
+@keyframes mcWag { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(7deg); } }
+.mc .mc-head { transform-box: view-box; transform-origin: 110px 150px; animation: mcHead 5.2s ease-in-out infinite; }
+@keyframes mcHead { 0%, 100% { transform: rotate(0) translateY(0); } 30% { transform: rotate(-1.6deg) translateY(-1px); } 65% { transform: rotate(1.4deg) translateY(0); } }
+.mc .mc-tuft { transform-box: view-box; transform-origin: 110px 98px; animation: mcBreeze 4.4s ease-in-out infinite; }
+.mc .mc-tuft.t1 { animation-delay: -1.1s; } .mc .mc-tuft.t2 { animation-delay: -2.2s; } .mc .mc-tuft.t3 { animation-delay: -3.3s; }
+@keyframes mcBreeze { 0%, 100% { transform: rotate(-1.6deg) scale(1); } 50% { transform: rotate(1.8deg) scale(1.02); } }
+.mc-happy .mc-body { transform-origin: 110px 228px; }
+.mc-calm .mc-body { transform-origin: 110px 228px; }
+.mc .mc-card { transform-box: fill-box; transform-origin: 50% 50%; }
+.mc .mc-medal { transform-box: view-box; transform-origin: 110px 142px; }
+.mc .mc-tassel { transform-box: view-box; transform-origin: 110px 50px; animation: mcTassel 3.2s ease-in-out infinite; }
+.mc .mc-eye { transform-box: fill-box; transform-origin: center; }
+@media (prefers-reduced-motion: reduce) { .mc .mc-tail, .mc .mc-head, .mc .mc-tuft, .mc .mc-tassel { animation: none !important; } }
+
+/* ---- Léo in the home card: big, sitting on the card's edge, with a soft glow behind him ---- */
+.hero .mascot { width: 132px; height: 144px; margin: -34px -8px -14px 0; align-self: end; background: none; overflow: visible; }
+.hero .mascot::before { content: ""; position: absolute; left: 50%; top: 56%; width: 128%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.26) 0, rgba(255,255,255,.1) 45%, transparent 68%); pointer-events: none; z-index: -1; }
+.hero .mascot .mc { position: relative; z-index: 1; filter: drop-shadow(0 8px 10px rgba(20,10,60,.35)); }
+@media (min-width: 768px) { .hero .mascot { width: 200px; height: 218px; margin: -62px 4px -34px 0; } }
+@media (min-width: 768px) {
+  .hero { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "text mascot" "actions mascot"; column-gap: 24px; row-gap: 20px; }
+  .hero-actions { justify-self: start; }
+  .hero .mascot { width: 190px; height: 207px; margin: -46px 8px -18px 0; align-self: center; }
+}

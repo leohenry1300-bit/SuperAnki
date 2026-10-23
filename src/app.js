@@ -1213,45 +1213,7 @@ class SuperAnki {
             clearTimeout(idle); idle = setTimeout(() => { const go = acc; acc = 0; if (go * .6 >= 54) { d = 54; release(); } else hide(); }, 220);
         }, { passive: true });
     }
-    /* Léo the lion cub: an animated SVG character (head, shoulders, paws and a flashcard) with four moods */
-    mascotSvg(mood = 'ready', opts = {}) {
-        const uid = 'mg' + (this._mgN = (this._mgN || 0) + 1);
-        const eyes = {
-            ready: '<g class="mc-eye"><g class="mc-look"><ellipse cx="46" cy="58" rx="4.8" ry="6.4" fill="#1f2937"/><circle cx="47.7" cy="55.6" r="1.8" fill="#fff"/></g></g><g class="mc-eye"><g class="mc-look"><ellipse cx="74" cy="58" rx="4.8" ry="6.4" fill="#1f2937"/><circle cx="75.7" cy="55.6" r="1.8" fill="#fff"/></g></g>',
-            happy: '<path d="M40 61 Q46 51 52 61" fill="none" stroke="#1f2937" stroke-width="3.4" stroke-linecap="round"/><path d="M68 61 Q74 51 80 61" fill="none" stroke="#1f2937" stroke-width="3.4" stroke-linecap="round"/>',
-            calm: '<path d="M40 58 Q46 64 52 58" fill="none" stroke="#1f2937" stroke-width="3.2" stroke-linecap="round"/><path d="M68 58 Q74 64 80 58" fill="none" stroke="#1f2937" stroke-width="3.2" stroke-linecap="round"/>',
-            tough: '<g class="mc-eye"><g class="mc-look"><ellipse cx="46" cy="59" rx="4.5" ry="5.8" fill="#1f2937"/><circle cx="47.5" cy="57" r="1.6" fill="#fff"/></g></g><g class="mc-eye"><g class="mc-look"><ellipse cx="74" cy="59" rx="4.5" ry="5.8" fill="#1f2937"/><circle cx="75.5" cy="57" r="1.6" fill="#fff"/></g></g><path d="M39 49 L52 53" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/><path d="M81 49 L68 53" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/>'
-        }[mood] || '';
-        const mouth = {
-            ready: '<path d="M51 80 Q60 88 69 80" fill="none" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/>',
-            happy: '<path d="M48 78 Q60 98 72 78 Z" fill="#7f1d1d" stroke="#7c2d12" stroke-width="2.4" stroke-linejoin="round"/><path d="M54 87 Q60 92 66 87 Q60 83 54 87 Z" fill="#fb7185"/>',
-            calm: '<path d="M54 82 Q60 86 66 82" fill="none" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/>',
-            tough: '<path d="M52 83 Q60 79 68 83" fill="none" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/>'
-        }[mood] || '';
-        const mane = Array.from({ length: 12 }, (_, i) => { const a = (Math.PI * 2 * i) / 12; return `<circle cx="${(60 + Math.cos(a) * 38).toFixed(1)}" cy="${(62 + Math.sin(a) * 38).toFixed(1)}" r="13" fill="#d97706"/>`; }).join('');
-        const cardY = mood === 'happy' ? 96 : 104, cy = cardY + 13;
-        const sym = { ready: `<text x="60" y="${cy + 6}" text-anchor="middle" font-size="18" font-weight="800" fill="#6366f1">?</text>`, happy: `<path d="M51 ${cy} l6 6 12 -13" fill="none" stroke="#10b981" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>`, calm: `<text x="60" y="${cy + 5}" text-anchor="middle" font-size="13" font-weight="800" fill="#94a3b8">zZ</text>`, tough: `<text x="60" y="${cy + 6}" text-anchor="middle" font-size="18" font-weight="800" fill="#f59e0b">!</text>` }[mood] || '';
-        const extra = mood === 'happy' ? '<g class="mc-spark"><path d="M14 30 l2.4 6 6 2.4 -6 2.4 -2.4 6 -2.4 -6 -6 -2.4 6 -2.4z" fill="#fde047"/><path d="M118 22 l1.8 4.4 4.4 1.8 -4.4 1.8 -1.8 4.4 -1.8 -4.4 -4.4 -1.8 4.4 -1.8z" fill="#fde047"/></g>'
-            : mood === 'calm' ? '<g class="mc-z"><text x="104" y="30" font-size="16" font-weight="800" fill="#fff" opacity=".9">z</text><text x="116" y="18" font-size="11" font-weight="800" fill="#fff" opacity=".7">z</text></g>' : '';
-        const wave = mood === 'ready' ? '<g class="mc-wave"><path d="M102 118 Q118 120 121 100" fill="none" stroke="#d97706" stroke-width="13" stroke-linecap="round"/><path d="M102 118 Q118 120 121 100" fill="none" stroke="#fbbf24" stroke-width="9" stroke-linecap="round"/><circle cx="121" cy="96" r="9" fill="#fbbf24" stroke="#d97706" stroke-width="2.4"/></g>' : '';
-        const arm = side => `<path d="M${side < 0 ? 36 : 104} 112 Q${side < 0 ? 44 : 96} ${cardY + 26} ${side < 0 ? 54 : 86} ${cardY + 20}" fill="none" stroke="#d97706" stroke-width="13" stroke-linecap="round"/><path d="M${side < 0 ? 36 : 104} 112 Q${side < 0 ? 44 : 96} ${cardY + 26} ${side < 0 ? 54 : 86} ${cardY + 20}" fill="none" stroke="#fbbf24" stroke-width="9" stroke-linecap="round"/>`;
-        const streak = opts.streak || 0;
-        const medal = streak >= 3 ? `<g class="mc-medal"><path d="M52 112 L60 124 L68 112" fill="none" stroke="#ef4444" stroke-width="3"/><circle cx="60" cy="128" r="${streak >= 7 ? 8 : 6.5}" fill="#fde047" stroke="#d97706" stroke-width="2"/><path d="M60 122.5 l1.7 3.6 3.9 .5 -2.9 2.7 .8 3.9 -3.5 -2 -3.5 2 .8 -3.9 -2.9 -2.7 3.9 -.5z" fill="#d97706"/></g>` : '';
-        return `<svg class="mc mc-${mood}" viewBox="0 0 140 150" aria-hidden="true"><defs><radialGradient id="${uid}f" cx=".38" cy=".3" r=".9"><stop offset="0" stop-color="#fde68a"/><stop offset=".55" stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/></radialGradient></defs><g class="mc-body" transform="translate(10 0)">
-            <ellipse class="mc-shadow" cx="60" cy="150" rx="46" ry="6" fill="#000" opacity=".18"/><ellipse cx="60" cy="128" rx="40" ry="30" fill="#d97706"/><ellipse cx="60" cy="128" rx="35" ry="27" fill="url(#${uid}f)"/><ellipse cx="60" cy="134" rx="21" ry="19" fill="#fef3c7"/>${medal}
-            ${mane}
-            <g class="mc-ear l"><circle cx="30" cy="40" r="12" fill="#fbbf24"/><circle cx="30" cy="40" r="6" fill="#fda4af"/></g><g class="mc-ear r"><circle cx="90" cy="40" r="12" fill="#fbbf24"/><circle cx="90" cy="40" r="6" fill="#fda4af"/></g>
-            <circle cx="60" cy="62" r="35" fill="url(#${uid}f)"/><ellipse cx="46" cy="42" rx="12" ry="7" fill="#fff" opacity=".18" transform="rotate(-20 46 42)"/>
-            <ellipse cx="60" cy="76" rx="17" ry="13" fill="#fef3c7"/>
-            <path d="M55 68 Q60 65 65 68 Q63 73 60 74 Q57 73 55 68Z" fill="#92400e"/>
-            <circle cx="36" cy="70" r="6" fill="#fb7185" opacity=".45"/><circle cx="84" cy="70" r="6" fill="#fb7185" opacity=".45"/>
-            ${eyes}${mouth}
-            <path d="M34 32 L60 20 L86 32 L60 44 Z" fill="#1e3a8a"/><path d="M46 38 L46 48 Q60 56 74 48 L74 38 L60 44 Z" fill="#1e40af"/><g class="mc-tassel"><path d="M86 32 L92 46" stroke="#fbbf24" stroke-width="2.4" stroke-linecap="round"/><circle cx="92" cy="48" r="3" fill="#fbbf24"/></g>
-            <g class="mc-card"><rect x="43" y="${cardY}" width="34" height="26" rx="5" fill="#fff" stroke="#c7d2fe" stroke-width="2.4"/>${sym}</g>
-            ${arm(-1)}${mood === 'ready' ? '' : arm(1)}
-            <circle cx="44" cy="${cardY + 22}" r="6.5" fill="#fbbf24" stroke="#d97706" stroke-width="2.2"/><circle cx="76" cy="${cardY + 22}" r="6.5" fill="#fbbf24" stroke="#d97706" stroke-width="2.2"/>
-            ${wave}</g>${extra}</svg>`;
-    }
+    mascotSvg(mood = 'ready', opts = {}) { return leoSvg(mood, opts); }
     /* Léo's mood follows the day: asleep late at night or when everything is done, cheering once today's review is done */
     mascotMood(toStudy) {
         const h = new Date().getHours(), done = this.data.stats.lastStudyDate === dayKey();
@@ -1296,7 +1258,7 @@ class SuperAnki {
                 pend = null;
                 $$('.mc').forEach(el => {
                     const r = el.getBoundingClientRect(); if (!r.width) return;
-                    const dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height * .42), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 220) * 3;
+                    const dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height * .42), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 220) * 4.5;
                     el.style.setProperty('--px', (dx / d * k).toFixed(2) + 'px'); el.style.setProperty('--py', (dy / d * k).toFixed(2) + 'px');
                 });
             });
