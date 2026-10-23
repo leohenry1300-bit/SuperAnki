@@ -907,7 +907,12 @@ class SuperAnki {
         setRollover(s.rolloverHour);
         fsrsApplyParams(s.fsrsW);
         const resolved = s.theme === 'auto' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'nuit' : 'clair') : s.theme;
-        document.documentElement.dataset.theme = resolved;
+        const root = document.documentElement;
+        if (this._themeSeen && root.dataset.theme !== resolved && !this.calm()) {   // colours melt into the new theme instead of jumping
+            root.classList.add('theme-fade'); clearTimeout(this._themeT); this._themeT = setTimeout(() => root.classList.remove('theme-fade'), 520);
+        }
+        this._themeSeen = true;
+        root.dataset.theme = resolved;
         try { localStorage.setItem('superanki_theme', s.theme); } catch { /* private mode */ }
         document.documentElement.style.setProperty('--card-size', CARD_SIZES[s.cardSize] || CARD_SIZES.m);
         requestAnimationFrame(() => {
@@ -1147,7 +1152,7 @@ class SuperAnki {
             el.classList.add('view-in', 'cascade', a >= 0 && b >= 0 && a !== b ? (b > a ? 'view-in-r' : 'view-in-l') : 'view-in-n');
             clearTimeout(this._viewInT); this._viewInT = setTimeout(() => el.classList.remove('cascade'), 900);   // the cascade only plays on arrival, not on later redraws
         }
-        if (view === 'dashboard' && prevView !== 'dashboard') this.countUp('#view-dashboard .status-num');
+        if (view === 'dashboard' && prevView !== 'dashboard') this.countUp('#view-dashboard .status-num, #view-dashboard .btn-hero .cnt');
     }
     /* pull the page down (at the top of an overview tab) to refresh the numbers and sync */
     initPull() {
@@ -1319,7 +1324,7 @@ class SuperAnki {
                     </div>
                     <div class="hero-actions">
                         ${toStudy > 0
-                            ? `<button class="btn btn-lg btn-hero breathe" data-action="study" data-deck="">${ic('play')}Réviser (${toStudy})</button>`
+                            ? `<button class="btn btn-lg btn-hero breathe" data-action="study" data-deck="">${ic('play')}Réviser (<span class="cnt">${toStudy}</span>)</button>`
                             : `<button class="btn btn-lg btn-hero" data-action="practice-all">${ic('repeat')}Révision libre</button>`}
                         ${extra || `<button class="btn btn-lg btn-hero-ghost" data-action="new-card">${ic('plus')}Nouvelle carte</button>`}
                     </div>

@@ -2058,3 +2058,16 @@ html { overscroll-behavior-y: contain; }
 .flashcard.stack-1 { box-shadow: 0 7px 0 -3px var(--surface), 0 7px 0 -2px var(--border-strong, var(--border)), var(--shadow); margin-bottom: 8px; }
 .flashcard.stack-2 { box-shadow: 0 7px 0 -3px var(--surface), 0 7px 0 -2px var(--border-strong, var(--border)), 0 14px 0 -7px var(--surface), 0 14px 0 -6px var(--border-strong, var(--border)), var(--shadow); margin-bottom: 16px; }
 @media (prefers-reduced-motion: reduce) { .modal-back.closing, .modal-back.closing .modal, .ptr.spin .i { animation: none !important; } }
+
+/* ---- motion pass 5: coloured answer feedback, theme fade, livelier switches and chips ---- */
+.grade-btn { transition: background .15s, box-shadow .15s, transform .08s; }
+.grade-btn:active { background: color-mix(in srgb, var(--c) 38%, var(--surface)); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 40%, transparent); }
+.flashcard.fly-right { box-shadow: 0 0 0 3px color-mix(in srgb, var(--easy, #10b981) 65%, transparent), var(--shadow); }
+.flashcard.fly-left { box-shadow: 0 0 0 3px color-mix(in srgb, var(--again, #ef4444) 65%, transparent), var(--shadow); }
+html.theme-fade, html.theme-fade *, html.theme-fade *::before, html.theme-fade *::after { transition: background-color .45s ease, color .45s ease, border-color .45s ease, fill .45s ease, stroke .45s ease, box-shadow .45s ease !important; }
+.switch span::after { transition: transform .3s cubic-bezier(.3, 1.7, .5, 1), background .2s; }
+.switch input:checked + span::after { transform: translate(20px, -50%) scale(1.06); }
+.switch input:active + span::after { width: 24px; }
+.chip.active { animation: chipPop .28s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes chipPop { 0% { transform: scale(.88); } 100% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .chip.active, html.theme-fade, html.theme-fade * { animation: none !important; transition: none !important; } .switch span::after { transition: none; } }
