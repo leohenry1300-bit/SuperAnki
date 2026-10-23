@@ -1553,6 +1553,7 @@ class SuperAnki {
                 <button class="btn btn-soft btn-sm" data-action="ordered-deck" data-deck="${esc(deck.id)}" title="Les cartes du paquet et des sous-paquets, dans l'ordre du cours, sans toucher au planning">${ic('list')}Dans l'ordre</button>
                 <button class="btn btn-soft btn-sm" data-action="new-card" data-deck="${esc(deck.id)}">${ic('plus')}Carte</button>
                 <button class="icon-btn" title="Options d'étude du paquet" data-action="deck-options" data-deck="${esc(deck.id)}">${ic('sliders')}</button>
+                <button class="icon-btn" title="Remettre à zéro tout le paquet et ses sous-paquets" data-action="reset-deck" data-deck="${esc(deck.id)}">${ic('reset')}</button>
                 <button class="icon-btn" title="Sous-paquet" data-action="new-subdeck" data-deck="${esc(deck.id)}">${ic('folderPlus')}</button>
                 <button class="icon-btn" title="Modifier le paquet" data-action="edit-deck" data-deck="${esc(deck.id)}">${ic('pencil')}</button>
                 <button class="icon-btn danger" title="Supprimer le paquet" data-action="delete-deck" data-deck="${esc(deck.id)}">${ic('trash')}</button>`;
@@ -3155,6 +3156,14 @@ class SuperAnki {
                 break;
             }
             case 'sync-now': Cloud.sync(true); break;
+            case 'reset-deck': {
+                const d = this.deck(ds.deck); if (!d) break;
+                const ids = this.poolFor([ds.deck]).map(c => c.id);
+                const all = this.data.cards.filter(c => this.descendantIds(ds.deck).includes(c.deckId)).map(c => c.id);
+                const ok = await this.confirm({ title: `Remettre « ${d.name} » à zéro ?`, message: `${plural(all.length, 'carte')} (paquet et sous-paquets) redeviennent « nouvelles ». Tes cartes sont conservées ; tu pourras annuler juste après.`, ok: 'Remettre à zéro', danger: true });
+                if (ok) this.opReset(all.length ? all : ids);
+                break;
+            }
             case 'reset-progress': {
                 const ok = await this.confirm({ title: 'Remettre la progression à zéro ?', message: 'Toutes les cartes redeviennent « nouvelles ». Tes cartes, tes images et ta série sont conservées.', ok: 'Remettre à zéro', danger: true });
                 if (!ok) break;
