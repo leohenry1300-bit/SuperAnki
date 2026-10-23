@@ -1730,3 +1730,6 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .recent-x:hover { background: var(--surface-2); color: var(--text); }
 .recent-x .i { width: 14px; height: 14px; }
 @media (max-width: 767px) { .recent-x { width: 32px; height: 32px; right: 3px; } }
+
+.sort-pick { display: inline-flex; align-items: center; gap: 8px; }
+.sort-lbl { font-size: .84rem; font-weight: 700; color: var(--text-muted); white-space: nowrap; }

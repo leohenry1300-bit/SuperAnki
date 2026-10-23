@@ -1750,6 +1750,9 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .recent-x .i { width: 14px; height: 14px; }
 @media (max-width: 767px) { .recent-x { width: 32px; height: 32px; right: 3px; } }
 
+.sort-pick { display: inline-flex; align-items: center; gap: 8px; }
+.sort-lbl { font-size: .84rem; font-weight: 700; color: var(--text-muted); white-space: nowrap; }
+
 </style>
 </head>
 <body>
@@ -3099,8 +3102,8 @@ class SuperAnki {
                 <div class="section-head">
                     <h3 class="section-title">Tes paquets</h3>
                     <span style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
-                        <button class="icon-btn icon-btn-sm" data-action="deck-view" title="${this.deckCompact() ? 'Vue détaillée' : 'Vue compacte'}" aria-label="Changer l'affichage des paquets">${ic(this.deckCompact() ? 'layers' : 'list')}</button>
-                        <label class="sort-pick"><span class="sr-only">Trier les paquets</span>${ic('sliders')}<select class="select select-sm" data-input="deck-sort">${[['recent', 'Plus récents'], ['due', 'À revoir d\'abord'], ['studied', 'Révisés récemment'], ['alpha', 'A → Z'], ['size', 'Plus de cartes']].map(([v, l]) => `<option value="${v}" ${(d.settings.deckSort || 'recent') === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label><button class="link" data-action="open-library">${ic('layers')}Bibliothèque</button><button class="link" data-nav="decks">Gérer ${ic('chevronRight')}</button></span>
+                        <button class="btn btn-soft btn-sm" data-action="deck-view" title="Changer l'affichage des paquets">${ic(this.deckCompact() ? 'layers' : 'list')}${this.deckCompact() ? 'Vue détaillée' : 'Vue compacte'}</button>
+                        <label class="sort-pick"><span class="sort-lbl">Trier :</span><select class="select select-sm" data-input="deck-sort">${[['recent', 'Plus récents'], ['due', 'À revoir d\'abord'], ['studied', 'Révisés récemment'], ['alpha', 'A → Z'], ['size', 'Plus de cartes']].map(([v, l]) => `<option value="${v}" ${(d.settings.deckSort || 'recent') === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label><button class="link" data-action="open-library">${ic('layers')}Bibliothèque</button><button class="link" data-nav="decks">Gérer ${ic('chevronRight')}</button></span>
                 </div>
                 ${d.decks.length ? `<label class="input-icon dash-find">${ic('search')}<span class="sr-only">Rechercher un paquet</span><input class="input" type="search" placeholder="Rechercher un paquet..." data-input="dash-find" autocomplete="off" spellcheck="false"></label>
                 <div id="dash-find-res" class="panel dl-results hidden"></div>
