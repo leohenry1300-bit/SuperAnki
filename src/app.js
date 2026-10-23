@@ -2179,7 +2179,7 @@ class SuperAnki {
                 </div>
             </div>
 
-            <p class="tiny faint" style="text-align:center;margin:44px 0 28px">LH Cards · ${s.scheduler === 'fsrs' ? 'FSRS' : 'SM-2'} · ${plural(this.data.cards.length, 'carte')} · Stockage ${Storage.db ? 'IndexedDB' : 'local'}</p>
+            <p class="tiny faint" style="text-align:center;margin:44px 0 28px">LH Cards · version ${(() => { const m = document.querySelector('meta[name=app-build]'), t = m ? Number(m.content) : 0; return t ? new Date(t).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '?'; })()} · ${s.scheduler === 'fsrs' ? 'FSRS' : 'SM-2'} · ${plural(this.data.cards.length, 'carte')} · Stockage ${Storage.db ? 'IndexedDB' : 'local'}</p>
         </div>`;
         this.bindOptionsForm($('#study-options'));
         this.renderSyncIndicator();

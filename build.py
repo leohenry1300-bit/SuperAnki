@@ -260,6 +260,7 @@ html = f"""<!DOCTYPE html>
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="LH Cards">
 <meta name="theme-color" content="#4f46e5">
+<meta name="app-build" content="{int(__import__("time").time()*1000)}">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="description" content="LH Cards : cartes mémoire avec répétition espacée, quiz, écriture et chrono.">
 {read("head-icons.html").strip()}
