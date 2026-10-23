@@ -1816,3 +1816,8 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .set-nav .chip.active { background: var(--primary-soft); color: var(--primary); }
 .set-group { scroll-margin-top: 130px; }
 .set-group-title { margin-top: 22px; }
+
+.resume-tile .mode-ico { background: var(--primary); color: #fff; }
+.resume-tile h4 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.resume-tile .grow { min-width: 0; flex: 1; }
+@media (max-width: 767px) { .resume-tile { flex-direction: row; text-align: left; } .resume-tile p, .resume-tile .chev { display: block; } }

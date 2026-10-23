@@ -1205,6 +1205,7 @@ class SuperAnki {
             </div>
 
             ${this.goalsHtml()}
+            ${this.resumeHtml()}
             ${libBanner}
             ${this.tipsHtml()}
             <div class="status-grid">
@@ -1383,6 +1384,25 @@ class SuperAnki {
         this.renderDeckPanel();
     }
     /* Recently used decks (shown on the dashboard) */
+    /* what the user did last: shown as the "Reprendre" line on the dashboard */
+    noteLast(kind, deckId) {
+        this.data.settings.lastRun = { kind, deck: deckId || '', at: Date.now() };
+        this.save(false);
+    }
+    resumeHtml() {
+        const r = this.data.settings.lastRun;
+        if (!r || !['study', 'free', 'ordered'].includes(r.kind)) return '';
+        const d = r.deck ? this.deck(r.deck) : null;
+        if (r.deck && !d) return '';
+        let sub, title = d ? `${d.emoji} ${d.name}` : 'Révision du jour';
+        if (r.kind === 'ordered') {
+            const pos = (this.data.settings.ordPos || {})[r.deck], n = pos ? pos.n : 0;
+            if (!pos || pos.i <= 0 || pos.i >= n) return '';   // nothing left to resume
+            sub = `Dans l'ordre · carte ${pos.i + 1} sur ${n}`;
+        } else if (r.kind === 'free') sub = 'Révision libre';
+        else sub = r.deck ? 'Révision du planning' : 'Cartes du jour';
+        return `<button class="panel mode-tile resume-tile wide" style="--c:#4f46e5" data-action="resume-last"><span class="mode-ico">${ic('play')}</span><span class="grow"><h4>Reprendre : ${esc(title)}</h4><p>${esc(sub)}</p></span>${ic('chevronRight', 'chev')}</button>`;
+    }
     touchDeck(id) {
         if (!id || id === 'all' || id === 'errors' || !this.deck(id)) return;
         const st = this.data.settings, cur = st.recentDecks || [];
@@ -1862,6 +1882,7 @@ class SuperAnki {
        ============================================================ */
     startStudy(deckId, extraNew = 0) {
         if (deckId) this.touchDeck(deckId);
+        this.noteLast('study', deckId || '');
         const deckIds = deckId ? [deckId] : null;
         const plan = this.studyPlan(deckIds, extraNew);
         const cfg0 = deckId ? this.deckCfg(deckId) : this.defaultCfg();
@@ -1919,8 +1940,9 @@ class SuperAnki {
     }
     /* Free revision: every card of the deck and its sub-decks, in random order, no impact on the schedule.
        Missed cards are put back at the end of the queue (see practiceAnswer). */
-    async startFree(deckId, ordered = false) {
+    async startFree(deckId, ordered = false, auto = false) {
         this.touchDeck(deckId);
+        this.noteLast(ordered ? 'ordered' : 'free', deckId);
         const d = this.deck(deckId), name = d ? this.deckPath(d.id) : '';
         if (!ordered) { this.startPractice([deckId], this.data.settings.answerMode, 9999, `Révision libre · ${name}`); return; }
         /* in order: sub-decks as listed (depth first), cards in the order they were written, then cloze number */
@@ -1931,9 +1953,12 @@ class SuperAnki {
         const pos = (this.data.settings.ordPos || {})[deckId];
         let from = 0;
         if (pos && pos.i > 0 && pos.i < all.length && pos.n === all.length) {
+            if (auto) from = pos.i;
+            else {
             const pick = await this.choose({ title: 'Reprendre où tu t\'étais arrêté ?', message: `Tu en étais à la carte <b>${pos.i + 1} sur ${all.length}</b> de « ${esc(name)} ».`, options: [{ label: 'Recommencer au début', value: 'restart' }, { label: `Reprendre (carte ${pos.i + 1})`, value: 'resume', primary: true }] });
             if (pick === null) return;
             if (pick === 'resume') from = pos.i;
+            }
         }
         const started = this.startPractice([deckId], this.data.settings.answerMode, 9999, `Dans l'ordre · ${name}`, all.slice(from), true);
         if (started && this.session) { this.session.ordKey = deckId; this.session.ordAll = all; this.session.ordMax = from - 1; }
@@ -3275,6 +3300,13 @@ class SuperAnki {
                     { icon: 'reset', label: 'Remettre à zéro…', fn: () => this.handleAction('reset-deck', { dataset: { deck: id } }) },
                     { icon: 'trash', label: 'Supprimer le paquet…', fn: () => this.handleAction('delete-deck', { dataset: { deck: id } }) }
                 ]);
+                break;
+            }
+            case 'resume-last': {
+                const r = this.data.settings.lastRun; if (!r) break;
+                if (r.kind === 'study') this.startStudy(r.deck || null);
+                else if (r.kind === 'free') this.startFree(r.deck);
+                else this.startFree(r.deck, true, true);
                 break;
             }
             case 'dash-open': {   // home: a deck with sub-decks unfolds in place, a deck without opens its cards
