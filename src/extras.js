@@ -231,11 +231,6 @@ function sndPlayClip(c) {
         const p = a.play(); return p && p.then ? p.then(() => 'ok', e => (e && e.name) || 'error') : Promise.resolve('ok');
     } catch (e) { return Promise.resolve((e && e.name) || 'error'); }
 }
-function sndDiagText() {
-    const ac = window.app && window.app.audioCtx;
-    return `Volume ${Math.round(SND.vol * 100)} % · app installée : ${sndStandalone() ? 'oui' : 'non'} · lecteur : ${sndClipsOk() ? 'fichiers audio' : 'synthé direct'} · état : ${ac ? ac.state : 'en attente'}`;
-}
-function sndDiag() { const el = document.getElementById('snd-diag'); if (el) el.textContent = sndDiagText(); }
 function sndPrerender() { ['reveal', 'g1', 'g2', 'g3', 'g4', 'right', 'wrong', 'done', 'tap', 'pop'].forEach((n, i) => setTimeout(() => SFX[n] && sndClip(n, SFX[n], n === 'done' ? 3 : 1.6), 300 + i * 120)); }
 
 /* iPhone: Web Audio is muted by the ring/silent switch and needs a real touch to start.
@@ -256,26 +251,7 @@ function sndUnlock() {
     SND_UNLOCK.done = true;
     if (sndClipsOk()) sndPrerender();
 }
-/* installed web app on iPhone: Web Audio stays muted unless the page is "playing media". A silent clip played in a loop
-   (in the page, not muted, a hair above silence) keeps the "playback" audio session alive, so the sounds are heard like in Safari. */
-let SND_KEEP = null;
-function sndKeepAlive() {
-    try {
-        if (!SND_KEEP) {
-            const n = 22050, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf), w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
-            w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
-            v.setUint32(24, 22050, true); v.setUint32(28, 44100, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
-            for (let i = 0; i < n; i++) v.setInt16(44 + i * 2, i % 2 ? 2 : -2, true);   // inaudible (±2 of 32768), but not digital silence
-            SND_KEEP = new Audio(URL.createObjectURL(new Blob([buf], { type: 'audio/wav' })));
-            SND_KEEP.loop = true; SND_KEEP.volume = 0.05; SND_KEEP.setAttribute('playsinline', ''); SND_KEEP.setAttribute('webkit-playsinline', ''); SND_KEEP.preload = 'auto';
-            SND_KEEP.style.display = 'none'; document.body.appendChild(SND_KEEP);
-            SND_KEEP.addEventListener('pause', () => { /* resumed on the next touch */ });
-        }
-        if (SND_KEEP.paused) { const p = SND_KEEP.play(); if (p && p.catch) p.catch(() => { SND_UNLOCK.done = false; }); }
-    } catch { /* ignore */ }
-}
-['touchend', 'pointerup', 'click', 'keydown'].forEach(ev => document.addEventListener(ev, () => { if (!SND_UNLOCK.done || (window.app && window.app.audioCtx && window.app.audioCtx.state !== 'running')) sndUnlock(); }, { passive: true, capture: true }));
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && SND_KEEP) { try { SND_KEEP.pause(); } catch { /* ignore */ } } if (document.visibilityState === 'visible') { const a = window.app && window.app.audioCtx; if (a && a.state !== 'running') { try { a.resume(); } catch { /* ignore */ } } } });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { const a = window.app && window.app.audioCtx; if (a && a.state !== 'running') { try { a.resume(); } catch { /* ignore */ } } } });
 
 /* hook the sounds on the study actions (wrapping the existing methods: nothing duplicated) */
 (() => {

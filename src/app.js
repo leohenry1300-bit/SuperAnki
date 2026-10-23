@@ -271,7 +271,7 @@ const OPT_DEFAULTS = {
 };
 const DEFAULT_SETTINGS = {
     theme: 'auto', cardSize: 'm', showIntervals: true,
-    autoSpeak: false, autoAudio: false, loadBalance: true, filters: [], sessionSize: 0, fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
+    autoSpeak: false, autoAudio: false, loadBalance: true, filters: [], sessionSize: 0, fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: false,
     quizCount: 20, writeCount: 20, chronoDuration: 60,
     rolloverHour: 4, syncKey: '', settingsMod: 0, autoBackup: true, libSeen: false, tipsSeen: false, goalName: '', goalDate: '', goals: [], deckSort: 'recent',
     ...OPT_DEFAULTS
@@ -985,7 +985,7 @@ class SuperAnki {
     }
     deckPath(id) { return this.deckChain(id).map(d => d.name).join(' › '); }
     deckDepth(id) { return Math.max(0, this.deckChain(id).length - 1); }
-    deckLabel(d) { return `${d.emoji} ${this.deckPath(d.id)}`; }
+    deckTitle(d) { return `${d.emoji} ${this.deckPath(d.id)}`; }
     sortedDecks() {
         const by = new Map();
         this.data.decks.forEach(d => { const k = d.parent || ''; if (!by.has(k)) by.set(k, []); by.get(k).push(d); });
@@ -1155,7 +1155,7 @@ class SuperAnki {
             const zoom = opts.from && !this.calm();
             if (zoom) { el.style.setProperty('--ox', opts.from.x + 'px'); el.style.setProperty('--oy', opts.from.y + 'px'); }
             el.classList.add('view-in', ...(this._vtOn ? [] : ['cascade']), zoom ? 'view-in-zoom' : this._vtOn ? 'view-in-n' : a >= 0 && b >= 0 && a !== b ? (b > a ? 'view-in-r' : 'view-in-l') : 'view-in-n');
-            clearTimeout(this._viewInT); this._viewInT = setTimeout(() => el.classList.remove('cascade'), 900);   // the cascade only plays on arrival, not on later redraws
+            clearTimeout(el._cascT); el._cascT = setTimeout(() => el.classList.remove('cascade'), 900);   // the cascade only plays on arrival, not on later redraws
         }
         if (view === 'dashboard' && prevView !== 'dashboard' && !this._vtOn) this.countUp('#view-dashboard .status-num, #view-dashboard .btn-hero .cnt');
     }
@@ -1199,12 +1199,15 @@ class SuperAnki {
             if (e.button !== 0 || !ok() || e.target.closest('button, a, input, select, textarea, label, summary, [data-action], [contenteditable], .modal-back')) { mon = false; return; }
             my0 = e.clientY; mon = true; d = 0;
         });
+        document.addEventListener('selectstart', e => { if (mon) e.preventDefault(); });
         document.addEventListener('mousemove', e => { if (mon) show(e.clientY - my0); });
         const mup = () => { if (!mon) return; mon = false; release(); };
         document.addEventListener('mouseup', mup); window.addEventListener('blur', () => { if (mon) { mon = false; hide(); } });
         /* trackpad / wheel: keep scrolling up while already at the top */
-        let acc = 0, idle = null;
+        let acc = 0, idle = null, lastMove = 0;
+        window.addEventListener('scroll', () => { lastMove = performance.now(); }, { passive: true });
         document.addEventListener('wheel', e => {
+            if (performance.now() - lastMove < 600) { acc = 0; return; }   // the page just scrolled up to the top: its inertia must not count as a pull
             if (!ok() || e.deltaY >= 0 || e.ctrlKey) { if (e.deltaY > 0) { acc = 0; if (!busy) hide(); } return; }
             acc += -e.deltaY; show(acc);
             clearTimeout(idle); idle = setTimeout(() => { const go = acc; acc = 0; if (go * .6 >= 54) { d = 54; release(); } else hide(); }, 220);
@@ -2225,7 +2228,7 @@ class SuperAnki {
             return;
         }
         const deck = deckId && this.deck(deckId);
-        this.beginSrs(deck ? this.deckLabel(deck) : 'Révision du jour', queue, plan.learning, { deckId: deckId || null, grouped });
+        this.beginSrs(deck ? this.deckTitle(deck) : 'Révision du jour', queue, plan.learning, { deckId: deckId || null, grouped });
     }
     /* Starts a scheduled (Anki-style) session on an explicit list of cards: custom study, review ahead... */
     startSrsIds(title, ids, keepOrder = false) {
