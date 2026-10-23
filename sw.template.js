@@ -25,6 +25,11 @@ self.addEventListener('fetch', e => {
         }));
         return;
     }
+    // Léo's animation clips are big and never change under the same name: kept apart (an app update does not clear them), cached copy first
+    if (sameOrigin && url.pathname.includes('/mascot/')) {
+        e.respondWith(caches.open('lh-mascot').then(c => c.match(req).then(hit => hit || fetch(req).then(res => { if (res && res.ok) c.put(req, res.clone()); return res; }))));
+        return;
+    }
     // fonts and libraries: cached copy first, refreshed in the background
     e.respondWith(caches.match(req).then(hit => {
         const net = fetch(req).then(res => { if (res && (res.ok || res.type === 'opaque')) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); } return res; }).catch(() => hit);

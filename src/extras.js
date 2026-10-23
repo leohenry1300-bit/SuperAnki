@@ -143,27 +143,49 @@ Object.assign(SFX, {
     success: (ac, o, t, v) => { iPluck(ac, o, t, NOTE.G5, v * 0.2, 0.4); iPluck(ac, o, t + 0.07, NOTE.D6, v * 0.2, 0.5); },
     error: (ac, o, t, v) => { iPad(ac, o, t, NOTE.A4, v * 0.14, 0.25); iMarimba(ac, o, t + 0.07, NOTE.E4, v * 0.14, 0.3); }
 });
-/* Léo's voice: tiny, soft and friendly (never harsh) */
+/* Léo's voice: a cute lion cub, Animal-Crossing style: short rolled "rrr" syllables with a soft vowel, never harsh.
+   iCub = a buzzy carrier (pitch glide) -> two vowel formants that slide (a "mouth" opening/closing) -> a fast amplitude flutter for the rolled r */
+function iCub(ac, o, t, v, p) {
+    const car = ac.createOscillator(), mod = ac.createGain(), env = ac.createGain(), vib = ac.createOscillator(), vg = ac.createGain();
+    car.type = p.type || 'sawtooth'; car.frequency.setValueAtTime(p.a, t); car.frequency.exponentialRampToValueAtTime(p.b, t + p.d);
+    vib.frequency.value = 6; vg.gain.value = p.a * 0.012; vib.connect(vg); vg.connect(car.frequency);
+    mod.gain.value = p.roll ? 0.55 : 1;
+    if (p.roll) { const lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = p.roll; lg.gain.value = 0.45; lfo.connect(lg); lg.connect(mod.gain); lfo.start(t); lfo.stop(t + p.d + 0.1); }
+    car.connect(mod);
+    [[p.f1, p.f1b, 1.0], [p.f2, p.f2b, 0.6]].forEach(([fa, fb, gain]) => {
+        const bp = ac.createBiquadFilter(), g = ac.createGain(); bp.type = 'bandpass'; bp.Q.value = 3.2; g.gain.value = gain;
+        bp.frequency.setValueAtTime(fa, t); bp.frequency.linearRampToValueAtTime(fb, t + p.d);
+        mod.connect(bp); bp.connect(g); g.connect(env);
+    });
+    sndEnv(env, t, v * (p.vol || 0.5) * 1.4, Math.min(0.04, p.d * 0.2), 0.06, Math.max(0, p.d - 0.1));
+    env.connect(o); car.start(t); vib.start(t); car.stop(t + p.d + 0.25); vib.stop(t + p.d + 0.25);
+}
 Object.assign(SFX, {
-    leo: (ac, o, t, v) => {   // two small rising "mrip" blips
-        [[520, 660, 0], [600, 760, 0.11]].forEach(([a, b, d]) => { const x = sndOsc(ac, sndLP(ac, o, 2600), 'triangle', a, t + d, 0.16, v * 0.3, 0.008, 0.05); x.o.frequency.exponentialRampToValueAtTime(b, t + d + 0.09); });
+    leo: (ac, o, t, v) => { iCub(ac, o, t, v, { a: 300, b: 460, d: 0.3, roll: 24, f1: 760, f1b: 1000, f2: 1500, f2b: 2100, vol: 0.55 }); },                      // "Rrr ?" curious
+    leohappy: (ac, o, t, v) => {                                                                                                                                      // "Ra-wrr !" happy
+        iCub(ac, o, t, v, { a: 380, b: 540, d: 0.16, f1: 850, f1b: 800, f2: 1250, f2b: 1300, vol: 0.5 });
+        iCub(ac, o, t + 0.15, v, { a: 540, b: 400, d: 0.34, roll: 30, f1: 700, f1b: 520, f2: 1100, f2b: 900, vol: 0.55 });
+    },
+    leogo: (ac, o, t, v) => {                                                                                                                                         // "Grrr… allez !" soft encouragement
+        iCub(ac, o, t, v, { a: 190, b: 235, d: 0.42, roll: 20, f1: 520, f1b: 640, f2: 900, f2b: 1100, vol: 0.55 });
+        [[520, 700, 0.5], [610, 840, 0.62]].forEach(([a, b, d]) => { const x = sndOsc(ac, sndLP(ac, o, 2800), 'triangle', a, t + d, 0.14, v * 0.26, 0.008, 0.05); x.o.frequency.exponentialRampToValueAtTime(b, t + d + 0.1); });
+    },
+    leosad: (ac, o, t, v) => { iCub(ac, o, t, v, { a: 430, b: 250, d: 0.62, roll: 22, f1: 850, f1b: 480, f2: 1350, f2b: 800, vol: 0.5 }); },                       // "Rrrrooh…" sleepy / a little sad
+    leopurr: (ac, o, t, v) => {                                                                                                                                       // a deep purr: a lion cub thinking
+        iCub(ac, o, t, v, { a: 72, b: 78, d: 0.8, roll: 27, f1: 320, f1b: 380, f2: 720, f2b: 800, vol: 0.62 });
+        const x = sndOsc(ac, sndLP(ac, o, 1800), 'sine', 230, t + 0.05, 0.5, v * 0.12, 0.1, 0.25); x.o.frequency.exponentialRampToValueAtTime(270, t + 0.5);
     },
     leotickle: (ac, o, t, v) => {   // a squeaky giggle: quick up-down blips
         [0, 1, 2, 3, 4].forEach(i => { const hz = i % 2 ? 760 : 960, x = sndOsc(ac, sndLP(ac, o, 3200), 'triangle', hz, t + i * 0.075, 0.1, v * 0.26, 0.005, 0.03); x.o.frequency.exponentialRampToValueAtTime(hz * 1.18, t + i * 0.075 + 0.05); });
     },
-    leoroar: (ac, o, t, v) => {   // a gentle growl: low saw with vibrato through a moving low-pass, plus a breath of noise
-        const car = ac.createOscillator(), lfo = ac.createOscillator(), lg = ac.createGain(), g = ac.createGain(), f = ac.createBiquadFilter();
-        car.type = 'sawtooth'; car.frequency.setValueAtTime(120, t); car.frequency.exponentialRampToValueAtTime(70, t + 0.75);
-        lfo.frequency.value = 22; lg.gain.value = 9; lfo.connect(lg); lg.connect(car.frequency);
-        f.type = 'lowpass'; f.Q.value = 2.5; f.frequency.setValueAtTime(260, t); f.frequency.linearRampToValueAtTime(900, t + 0.28); f.frequency.linearRampToValueAtTime(240, t + 0.8);
-        sndEnv(g, t, v * 0.34, 0.07, 0.2, 0.35); car.connect(f); f.connect(g); g.connect(o);
-        car.start(t); lfo.start(t); car.stop(t + 1.1); lfo.stop(t + 1.1);
-        iPuff(ac, o, t + 0.02, 0.4, v * 0.18, 700);
+    leoroar: (ac, o, t, v) => {   // a little cub roar: rolled, rising then falling, open vowel
+        iCub(ac, o, t, v, { a: 210, b: 330, d: 0.3, roll: 18, f1: 650, f1b: 950, f2: 1100, f2b: 1500, vol: 0.6 });
+        iCub(ac, o, t + 0.28, v, { a: 330, b: 190, d: 0.55, roll: 17, f1: 950, f1b: 600, f2: 1500, f2b: 1000, vol: 0.55 });
     },
-    leocheer: (ac, o, t, v) => {   // a happy little fanfare
-        [NOTE.C5, NOTE.E5, NOTE.G5, NOTE.C6].forEach((h, i) => iPluck(ac, o, t + i * 0.07, h, v * 0.34, 0.8));
-        iBell(ac, o, t + 0.28, NOTE.E6, v * 0.13, 0.9);
-        const x = sndOsc(ac, sndLP(ac, o, 3000), 'triangle', 700, t + 0.4, 0.16, v * 0.22, 0.01, 0.06); x.o.frequency.exponentialRampToValueAtTime(980, t + 0.5);
+    leocheer: (ac, o, t, v) => {   // "ROAAR !" victorious cub roar, then a sparkle
+        iCub(ac, o, t, v, { a: 230, b: 380, d: 0.28, roll: 17, f1: 700, f1b: 1000, f2: 1200, f2b: 1600, vol: 0.62 });
+        iCub(ac, o, t + 0.26, v, { a: 380, b: 210, d: 0.6, roll: 16, f1: 1000, f1b: 650, f2: 1600, f2b: 1050, vol: 0.58 });
+        [NOTE.E6, NOTE.G6, NOTE.C7].forEach((h, k) => iGlass(ac, o, t + 0.62 + k * 0.08, h, v * 0.12, 0.7));
     }
 });
 let SND_LAST = 0, SND_LAST_NAME = '';
@@ -271,7 +293,7 @@ function sndPlayClip(c) {
 }
 /* the volume changed: sounds are rendered again at the new volume, in the background */
 function sndVolChanged() { Object.keys(SND_PROM).forEach(k => delete SND_PROM[k]); if (sndClipsOk()) sndPrerender(); }
-const SND_PRE = ['leo', 'leotickle', 'leoroar', 'leocheer', 'reveal', 'g1', 'g2', 'g3', 'g4', 'right', 'wrong', 'done', 'tap', 'pop', 'tabswipe', 'tabbubble', 'tabclick', 'on', 'off', 'select', 'tick', 'open', 'close', 'success', 'error'];
+const SND_PRE = ['leo', 'leohappy', 'leogo', 'leosad', 'leopurr', 'leotickle', 'leoroar', 'leocheer', 'reveal', 'g1', 'g2', 'g3', 'g4', 'right', 'wrong', 'done', 'tap', 'pop', 'tabswipe', 'tabbubble', 'tabclick', 'on', 'off', 'select', 'tick', 'open', 'close', 'success', 'error'];
 function sndPrerender() { SND_PRE.forEach((n, i) => setTimeout(() => SFX[n] && sndClipP(n, SFX[n], n === 'done' ? 3 : 1.6), 150 + i * 90)); }
 
 /* iPhone: Web Audio is muted by the ring/silent switch and needs a real touch to start.

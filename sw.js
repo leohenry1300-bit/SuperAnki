@@ -1,5 +1,5 @@
-/* LH Cards service worker: makes the app work offline. Version: 34c6ed5f08 */
-const CACHE = 'superanki-34c6ed5f08';
+/* LH Cards service worker: makes the app work offline. Version: 81a9051bec */
+const CACHE = 'superanki-81a9051bec';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -23,6 +23,11 @@ self.addEventListener('fetch', e => {
             if (hit) e.waitUntil(net.catch(() => {}));
             return hit || net;
         }));
+        return;
+    }
+    // Léo's animation clips are big and never change under the same name: kept apart (an app update does not clear them), cached copy first
+    if (sameOrigin && url.pathname.includes('/mascot/')) {
+        e.respondWith(caches.open('lh-mascot').then(c => c.match(req).then(hit => hit || fetch(req).then(res => { if (res && res.ok) c.put(req, res.clone()); return res; }))));
         return;
     }
     // fonts and libraries: cached copy first, refreshed in the background

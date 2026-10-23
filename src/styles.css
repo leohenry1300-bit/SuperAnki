@@ -2256,18 +2256,20 @@ html[data-vt="l"]::view-transition-new(root) { animation-name: vtInL; }
 .leo-star { position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s); background: #fff1b8; clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); opacity: 0; animation: leoTwinkle 3.4s ease-in-out infinite; animation-delay: var(--d); z-index: 0; pointer-events: none; }
 @keyframes leoTwinkle { 0%, 100% { opacity: 0; transform: scale(.4) rotate(0); } 45% { opacity: .95; transform: scale(1) rotate(25deg); } 70% { opacity: .3; transform: scale(.7) rotate(40deg); } }
 /* the figure sits on the floor of its slot; every layer shares the same box (the crop of the clips) */
-.leo-pose { position: absolute; left: 50%; bottom: 0; height: 100%; aspect-ratio: var(--ar, 1); max-width: 100%; transform: translateX(-50%); z-index: 1; }
+.leo-pose { position: absolute; left: 0; bottom: 0; width: 100%; aspect-ratio: var(--ar, 1); z-index: 1; }
 .leo-shadow { position: absolute; left: 50%; bottom: 1%; width: 46%; height: 6%; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(closest-side, rgba(20, 8, 50, .45), transparent); z-index: 0; pointer-events: none; }
-.leo-fig { position: absolute; inset: 0; filter: drop-shadow(0 6px 8px rgba(20, 8, 50, .28)); }
+.leo-fig { position: absolute; inset: 0; }
 .lf-still { position: absolute; inset: 0; }
 .lf-still, .lf-clip { max-width: none; background-repeat: no-repeat; background-size: 100% 100%; pointer-events: none; user-select: none; -webkit-user-drag: none; }
 .leo3d[data-state="s1"] .lf-still { background-image: var(--leo-s1); }
 .leo3d[data-state="s0"] .lf-still { background-image: var(--leo-s0); }
 .leo3d[data-state="sleep"] .lf-still { background-image: var(--leo-sleep); }
 .lv-idle .lf-still, .lv-clip .lf-still { visibility: hidden; }
-.lf-clip { position: absolute; }
+.lf-clip { position: absolute; opacity: 0; transition: opacity .14s linear; image-rendering: auto; }
+.lf-clip.on { opacity: 1; }
+.hero .mascot { animation: none; }
 .lf-clip.flip { transform: scaleX(-1); }
-.lf-idle { z-index: 1; }
+.lf-idle { z-index: 1; opacity: 1; transition: none; }
 .lf-play { z-index: 2; }
 .leo-z { display: none; position: absolute; z-index: 2; font-weight: 900; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,.35); animation: leoZ 3s ease-in infinite; opacity: 0; }
 .leo3d[data-state="sleep"] .leo-z { display: block; }
@@ -2285,4 +2287,4 @@ html[data-vt="l"]::view-transition-new(root) { animation-name: vtInL; }
 .summary-mascot { width: 220px; height: 220px; }
 .empty-mascot { width: 160px; height: 160px; }
 .hero { overflow-x: clip; overflow-y: visible; } body { overflow-x: clip; }
-@media (prefers-reduced-motion: reduce) { .leo-glow, .leo-star, .leo-z, .leo-trail, .leo-trail * { animation: none !important; } .leo-star { opacity: .6; } .leo-trail { display: none; } }
+@media (prefers-reduced-motion: reduce) { .lf-clip { transition: none; } .leo-glow, .leo-star, .leo-z, .leo-trail, .leo-trail * { animation: none !important; } .leo-star { opacity: .6; } .leo-trail { display: none; } }

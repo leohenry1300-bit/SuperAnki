@@ -1253,18 +1253,16 @@ class SuperAnki {
                 const g = this.goalsAll().find(x => x.days >= 0 && [0, 1, 2, 3, 5, 7, 14].includes(x.days));
                 if (g && st.examDay !== today + ':' + g.days) { line = leoPick(LEO_SAYS.exam[g.days], { exam: g.name }); cat = 'exam'; mark = { examDay: today + ':' + g.days }; }
             }
-            if (!line && stats.lastStudyDate && st.missedDay !== today && daysBetweenKeys(stats.lastStudyDate, today) >= 2) { line = leoPick('missed'); cat = 'missed'; mark = { missedDay: today }; }
+            if (!line && stats.lastStudyDate && st.missedDay !== today && daysBetweenKeys(stats.lastStudyDate, today) >= 2) { line = leoPick('missed', { gap: daysBetweenKeys(stats.lastStudyDate, today) }); cat = 'missed'; mark = { missedDay: today }; }
             if (!line) return;
             localStorage.setItem('lh_leo_auto', JSON.stringify({ ...st, ...mark }));
-            this.mascotSay(line, { sound: party ? 'leocheer' : 'leo', cat });
-            const m = $('.hero .mascot'); if (m) { m.classList.remove('hop'); void m.offsetWidth; m.classList.add('hop'); }
+            this.mascotSay(line, { cat });
             if (party) { this.confetti(); leoTrail($('.hero .mascot')); }
         } catch { /* ignore */ }
     }
     /* Léo talks: his words replace the sub-title of the home card for a few seconds (typed letter by letter), so he never covers anything */
     mascotSay(text, opts = {}) {
         const hero = $('.hero'), sub = $('.hero .hero-sub'); if (!hero || !sub) return;
-        sfx(opts.sound || 'leo');
         clearInterval(this._typeT); clearTimeout(this._bubbleT);
         /* on a wide screen the words appear in a bubble right next to Léo; on a phone they take the place of the sub-title, which already sits beside him */
         const wide = window.matchMedia('(min-width: 768px)').matches;
@@ -1274,8 +1272,9 @@ class SuperAnki {
             box.classList.remove('out');
         } else { if (!sub.dataset.orig) sub.dataset.orig = sub.innerHTML; sub.classList.add('speaking'); }
         box.textContent = '';
-        const root = $('.hero .leo3d');
-        if (root && !this.calm()) leoPlay(root, opts.clip || leoClipFor(root, opts.cat || root.dataset.mood));
+        const root = $('.hero .leo3d'), clip = root ? (opts.clip || leoClipFor(root, opts.cat || root.dataset.mood, text)) : '';
+        sfx(opts.sound || LEO_VOICE[clip] || 'leo');
+        if (root && !this.calm()) leoPlay(root, clip, { soft: true });
         const stopTalk = () => {};
         let i = 0; const full = [...text];
         const end = () => { stopTalk(); this._bubbleT = setTimeout(() => {
@@ -3837,13 +3836,13 @@ class SuperAnki {
                 this.setSetting('cardSize', ks[i]); if (this.session && this.session.current) this.renderSession(); break;
             }
             case 'mascot': {
-                const m = el.dataset ? el.dataset.mood : 'ready', now = Date.now(), h = new Date().getHours();
+                const m = el.dataset ? el.dataset.mood : 'ready', now = Date.now(), h = new Date().getHours(), streak = this.data.stats.streak || 0;
                 this._mTaps = (this._mTaps || []).filter(t => now - t < 2500); this._mTaps.push(now);
                 const root = el.querySelector && el.querySelector('.leo3d'), asleep = root && root.dataset.state === 'sleep';
-                if (this._mTaps.length >= 5) { this._mTaps = []; this.mascotSay(leoPick('roar'), { sound: 'leoroar', cat: 'roar' }); }
-                else if (this._mTaps.length >= 3) this.mascotSay(leoPick('tap'), { sound: 'leotickle', cat: 'tickle' });
-                else this.mascotSay(leoPick(m === 'calm' && (h >= 23 || h < 5) ? 'night' : m), { cat: asleep ? 'night' : this._mTaps.length === 2 ? 'tap' : m });
-                el.classList && el.classList.remove('hop'); void (el.offsetWidth); el.classList && el.classList.add('hop');
+                if (asleep) this.mascotSay(leoPick('wake'), { cat: 'night' });
+                else if (this._mTaps.length >= 5) { this._mTaps = []; this.mascotSay(leoPick('roar'), { cat: 'roar' }); }
+                else if (this._mTaps.length >= 3) this.mascotSay(leoPick('tap'), { cat: 'tickle' });
+                else this.mascotSay(leoPick(m === 'calm' && (h >= 23 || h < 5) ? 'night' : m, { streak }), { cat: this._mTaps.length === 2 ? 'tap' : m === 'calm' && (h >= 23 || h < 5) ? 'night' : m });
                 break;
             }
             case 'undo': this.undo(); break;
