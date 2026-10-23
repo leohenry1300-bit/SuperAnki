@@ -1991,3 +1991,5 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .summary-ring .ring-in b { font-size: 1.9rem; font-family: var(--font-display); line-height: 1; }
 .summary-ring .ring-in small { color: var(--text-faint); font-size: .72rem; }
 @media (prefers-reduced-motion: reduce) { .summary-ring .rg-fg { animation: none; stroke-dashoffset: calc(100 - var(--p)); } .run-pill { animation: none; } }
+
+.card-row mark { background: color-mix(in srgb, #facc15 55%, transparent); color: inherit; border-radius: 3px; padding: 0 1px; }

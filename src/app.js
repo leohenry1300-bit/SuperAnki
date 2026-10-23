@@ -1639,6 +1639,36 @@ class SuperAnki {
         return { score, fuzzy };
     }
     /* Returns Map(cardId -> match) for the current query over ALL cards, or null when no query */
+    /* words typed in the search box (accents and case ignored) */
+    searchWords() {
+        const q = (this.ui.search || '').trim();
+        if (!q) return [];
+        const pq = this.parseQuery(q);
+        return [...pq.phrases, ...pq.terms].filter(w => w && w.length > 1).sort((a, b) => b.length - a.length);
+    }
+    /* wraps the searched words in <mark> inside an HTML string, touching text only (images, formulas and tags stay intact) */
+    highlightHtml(html, words) {
+        if (!words.length || !html) return html;
+        const box = document.createElement('div'); box.innerHTML = html;
+        const walker = document.createTreeWalker(box, NodeFilter.SHOW_TEXT);
+        const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach(node => {
+            if (node.parentElement && node.parentElement.closest('mark, script, style, .katex, .math')) return;
+            const text = node.nodeValue; let folded = '', map = [];
+            for (let i = 0; i < text.length; i++) { const f = fold(text[i]); for (let k = 0; k < f.length; k++) { folded += f[k]; map.push(i); } }
+            const ranges = [];
+            words.forEach(w => { let at = 0; while ((at = folded.indexOf(w, at)) !== -1) { ranges.push([map[at], map[at + w.length - 1] + 1]); at += w.length; } });
+            if (!ranges.length) return;
+            ranges.sort((a, b) => a[0] - b[0]);
+            const merged = [];
+            ranges.forEach(r => { const l = merged[merged.length - 1]; if (l && r[0] <= l[1]) l[1] = Math.max(l[1], r[1]); else merged.push([...r]); });
+            const frag = document.createDocumentFragment(); let pos = 0;
+            merged.forEach(([a, b]) => { if (a > pos) frag.append(text.slice(pos, a)); const m = document.createElement('mark'); m.textContent = text.slice(a, b); frag.append(m); pos = b; });
+            if (pos < text.length) frag.append(text.slice(pos));
+            node.replaceWith(frag);
+        });
+        return box.innerHTML;
+    }
     searchMatches() {
         const raw = this.ui.search.trim();
         if (!raw) return null;
@@ -1732,6 +1762,7 @@ class SuperAnki {
         const chips = chipDefs.map(([k, l]) => `<button class="chip ${ui.filter === k ? 'active' : ''}" data-action="filter" data-filter="${k}">${k !== 'all' ? `<span class="dot" style="background:${STATUS[k].color}"></span>` : ''}${l} <span class="count">${statusCounts[k]}</span></button>`).join('');
         const shown = rows.slice(0, ui.limit);
         const showDeck = ui.deck === 'all' || ui.deck === 'errors';
+        const hw = this.searchWords();
         const list = shown.map(({ c, s }) => {
             const dk = showDeck ? this.deck(c.deckId) : null;
             const when = s === 'susp' ? 'Suspendue' : s === 'buried' ? 'Enfouie jusqu\'à demain' : c.state === 'new' ? 'Jamais vue' : s === 'due' ? 'À revoir maintenant' : `Révision ${fmtRelativeFuture(c.due, now)}`;
@@ -1741,8 +1772,8 @@ class SuperAnki {
                 ${ui.selMode ? `<span class="row-check ${checked ? 'on' : ''}">${checked ? ic('check') : ''}</span>` : ''}
                 <span class="dot" style="background:${STATUS[s].color}" title="${STATUS[s].one}"></span>
                 <div class="body">
-                    <div class="q rich">${c.front}</div>
-                    <div class="a">${esc(truncate(stripHtml(c.back), 220)) || (hasImage(c.back) ? '[image]' : '')}</div>
+                    <div class="q rich">${this.highlightHtml(c.front, hw)}</div>
+                    <div class="a">${this.highlightHtml(esc(truncate(stripHtml(c.back), 220)), hw) || (hasImage(c.back) ? '[image]' : '')}</div>
                     <div class="meta">
                         ${c.flag ? `<span style="color:${FLAGS[c.flag].color}" title="Drapeau ${FLAGS[c.flag].name.toLowerCase()}">${ic('flag', 'i-flag')}</span>` : ''}${c.marked ? `<span style="color:#eab308" title="Marquée">${ic('star', 'i-fill')}</span>` : ''}
                         ${dk ? `<span class="tag">${esc(dk.emoji)} ${esc(this.deckPath(dk.id))}</span>` : ''}
