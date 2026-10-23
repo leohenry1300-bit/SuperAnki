@@ -1915,3 +1915,20 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .logo-mark { flex: none; min-width: 36px; }
 @media (max-width: 767px) { .brand { flex: 0 1 auto; } .brand > span:last-child { white-space: nowrap; } }
 @media (max-width: 379px) { .brand > span:last-child { display: none; } }
+
+/* ---- objective form ---- */
+.goal-form { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 12px; }
+.goal-form .gf-title { font-weight: 800; }
+.goal-form .gf-field { display: flex; flex-direction: column; gap: 6px; }
+.goal-form .gf-field .input, .goal-form .gf-field .select { width: 100%; }
+.goal-form input[type=date] { min-height: 44px; }
+.goal-form .gf-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.gf-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 6px 6px 12px; border-radius: 999px; background: var(--primary-soft); color: var(--primary); font-weight: 700; font-size: .85rem; max-width: 100%; }
+.gf-chip button { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; color: inherit; }
+.gf-chip .i { width: 14px; height: 14px; }
+.goal-form .gf-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.goal-form .gf-actions .btn-primary { flex: 1; }
+.goal-row.editing { outline: 2px solid var(--primary); }
+.goal-row .gr-deck { overflow-wrap: anywhere; }
+.ex-decks { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.ex-deck { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }

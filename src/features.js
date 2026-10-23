@@ -825,7 +825,7 @@ Object.assign(SuperAnki.prototype, {
         const s = this.data.settings;
         if (!Array.isArray(s.goals)) s.goals = [];
         if (!s.goals.length && s.goalDate && /^\d{4}-\d{2}-\d{2}$/.test(s.goalDate)) { s.goals = [{ id: uid('g'), name: s.goalName || 'Objectif', date: s.goalDate }]; s.goalDate = ''; s.goalName = ''; }
-        return s.goals.filter(g => g && /^\d{4}-\d{2}-\d{2}$/.test(g.date));
+        return s.goals.filter(g => g && /^\d{4}-\d{2}-\d{2}$/.test(g.date)).map(g => ({ ...g, decks: (Array.isArray(g.decks) ? g.decks : g.deck ? [g.deck] : []).filter(id => this.deck(id)) }));
     },
     goalsAll() {
         const today = dayKey();
@@ -844,15 +844,18 @@ Object.assign(SuperAnki.prototype, {
         const all = this.goalsAll().filter(g => g.days >= 0);
         if (!all.length) return '';
         const rows = all.slice(0, 6).map(g => {
-            const d = g.deck ? this.deck(g.deck) : null, left = g.days === 0 ? "aujourd'hui" : `J-${g.days}`, soon = g.days <= 7;
+            const ds = g.decks.map(id => this.deck(id)).filter(Boolean), left = g.days === 0 ? "aujourd'hui" : `J-${g.days}`, soon = g.days <= 7;
             let body = '';
-            if (d) {
-                const cards = this.poolFor([d.id]), total = cards.length, seen = cards.filter(c => (c.right || 0) + (c.wrong || 0) > 0 || c.state !== 'new').length, rest = total - seen;
+            if (ds.length) {
+                const cards = this.poolFor(ds.map(d => d.id)), total = cards.length, seen = cards.filter(c => (c.right || 0) + (c.wrong || 0) > 0 || c.state !== 'new').length, rest = total - seen;
                 const perDay = Math.ceil(rest / Math.max(g.days, 1));
-                body = `<div class="ex-sub">${esc(d.emoji)} ${esc(d.name)} · <b>${seen}</b> / ${total} cartes vues</div>
+                const btns = d => `<button class="btn btn-soft btn-sm" data-action="exam-go" data-mode="ordered" data-deck="${esc(d.id)}">${ic('list')}Ordre</button><button class="btn btn-soft btn-sm" data-action="exam-go" data-mode="free" data-deck="${esc(d.id)}">${ic('repeat')}Libre</button>`;
+                body = `<div class="ex-sub">${ds.length === 1 ? `${esc(ds[0].emoji)} ${esc(ds[0].name)}` : plural(ds.length, 'paquet')} · <b>${seen}</b> / ${total} cartes vues</div>
                     <div class="progress"><i style="width:${total ? seen / total * 100 : 0}%;background:var(--primary)"></i></div>
                     <div class="ex-plan">${rest > 0 ? `≈ <b>${plural(perDay, 'carte')} par jour</b> pour tout voir avant l'examen` : '✔ Tout vu : repasse tout une dernière fois en Libre'}</div>
-                    <div class="ex-actions"><button class="btn btn-soft btn-sm" data-action="exam-go" data-mode="ordered" data-deck="${esc(d.id)}">${ic('list')}Ordre</button><button class="btn btn-soft btn-sm" data-action="exam-go" data-mode="free" data-deck="${esc(d.id)}">${ic('repeat')}Libre</button><button class="link" data-action="open-deck" data-deck="${esc(d.id)}">Voir le paquet</button></div>`;
+                    ${ds.length === 1
+                        ? `<div class="ex-actions">${btns(ds[0])}<button class="link" data-action="open-deck" data-deck="${esc(ds[0].id)}">Voir le paquet</button></div>`
+                        : `<div class="ex-decks">${ds.map(d => `<div class="ex-deck"><button class="link" data-action="open-deck" data-deck="${esc(d.id)}">${esc(d.emoji)} ${esc(d.name)}</button><span class="ex-actions">${btns(d)}</span></div>`).join('')}</div>`}`;
             }
             return `<div class="panel exam-row ${soon ? 'soon' : ''}"><div class="ex-top"><b>${esc(g.name)}</b><span class="goal-days ${soon ? 'soon' : ''}">${left}</span></div>${body}</div>`;
         }).join('');

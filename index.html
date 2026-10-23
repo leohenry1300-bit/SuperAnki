@@ -1935,6 +1935,23 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 @media (max-width: 767px) { .brand { flex: 0 1 auto; } .brand > span:last-child { white-space: nowrap; } }
 @media (max-width: 379px) { .brand > span:last-child { display: none; } }
 
+/* ---- objective form ---- */
+.goal-form { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 12px; }
+.goal-form .gf-title { font-weight: 800; }
+.goal-form .gf-field { display: flex; flex-direction: column; gap: 6px; }
+.goal-form .gf-field .input, .goal-form .gf-field .select { width: 100%; }
+.goal-form input[type=date] { min-height: 44px; }
+.goal-form .gf-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.gf-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 6px 6px 12px; border-radius: 999px; background: var(--primary-soft); color: var(--primary); font-weight: 700; font-size: .85rem; max-width: 100%; }
+.gf-chip button { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; color: inherit; }
+.gf-chip .i { width: 14px; height: 14px; }
+.goal-form .gf-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.goal-form .gf-actions .btn-primary { flex: 1; }
+.goal-row.editing { outline: 2px solid var(--primary); }
+.goal-row .gr-deck { overflow-wrap: anywhere; }
+.ex-decks { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.ex-deck { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+
 </style>
 </head>
 <body>
@@ -3476,6 +3493,27 @@ class SuperAnki {
         if (id === 'errors') return '🎯 Mes erreurs';
         const d = this.deck(id); return d ? `${d.emoji} ${d.name}` : '📂 Paquets';
     }
+    /* add / edit form of an objective (name, date, linked decks) */
+    goalFormHtml() {
+        const f = this.ui.goalForm || { id: null, name: '', date: '', decks: [] };
+        const free = this.sortedDecks().filter(d => !f.decks.includes(d.id));
+        return `<div class="goal-form">
+            <p class="gf-title">${f.id ? 'Modifier l\'objectif' : 'Nouvel objectif'}</p>
+            <label class="gf-field"><span class="label">Nom</span><input class="input" id="goal-name" placeholder="Ex. Partiel de logistique" maxlength="40" value="${esc(f.name)}"></label>
+            <label class="gf-field"><span class="label">Date</span><input class="input" id="goal-date" type="date" value="${esc(f.date)}"></label>
+            <div class="gf-field"><span class="label">Paquet(s) lié(s) <span class="faint">(facultatif)</span></span>
+                ${f.decks.length ? `<div class="gf-chips">${f.decks.map(id => this.deck(id) ? `<span class="gf-chip">${esc(this.deck(id).emoji)} ${esc(this.deck(id).name)}<button type="button" data-action="goal-deck-del" data-deck="${esc(id)}" aria-label="Retirer ${esc(this.deck(id).name)}">${ic('x')}</button></span>` : '').join('')}</div>` : ''}
+                <select class="select" id="goal-deck" data-input="goal-deck" aria-label="Ajouter un paquet lié"><option value="">${f.decks.length ? '+ Ajouter un autre paquet' : '+ Choisir un paquet'}</option>${free.map(d => `<option value="${esc(d.id)}">${esc(d.emoji)} ${esc(this.deckPath(d.id).split(' › ').slice(-2).join(' › '))}</option>`).join('')}</select>
+            </div>
+            <div class="gf-actions">${f.id ? '<button class="btn btn-soft btn-sm" data-action="goal-cancel">Annuler</button>' : ''}<button class="btn btn-primary btn-sm" data-action="goal-add">${ic(f.id ? 'check' : 'plus')}${f.id ? 'Enregistrer' : 'Ajouter'}</button></div>
+        </div>`;
+    }
+    goalFormSync() {
+        const f = this.ui.goalForm = this.ui.goalForm || { id: null, name: '', date: '', decks: [] };
+        const n = $('#goal-name'), d = $('#goal-date');
+        if (n) f.name = n.value; if (d) f.date = d.value;
+        return f;
+    }
     /* phone: the deck picker is a sheet that only opens on request; desktop: always shown */
     treeIsOpen() {
         if (window.matchMedia('(max-width: 960px)').matches) return this.ui.treeOpen === true;
@@ -3827,13 +3865,9 @@ class SuperAnki {
             <div class="panel panel-pad set-section" id="goals-panel">
                 <h3>${ic('target')} Objectifs / examens</h3>
                 <p class="small muted">Chaque objectif a son compte à rebours sur l'accueil. Ajoute-en autant que tu veux.</p>
-                <div class="goal-list">${this.goalsAll().map(g => `<div class="goal-row ${g.days < 0 ? 'past' : ''}"><div class="gr-main"><b>${esc(g.name)}</b><span class="small muted">${esc(this.goalDateLabel(g.date))}</span>${g.deck && this.deck(g.deck) ? `<span class="small gr-deck">${esc(this.deck(g.deck).emoji)} ${esc(this.deck(g.deck).name)}</span>` : ''}</div><span class="goal-days ${g.days <= 7 && g.days >= 0 ? 'soon' : ''}">${g.days > 0 ? `J-${g.days}` : g.days === 0 ? 'Aujourd\'hui' : 'Terminé'}</span><button class="icon-btn" data-action="goal-del" data-id="${esc(g.id)}" title="Supprimer cet objectif" aria-label="Supprimer ${esc(g.name)}">${ic('trash')}</button></div>`).join('') || '<p class="small muted" style="margin:6px 0">Aucun objectif pour l\'instant.</p>'}</div>
-                <div class="goal-add">
-                    <input class="input" id="goal-name" placeholder="Nom de l'objectif" aria-label="Nom de l'objectif" maxlength="40">
-                    <input class="input" id="goal-date" aria-label="Date de l'objectif" type="date">
-                    <select class="select" id="goal-deck" aria-label="Cours lié (facultatif)"><option value="">Cours lié : aucun</option>${this.sortedDecks().map(d => `<option value="${esc(d.id)}">${esc(d.emoji)} ${esc(this.deckPath(d.id).split(' › ').slice(-2).join(' › '))}</option>`).join('')}</select>
-                    <button class="btn btn-primary btn-sm" data-action="goal-add">${ic('plus')}Ajouter</button>
-                </div>
+                <div class="goal-list">${this.goalsAll().map(g => `<div class="goal-row ${g.days < 0 ? 'past' : ''} ${this.ui.goalForm && this.ui.goalForm.id === g.id ? 'editing' : ''}"><div class="gr-main"><b>${esc(g.name)}</b><span class="small muted">${esc(this.goalDateLabel(g.date))}</span>${g.decks.length ? `<span class="small gr-deck">${g.decks.map(id => esc(this.deck(id).emoji + ' ' + this.deck(id).name)).join(' · ')}</span>` : ''}</div><span class="goal-days ${g.days <= 7 && g.days >= 0 ? 'soon' : ''}">${g.days > 0 ? `J-${g.days}` : g.days === 0 ? 'Aujourd\'hui' : 'Terminé'}</span><button class="icon-btn" data-action="goal-edit" data-id="${esc(g.id)}" title="Modifier cet objectif" aria-label="Modifier ${esc(g.name)}">${ic('pencil')}</button><button class="icon-btn" data-action="goal-del" data-id="${esc(g.id)}" title="Supprimer cet objectif" aria-label="Supprimer ${esc(g.name)}">${ic('trash')}</button></div>`).join('') || '<p class="small muted" style="margin:6px 0">Aucun objectif pour l\'instant.</p>'}</div>
+                ${this.goalFormHtml()}
+            </div>
             </div>
 
             <div class="panel panel-pad set-section" id="study-options">
@@ -5177,6 +5211,7 @@ class SuperAnki {
             if (k === 'sort') { this.ui.sort = el.value; this.renderDeckPanel(); }
             else if (k === 'quick-tag') this.quickQueryTag(el.value);
             else if (k === 'deck-sort') { this.setSetting('deckSort', el.value); this.renderDashboard(); }
+            else if (k === 'goal-deck') { if (el.value) { const f = this.goalFormSync(); if (!f.decks.includes(el.value)) f.decks.push(el.value); this.renderSettings(); } }
             else if (k === 'stats-deck') { this.statsUi.deck = el.value; this.renderStats(); }
             else if (k === 'stats-check') { this.statsUi[el.dataset.key] = el.checked; this.renderStats(); }
             else if (k === 'toggle') {
@@ -5492,15 +5527,28 @@ class SuperAnki {
             case 'tree-all': this.setAllOpen(ds.key, ds.open === '1'); this.renderDeckSidebar(); break;
             case 'goals-manage': this.go('settings'); setTimeout(() => { const g = $('#goals-panel'); if (g) { const sp = g.closest('details'); if (sp) sp.open = true; g.scrollIntoView({ block: 'start' }); window.scrollBy(0, -120); } }, 80); break;
             case 'goal-add': {
-                const name = (($('#goal-name') || {}).value || '').trim(), date = ($('#goal-date') || {}).value || '';
-                if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { this.toast('Choisis une date pour ton objectif.', 'warning'); break; }
-                const deck = ($('#goal-deck') || {}).value || '';
-                this.data.settings.goals = [...this.goalsRaw(), { id: uid('g'), name: name || (deck && this.deck(deck) ? this.deck(deck).name : 'Objectif'), date, ...(deck && this.deck(deck) ? { deck } : {}) }];
+                const f = this.goalFormSync();
+                if (!/^\d{4}-\d{2}-\d{2}$/.test(f.date)) { this.toast('Choisis une date pour ton objectif.', 'warning'); break; }
+                const decks = f.decks.filter(id => this.deck(id));
+                const name = f.name.trim() || (decks.length ? this.deck(decks[0]).name : 'Objectif');
+                const rec = { id: f.id || uid('g'), name, date: f.date, decks };
+                const cur = this.goalsRaw().map(g => { const { deck, ...rest } = g; return rest; });
+                this.data.settings.goals = f.id ? cur.map(g => (g.id === f.id ? rec : g)) : [...cur, rec];
                 this.data.settings.settingsMod = Date.now();
+                this.ui.goalForm = null;
                 this.save(); this.renderSettings();
-                this.toast('Objectif ajouté', 'success', ic('target'));
+                this.toast(f.id ? 'Objectif modifié' : 'Objectif ajouté', 'success', ic('target'));
                 break;
             }
+            case 'goal-edit': {
+                const g = this.goalsRaw().find(x => x.id === ds.id); if (!g) break;
+                this.ui.goalForm = { id: g.id, name: g.name, date: g.date, decks: [...g.decks] };
+                this.renderSettings();
+                setTimeout(() => { const el = $('.goal-form'); if (el) { el.scrollIntoView({ block: 'center' }); const n = $('#goal-name'); n && n.focus(); } }, 60);
+                break;
+            }
+            case 'goal-cancel': this.ui.goalForm = null; this.renderSettings(); break;
+            case 'goal-deck-del': { const f = this.goalFormSync(); f.decks = f.decks.filter(id => id !== ds.deck); this.renderSettings(); break; }
             case 'goal-del': {
                 this.data.settings.goals = this.goalsRaw().filter(g => g.id !== ds.id);
                 this.data.settings.settingsMod = Date.now();
@@ -7083,7 +7131,7 @@ Object.assign(SuperAnki.prototype, {
         const s = this.data.settings;
         if (!Array.isArray(s.goals)) s.goals = [];
         if (!s.goals.length && s.goalDate && /^\d{4}-\d{2}-\d{2}$/.test(s.goalDate)) { s.goals = [{ id: uid('g'), name: s.goalName || 'Objectif', date: s.goalDate }]; s.goalDate = ''; s.goalName = ''; }
-        return s.goals.filter(g => g && /^\d{4}-\d{2}-\d{2}$/.test(g.date));
+        return s.goals.filter(g => g && /^\d{4}-\d{2}-\d{2}$/.test(g.date)).map(g => ({ ...g, decks: (Array.isArray(g.decks) ? g.decks : g.deck ? [g.deck] : []).filter(id => this.deck(id)) }));
     },
     goalsAll() {
         const today = dayKey();
@@ -7102,15 +7150,18 @@ Object.assign(SuperAnki.prototype, {
         const all = this.goalsAll().filter(g => g.days >= 0);
         if (!all.length) return '';
         const rows = all.slice(0, 6).map(g => {
-            const d = g.deck ? this.deck(g.deck) : null, left = g.days === 0 ? "aujourd'hui" : `J-${g.days}`, soon = g.days <= 7;
+            const ds = g.decks.map(id => this.deck(id)).filter(Boolean), left = g.days === 0 ? "aujourd'hui" : `J-${g.days}`, soon = g.days <= 7;
             let body = '';
-            if (d) {
-                const cards = this.poolFor([d.id]), total = cards.length, seen = cards.filter(c => (c.right || 0) + (c.wrong || 0) > 0 || c.state !== 'new').length, rest = total - seen;
+            if (ds.length) {
+                const cards = this.poolFor(ds.map(d => d.id)), total = cards.length, seen = cards.filter(c => (c.right || 0) + (c.wrong || 0) > 0 || c.state !== 'new').length, rest = total - seen;
                 const perDay = Math.ceil(rest / Math.max(g.days, 1));
-                body = `<div class="ex-sub">${esc(d.emoji)} ${esc(d.name)} · <b>${seen}</b> / ${total} cartes vues</div>
+                const btns = d => `<button class="btn btn-soft btn-sm" data-action="exam-go" data-mode="ordered" data-deck="${esc(d.id)}">${ic('list')}Ordre</button><button class="btn btn-soft btn-sm" data-action="exam-go" data-mode="free" data-deck="${esc(d.id)}">${ic('repeat')}Libre</button>`;
+                body = `<div class="ex-sub">${ds.length === 1 ? `${esc(ds[0].emoji)} ${esc(ds[0].name)}` : plural(ds.length, 'paquet')} · <b>${seen}</b> / ${total} cartes vues</div>
                     <div class="progress"><i style="width:${total ? seen / total * 100 : 0}%;background:var(--primary)"></i></div>
                     <div class="ex-plan">${rest > 0 ? `≈ <b>${plural(perDay, 'carte')} par jour</b> pour tout voir avant l'examen` : '✔ Tout vu : repasse tout une dernière fois en Libre'}</div>
-                    <div class="ex-actions"><button class="btn btn-soft btn-sm" data-action="exam-go" data-mode="ordered" data-deck="${esc(d.id)}">${ic('list')}Ordre</button><button class="btn btn-soft btn-sm" data-action="exam-go" data-mode="free" data-deck="${esc(d.id)}">${ic('repeat')}Libre</button><button class="link" data-action="open-deck" data-deck="${esc(d.id)}">Voir le paquet</button></div>`;
+                    ${ds.length === 1
+                        ? `<div class="ex-actions">${btns(ds[0])}<button class="link" data-action="open-deck" data-deck="${esc(ds[0].id)}">Voir le paquet</button></div>`
+                        : `<div class="ex-decks">${ds.map(d => `<div class="ex-deck"><button class="link" data-action="open-deck" data-deck="${esc(d.id)}">${esc(d.emoji)} ${esc(d.name)}</button><span class="ex-actions">${btns(d)}</span></div>`).join('')}</div>`}`;
             }
             return `<div class="panel exam-row ${soon ? 'soon' : ''}"><div class="ex-top"><b>${esc(g.name)}</b><span class="goal-days ${soon ? 'soon' : ''}">${left}</span></div>${body}</div>`;
         }).join('');
