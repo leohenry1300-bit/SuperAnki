@@ -1166,8 +1166,8 @@ class SuperAnki {
         ind.innerHTML = '<svg class="i" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg>'; document.body.appendChild(ind);
         let busy = false, d = 0;
         const ok = () => !busy && !this.session && !this.ex && !document.body.classList.contains('deck-sheet') && !this.modals.length && ['dashboard', 'decks', 'stats'].includes(this.view) && window.scrollY <= 0;
-        const show = raw => {
-            d = Math.min(Math.max(raw, 0), 140) * .6; ind.style.opacity = Math.min(1, d / 60);
+        const show = (raw, k = .6) => {   // k: how much of the movement counts (finger .6, mouse .2, trackpad .1 = you really have to pull a long way)
+            d = Math.min(Math.max(raw, 0) * k, 62); ind.style.opacity = Math.min(1, d / 60);
             ind.style.transform = `translate(-50%, ${d}px) rotate(${d * 4}deg)`; ind.classList.toggle('ready', d >= 54);
         };
         const hide = () => { ind.classList.remove('spin', 'ready'); ind.style.opacity = 0; ind.style.transform = 'translate(-50%, 0)'; d = 0; };
@@ -1200,7 +1200,7 @@ class SuperAnki {
             my0 = e.clientY; mon = true; d = 0;
         });
         document.addEventListener('selectstart', e => { if (mon) e.preventDefault(); });
-        document.addEventListener('mousemove', e => { if (mon) show(e.clientY - my0); });
+        document.addEventListener('mousemove', e => { if (mon) show(e.clientY - my0, .2); });
         const mup = () => { if (!mon) return; mon = false; release(); };
         document.addEventListener('mouseup', mup); window.addEventListener('blur', () => { if (mon) { mon = false; hide(); } });
         /* trackpad / wheel: keep scrolling up while already at the top */
@@ -1209,8 +1209,8 @@ class SuperAnki {
         document.addEventListener('wheel', e => {
             if (performance.now() - lastMove < 600) { acc = 0; return; }   // the page just scrolled up to the top: its inertia must not count as a pull
             if (!ok() || e.deltaY >= 0 || e.ctrlKey) { if (e.deltaY > 0) { acc = 0; if (!busy) hide(); } return; }
-            acc += -e.deltaY; show(acc);
-            clearTimeout(idle); idle = setTimeout(() => { const go = acc; acc = 0; if (go * .6 >= 54) { d = 54; release(); } else hide(); }, 220);
+            acc += -e.deltaY; show(acc, .1);
+            clearTimeout(idle); idle = setTimeout(() => { const go = acc; acc = 0; if (go * .1 >= 54) { d = 54; release(); } else hide(); }, 220);
         }, { passive: true });
     }
     mascotSvg(mood = 'ready', opts = {}) { return leoSvg(mood, opts); }
