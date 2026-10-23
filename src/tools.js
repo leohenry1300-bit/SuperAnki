@@ -37,7 +37,7 @@ Object.assign(SuperAnki.prototype, {
             <div class="mode-grid filter-grid">${fl.map(f => {
                 const cards = this.queryCards(f.query).filter(c => !c.suspended), due = cards.filter(c => cardStatus(c, now, eod) === 'due').length;
                 return `<div class="panel mode-tile filter-tile" style="--c:#0ea5e9;cursor:default"><span class="mode-ico">${ic('filter')}</span><span class="grow"><h4>${esc(f.name)}</h4><p>${plural(cards.length, 'carte')} · ${due} à réviser</p></span>
-                    <button class="btn btn-primary btn-sm" data-action="filter-start" data-id="${esc(f.id)}" ${cards.length ? '' : 'disabled'}>${ic('play')}</button>
+                    <button class="btn btn-primary btn-sm" data-action="filter-start" data-id="${esc(f.id)}" aria-label="Lancer : ${esc(f.name)}" title="Lancer la révision" ${cards.length ? '' : 'disabled'}>${ic('play')}</button>
                     <button class="icon-btn" data-action="filter-edit" data-id="${esc(f.id)}" title="Modifier" aria-label="Modifier">${ic('pencil')}</button></div>`;
             }).join('')}</div></div>`;
     },

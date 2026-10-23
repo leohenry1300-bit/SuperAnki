@@ -1722,6 +1722,16 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .deck-pick b { min-width: 0; flex: 1; text-align: left; }
 .deck-panel-head, .deck-panel-head > * { min-width: 0; }
 
+/* comfortable touch targets on phones */
+@media (max-width: 767px) {
+  .icon-btn-sm, .pin-btn { min-width: 40px; min-height: 40px; }
+  .sync-dot { min-width: 40px; min-height: 40px; }
+  .dl-tools button { min-width: 36px; min-height: 36px; }
+  .chip { min-height: 36px; }
+  .seg-sm button, .segmented.seg-sm button { min-height: 36px; }
+  .deck-foot .modes .icon-btn { width: 40px; height: 40px; }
+}
+
 </style>
 </head>
 <body>
@@ -7605,7 +7615,7 @@ Object.assign(SuperAnki.prototype, {
             <div class="mode-grid filter-grid">${fl.map(f => {
                 const cards = this.queryCards(f.query).filter(c => !c.suspended), due = cards.filter(c => cardStatus(c, now, eod) === 'due').length;
                 return `<div class="panel mode-tile filter-tile" style="--c:#0ea5e9;cursor:default"><span class="mode-ico">${ic('filter')}</span><span class="grow"><h4>${esc(f.name)}</h4><p>${plural(cards.length, 'carte')} · ${due} à réviser</p></span>
-                    <button class="btn btn-primary btn-sm" data-action="filter-start" data-id="${esc(f.id)}" ${cards.length ? '' : 'disabled'}>${ic('play')}</button>
+                    <button class="btn btn-primary btn-sm" data-action="filter-start" data-id="${esc(f.id)}" aria-label="Lancer : ${esc(f.name)}" title="Lancer la révision" ${cards.length ? '' : 'disabled'}>${ic('play')}</button>
                     <button class="icon-btn" data-action="filter-edit" data-id="${esc(f.id)}" title="Modifier" aria-label="Modifier">${ic('pencil')}</button></div>`;
             }).join('')}</div></div>`;
     },

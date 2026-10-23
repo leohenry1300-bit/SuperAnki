@@ -1702,3 +1702,13 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .deck-pick { min-width: 0; max-width: 100%; overflow: hidden; }
 .deck-pick b { min-width: 0; flex: 1; text-align: left; }
 .deck-panel-head, .deck-panel-head > * { min-width: 0; }
+
+/* comfortable touch targets on phones */
+@media (max-width: 767px) {
+  .icon-btn-sm, .pin-btn { min-width: 40px; min-height: 40px; }
+  .sync-dot { min-width: 40px; min-height: 40px; }
+  .dl-tools button { min-width: 36px; min-height: 36px; }
+  .chip { min-height: 36px; }
+  .seg-sm button, .segmented.seg-sm button { min-height: 36px; }
+  .deck-foot .modes .icon-btn { width: 40px; height: 40px; }
+}
