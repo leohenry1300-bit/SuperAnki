@@ -250,6 +250,8 @@ print("toeic bank:", {k: len(v) for k, v in toeic.items()}, "questions:",
       sum(len(v) if k in ("p1", "p2", "p5") else sum(len(i["qs"]) for i in v) for k, v in toeic.items()))
 
 
+import time
+BUILD = int(time.time() * 1000)
 html = f"""<!DOCTYPE html>
 <html lang="fr" data-theme="clair">
 <head>
@@ -260,7 +262,7 @@ html = f"""<!DOCTYPE html>
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="LH Cards">
 <meta name="theme-color" content="#4f46e5">
-<meta name="app-build" content="{int(__import__("time").time()*1000)}">
+<meta name="app-build" content="{BUILD}">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="description" content="LH Cards : cartes mémoire avec répétition espacée, quiz, écriture et chrono.">
 {read("head-icons.html").strip()}
@@ -315,5 +317,6 @@ print(f"index.html written ({len(html.encode('utf-8')) // 1024} Ko)")
 
 import hashlib
 ver = hashlib.sha1(html.encode("utf-8")).hexdigest()[:10]
+(ROOT / "version.json").write_text('{"build": %d}' % BUILD, encoding="utf-8")
 (ROOT / "sw.js").write_text((ROOT / "sw.template.js").read_text(encoding="utf-8").replace("__VERSION__", ver), encoding="utf-8")
 print("sw.js written, version", ver)
