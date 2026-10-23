@@ -1640,3 +1640,24 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .train .progress { height: 7px; }
 .train small { font-size: .74rem; color: var(--text-muted); font-weight: 600; }
 .sub-bar small { white-space: normal; }
+
+/* ---- centering pass: content of buttons, tiles and chips sits exactly in the middle ---- */
+.btn, .chip { justify-content: center; text-align: center; }
+.btn > *, .chip > * { flex: none; }
+.status-tile, .mode-tile:not(.wide):not(.filter-tile) { justify-content: center; }
+.audio-bar { justify-content: center; }
+.hero-actions .btn { white-space: nowrap; }
+.tag { text-align: center; }
+.session-card .tag, .fc-path, .fc-deck { text-align: center; }
+@media (max-width: 767px) {
+  .hero-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+  .hero-actions .btn { width: 100%; padding-left: 10px; padding-right: 10px; font-size: .95rem; }
+  .mode-tile:not(.wide):not(.filter-tile), .status-tile { align-items: center; text-align: center; }
+  .filter-tile .grow, .mode-tile.wide .grow { text-align: left; }
+  .tq-part { text-align: left; }
+}
+@media (max-width: 767px) { .hero-actions .btn { font-size: .9rem; gap: 6px; padding-left: 8px; padding-right: 8px; } .hero-actions .btn .i { width: 18px; height: 18px; } }
+
+.fc-top { flex-direction: column; justify-content: center; gap: 4px; text-align: center; }
+.fc-top .fc-badges:empty { display: none; }
+@media (max-width: 767px) { .hero-actions .btn { font-size: .86rem; } }

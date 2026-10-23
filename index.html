@@ -1660,6 +1660,27 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .train small { font-size: .74rem; color: var(--text-muted); font-weight: 600; }
 .sub-bar small { white-space: normal; }
 
+/* ---- centering pass: content of buttons, tiles and chips sits exactly in the middle ---- */
+.btn, .chip { justify-content: center; text-align: center; }
+.btn > *, .chip > * { flex: none; }
+.status-tile, .mode-tile:not(.wide):not(.filter-tile) { justify-content: center; }
+.audio-bar { justify-content: center; }
+.hero-actions .btn { white-space: nowrap; }
+.tag { text-align: center; }
+.session-card .tag, .fc-path, .fc-deck { text-align: center; }
+@media (max-width: 767px) {
+  .hero-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+  .hero-actions .btn { width: 100%; padding-left: 10px; padding-right: 10px; font-size: .95rem; }
+  .mode-tile:not(.wide):not(.filter-tile), .status-tile { align-items: center; text-align: center; }
+  .filter-tile .grow, .mode-tile.wide .grow { text-align: left; }
+  .tq-part { text-align: left; }
+}
+@media (max-width: 767px) { .hero-actions .btn { font-size: .9rem; gap: 6px; padding-left: 8px; padding-right: 8px; } .hero-actions .btn .i { width: 18px; height: 18px; } }
+
+.fc-top { flex-direction: column; justify-content: center; gap: 4px; text-align: center; }
+.fc-top .fc-badges:empty { display: none; }
+@media (max-width: 767px) { .hero-actions .btn { font-size: .86rem; } }
+
 </style>
 </head>
 <body>
@@ -3832,7 +3853,7 @@ class SuperAnki {
             <div class="pbar"><i style="width:${progress}%"></i></div>
             <div class="panel flashcard" ${s.revealed || typeMode ? '' : 'data-action="reveal" style="cursor:pointer"'}>
                 <div class="fc-top">
-                    <span class="tag">${esc(deck ? deck.emoji + ' ' + this.deckPath(deck.id) : '')}</span>
+                    <span class="tag" title="${esc(deck ? this.deckPath(deck.id) : '')}">${esc(deck ? deck.emoji + ' ' + this.deckPath(deck.id).split(' › ').slice(-2).join(' › ') : '')}</span>
                     <span class="tiny faint fc-badges">${card.flag ? `<span style="color:${FLAGS[card.flag].color}" title="${FLAGS[card.flag].name}">${ic('flag', 'i-flag')}</span>` : ''}${card.marked ? `<span style="color:#eab308" title="Marquée">${ic('star', 'i-fill')}</span>` : ''}${card.state === 'new' ? 'Nouvelle' : card.errors ? `${ic('target')} ${plural(card.errors, 'erreur')}` : ''}</span>
                 </div>
                 <div class="fc-content fc-front rich">${card.front}</div>
