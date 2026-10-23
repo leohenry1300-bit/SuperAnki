@@ -1241,7 +1241,7 @@ class SuperAnki {
             localStorage.setItem('lh_leo_auto', JSON.stringify({ ...st, ...mark }));
             this.mascotSay(line, { sound: party ? 'leocheer' : 'leo' });
             const m = $('.hero .mascot'); if (m) { m.classList.remove('hop'); void m.offsetWidth; m.classList.add('hop'); }
-            if (party) this.confetti();
+            if (party) { this.confetti(); leoTrail($('.hero .mascot')); }
         } catch { /* ignore */ }
     }
     /* Léo talks: his words replace the sub-title of the home card for a few seconds (typed letter by letter), so he never covers anything */
@@ -1257,33 +1257,16 @@ class SuperAnki {
             box.classList.remove('out');
         } else { if (!sub.dataset.orig) sub.dataset.orig = sub.innerHTML; sub.classList.add('speaking'); }
         box.textContent = '';
+        const pose = $('.leo-ready .leo-pose'); clearInterval(this._mouthT);
+        if (pose && !this.calm()) { let o = false; this._mouthT = setInterval(() => { o = !o; pose.classList.toggle('talk', o); }, 170); }
+        const stopTalk = () => { clearInterval(this._mouthT); const q = $('.leo-ready .leo-pose'); if (q) q.classList.remove('talk'); };
         let i = 0; const full = [...text];
-        const end = () => { this._bubbleT = setTimeout(() => {
+        const end = () => { stopTalk(); this._bubbleT = setTimeout(() => {
             if (wide) { box.classList.add('out'); setTimeout(() => box.remove(), 260); }
             else if (sub.isConnected && sub.dataset.orig) { sub.classList.remove('speaking'); sub.innerHTML = sub.dataset.orig; delete sub.dataset.orig; }
         }, 4200); };
         if (this.calm()) { box.textContent = text; end(); return; }
         this._typeT = setInterval(() => { box.textContent = full.slice(0, ++i).join(''); if (i >= full.length) { clearInterval(this._typeT); end(); } }, 28);
-    }
-    /* outfit of the day: night cap at night, headband when an exam is close, crown after 30 days, seasonal hats, otherwise the graduation cap */
-    mascotOutfit() {
-        if (this._leoTry) return this._leoTry;
-        const d = new Date(), h = d.getHours(), m = d.getMonth() + 1, day = d.getDate(), st = this.data.stats;
-        if ((h >= 23 || h < 5) && st.lastStudyDate !== dayKey()) return 'night';
-        if (this.goalsAll().some(g => g.days >= 0 && g.days <= 3)) return 'headband';
-        if ((st.streak || 0) >= 30) return 'crown';
-        if ((m === 12 && day >= 15) || (m === 1 && day <= 5)) return 'santa';
-        if ((m === 10 && day >= 24) || (m === 11 && day <= 2)) return 'witch';
-        if (m >= 6 && m <= 8) return 'sun';
-        return 'cap';
-    }
-    /* long press on Léo: he tries the next outfit */
-    mascotTryOutfit(btn) {
-        const list = ['cap', 'santa', 'witch', 'crown', 'night', 'headband', 'sun'], names = { cap: 'la toque de diplômé 🎓', santa: 'le bonnet de Noël 🎅', witch: 'le chapeau de sorcier 🎃', crown: 'la couronne 👑', night: 'le bonnet de nuit 🌙', headband: 'le bandeau de champion 💪', sun: 'les lunettes de soleil 😎' };
-        const cur = this._leoTry || this.mascotOutfit(), next = list[(list.indexOf(cur) + 1) % list.length];
-        this._leoTry = next;
-        btn.innerHTML = this.mascotSvg(btn.dataset.mood || 'ready', { streak: this.data.stats.streak, outfit: next });
-        this.mascotSay(`Hop, ${names[next]} !`, { sound: 'leo' });
     }
     tabGo(view) { this.go(view); }   // (a browser view transition froze the page while heavy tabs were drawn: a light CSS slide is used instead)
     /* fallback for browsers without view transitions: a veil of the old background fades out over the new theme */
@@ -1309,17 +1292,16 @@ class SuperAnki {
             if (pend) return;
             pend = requestAnimationFrame(() => {
                 pend = null;
-                $$('.mc').forEach(el => {
+                $$('.leo3d').forEach(el => {
                     const r = el.getBoundingClientRect(); if (!r.width) return;
                     const dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height * .42), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 220) * 4.5;
-                    el.style.setProperty('--px', (dx / d * k).toFixed(2) + 'px'); el.style.setProperty('--py', (dy / d * k).toFixed(2) + 'px');
+                    el.style.setProperty('--px', (dx / d * k * .9).toFixed(2) + 'px'); el.style.setProperty('--py', (dy / d * k * .5).toFixed(2) + 'px'); el.style.setProperty('--rot', (dx / d * k * .35).toFixed(2) + 'deg');
                 });
             });
         };
+        clearInterval(this._winkT);
+        this._winkT = setInterval(() => { const b = $('.leo-ready .leo-pose'); if (b && !this.calm() && !b.classList.contains('talk')) { b.classList.add('wink'); setTimeout(() => b.classList.remove('wink'), 260); } }, 6200);
         document.addEventListener('pointermove', e => move(e.clientX, e.clientY), { passive: true });
-        let lp = null;
-        document.addEventListener('pointerdown', e => { const b = e.target.closest && e.target.closest('.hero .mascot'); clearTimeout(lp); if (b) lp = setTimeout(() => { this._lpFired = true; this.mascotTryOutfit(b); }, 650); }, { passive: true });
-        ['pointerup', 'pointercancel', 'pointerleave', 'scroll'].forEach(ev => document.addEventListener(ev, () => clearTimeout(lp), { passive: true, capture: true }));
         document.addEventListener('touchmove', e => { const t = e.touches[0]; if (t) move(t.clientX, t.clientY); }, { passive: true });
     }
     /* the top bar gets a soft shadow once the page is scrolled */
@@ -1461,7 +1443,7 @@ class SuperAnki {
         $('#view-dashboard').innerHTML = `
         <div class="stack">
             <div class="hero">
-                <button class="mascot" data-action="mascot" aria-label="Léo, ta mascotte : touche-le pour un encouragement" data-mood="${this.mascotMood(toStudy)}">${this.mascotSvg(this.mascotMood(toStudy), { streak: this.data.stats.streak, outfit: this.mascotOutfit() })}</button>
+                <button class="mascot" data-action="mascot" aria-label="Léo, ta mascotte : touche-le pour un encouragement" data-mood="${this.mascotMood(toStudy)}">${this.mascotSvg(this.mascotMood(toStudy), { streak: this.data.stats.streak })}</button>
                 <div class="hero-inner">
                     <div>
                         <span class="hero-kicker">${hello} 👋${goal ? ` · <b>${esc(goal.name)} : ${goal.days > 0 ? `J-${goal.days}` : goal.days === 0 ? 'c\'est aujourd\'hui !' : 'terminé'}</b>` : ''}</span>
@@ -1521,7 +1503,7 @@ class SuperAnki {
                 <label class="sort-pick"><span class="sr-only">Trier</span><select class="select select-sm" aria-label="Trier les paquets" data-input="deck-sort">${[['recent', 'Plus récents'], ['due', 'À revoir d\'abord'], ['studied', 'Révisés récemment'], ['alpha', 'A → Z'], ['size', 'Plus de cartes']].map(([v, l]) => `<option value="${v}" ${(d.settings.deckSort || 'recent') === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label></div>
                 <div id="dash-find-res" class="panel dl-results hidden"></div>
                 <div id="dash-decks" class="deck-grid ${this.deckCompact() ? 'compact' : ''}">${this.dashboardDeckCards()}</div>`
-                    : `<div class="panel empty"><div class="empty-mascot">${this.mascotSvg('calm', { outfit: this.mascotOutfit() })}</div><p>Aucun paquet pour l'instant.</p><button class="btn btn-primary" style="margin-top:14px" data-action="new-deck">${ic('folderPlus')}Créer un paquet</button></div>`}
+                    : `<div class="panel empty"><div class="empty-mascot">${this.mascotSvg('calm')}</div><p>Aucun paquet pour l'instant.</p><button class="btn btn-primary" style="margin-top:14px" data-action="new-deck">${ic('folderPlus')}Créer un paquet</button></div>`}
             </div>
             ${libBanner}
             ${this.tipsHtml()}
@@ -2781,7 +2763,7 @@ class SuperAnki {
         document.body.classList.add('in-session');
         $('#view-session').innerHTML = `
         <div class="summary">
-            ${kind === 'chrono' ? `<div class="summary-emoji">${emoji}</div>` : `<div class="summary-mascot">${this.mascotSvg(acc >= 80 ? 'happy' : acc >= 50 ? 'ready' : 'tough', { streak: this.data.stats.streak, outfit: this.mascotOutfit() })}</div>`}
+            ${kind === 'chrono' ? `<div class="summary-emoji">${emoji}</div>` : `<div class="summary-mascot">${this.mascotSvg(acc >= 80 ? 'happy' : acc >= 50 ? 'ready' : 'tough', { streak: this.data.stats.streak })}</div>`}
             <h2 class="page-title" style="margin-top:12px">${title}</h2>
             ${lead ? `<p class="page-sub">${lead}</p>` : ''}
             ${kind === 'chrono' ? '' : `<div class="summary-ring" style="--off:${100 - acc}"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="rg-bg" cx="50" cy="50" r="44"/><circle class="rg-fg" cx="50" cy="50" r="44" pathLength="100"/></svg><div class="ring-in"><b>${acc}%</b><small>réussite</small></div></div>`}
@@ -3857,7 +3839,6 @@ class SuperAnki {
                 this.setSetting('cardSize', ks[i]); if (this.session && this.session.current) this.renderSession(); break;
             }
             case 'mascot': {
-                if (this._lpFired) { this._lpFired = false; break; }
                 const m = el.dataset ? el.dataset.mood : 'ready', now = Date.now(), h = new Date().getHours();
                 this._mTaps = (this._mTaps || []).filter(t => now - t < 2500); this._mTaps.push(now);
                 if (this._mTaps.length >= 5) { this._mTaps = []; this.mascotSay(leoPick('roar'), { sound: 'leoroar' }); el.classList.add('roar'); setTimeout(() => el.classList.remove('roar'), 900); }

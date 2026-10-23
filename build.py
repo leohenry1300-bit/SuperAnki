@@ -299,6 +299,7 @@ try {{ var t = localStorage.getItem('superanki_theme'); if (t) document.document
 {read("tools.js")}
 {read("notetypes.js")}
 {read("export-apkg.js")}
+{read("mascot-img.js")}
 {read("mascot.js")}
 {read("study.js")}
 {read("focus.js")}

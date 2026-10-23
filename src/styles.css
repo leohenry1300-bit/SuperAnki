@@ -2247,3 +2247,40 @@ html[data-vt="l"]::view-transition-new(root) { animation-name: vtInL; }
 .leo-bubble.out { opacity: 0; transform: scale(.92); transition: .24s; }
 @media (max-width: 767px) { .leo-bubble { display: none; } }
 @media (prefers-reduced-motion: reduce) { .leo-bubble { animation: none; } }
+
+/* ================= Léo, the 3D mascot ================= */
+.leo3d { position: relative; width: 100%; height: 100%; --px: 0px; --py: 0px; --rot: 0deg; }
+.leo-glow { position: absolute; left: 50%; top: 56%; width: 165%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(closest-side, rgba(255,200,96,.6), rgba(255,160,40,.22) 52%, transparent 74%); animation: leoGlow 3.8s ease-in-out infinite alternate; z-index: 0; pointer-events: none; }
+@keyframes leoGlow { from { opacity: .7; transform: translate(-50%, -50%) scale(.94); } to { opacity: 1; transform: translate(-50%, -50%) scale(1.06); } }
+.leo-star { position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s); background: #fff1b8; clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); opacity: 0; animation: leoTwinkle 3.2s ease-in-out infinite; animation-delay: var(--d); z-index: 0; pointer-events: none; }
+@keyframes leoTwinkle { 0%, 100% { opacity: 0; transform: scale(.4) rotate(0); } 45% { opacity: .95; transform: scale(1) rotate(25deg); } 70% { opacity: .3; transform: scale(.7) rotate(40deg); } }
+.leo-pose { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%) translate(var(--px), var(--py)) rotate(var(--rot)); transform-origin: 50% 100%; z-index: 1; transition: transform .25s ease-out; }
+.leo-anim { display: inline-block; position: relative; height: 100%; transform-origin: 50% 100%; animation: leoBreath 4.2s ease-in-out infinite; }
+@keyframes leoBreath { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.012, 1.022); } }
+.leo-img { display: block; height: 100%; width: auto; max-width: none; user-select: none; -webkit-user-drag: none; pointer-events: none; filter: drop-shadow(0 10px 12px rgba(20, 8, 50, .42)); }
+.leo-b, .leo-t { position: absolute; left: 0; top: 0; opacity: 0; }
+.leo-pose.wink .leo-b { opacity: 1; } .leo-pose.wink .leo-main { opacity: 0; }
+.leo-pose.talk .leo-t { opacity: 1; } .leo-pose.talk .leo-main { opacity: 0; }
+.leo-happy .leo-anim { animation: leoJump 1.25s ease-in-out infinite; }
+@keyframes leoJump { 0%, 100% { transform: translateY(0) scale(1.01, .99); } 42% { transform: translateY(-9%) scale(.985, 1.02); } 58% { transform: translateY(-9%) scale(.985, 1.02); } 78% { transform: translateY(0) scale(1.03, .97); } }
+.leo-z { position: absolute; z-index: 2; font-weight: 900; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,.35); animation: leoZ 3s ease-in infinite; opacity: 0; }
+.leo-z.z1 { right: 8%; top: 22%; font-size: 1.2rem; } .leo-z.z2 { right: -2%; top: 8%; font-size: .9rem; animation-delay: 1.2s; }
+@keyframes leoZ { 0% { opacity: 0; transform: translateY(8px) scale(.7); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(-16px) scale(1.1); } }
+.mascot.roar .leo-anim { animation: leoRoar .9s ease-in-out; }
+@keyframes leoRoar { 0%, 100% { transform: scale(1); } 15% { transform: translateX(-3px) scale(1.12); } 30% { transform: translateX(3px) scale(1.12); } 45% { transform: translateX(-3px) scale(1.1); } 60% { transform: translateX(3px) scale(1.1); } 80% { transform: scale(1.04); } }
+/* golden ribbon of sparkles for milestones */
+.leo-trail { position: absolute; left: 50%; top: 50%; width: 260%; aspect-ratio: 4 / 3; transform: translate(-50%, -50%); pointer-events: none; z-index: 3; overflow: visible; filter: drop-shadow(0 0 6px rgba(255, 200, 80, .8)); animation: trailFade 3.2s ease-out forwards; }
+.leo-trail .tp { stroke-dasharray: 1; stroke-dashoffset: 1; animation: trailDraw 1.5s ease-out forwards; }
+@keyframes trailDraw { to { stroke-dashoffset: 0; } }
+.leo-trail .td { opacity: 0; animation: tdPop 1.4s ease-out forwards; }
+@keyframes tdPop { 0% { opacity: 0; transform: scale(0); } 30% { opacity: 1; transform: scale(1.4); } 100% { opacity: .9; transform: scale(1); } }
+@keyframes trailFade { 0%, 60% { opacity: 1; } 100% { opacity: 0; } }
+/* sizes: the pose sits at the bottom of its slot; the cheering pose is a bit taller (arms up) */
+.hero .mascot, .summary-mascot, .empty-mascot { overflow: visible; }
+.hero .mascot::before { display: none; }
+.hero .mascot .leo3d, .hero .mascot .mc { filter: none; }
+.summary-mascot { width: 200px; height: 220px; }
+.empty-mascot { width: 150px; height: 165px; }
+@media (prefers-reduced-motion: reduce) { .leo-glow, .leo-star, .leo-anim, .leo-z, .leo-trail, .leo-trail * { animation: none !important; } .leo-star { opacity: .6; } .leo-trail { display: none; } }
+.hero { overflow-x: clip; overflow-y: visible; } body { overflow-x: clip; }
+@media (max-width: 767px) { .hero .leo-happy .leo-pose { left: 40%; } }
