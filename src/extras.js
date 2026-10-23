@@ -338,7 +338,6 @@ Object.assign(SuperAnki.prototype, {
         document.addEventListener('input', e => { if (e.target.id === 'snd-vol') { SND.vol = Number(e.target.value) / 100; sndSave(); } });
         document.addEventListener('change', e => {
             if (e.target.id === 'snd-vol') sfx('pop');
-            else if (e.target.id === 'snd-mode') { SND.mode = e.target.value === 'prio' ? 'prio' : 'mix'; sndSave(); sndSession(SND.mode === 'prio' ? 'playback' : SND_MIX); sndDiag(); sfx('g3'); }
             else if (e.target.id === 'snd-tab') { SND.tab = e.target.value; sndSave(); if (SND.tab !== 'none') setTimeout(() => { if (SND.on) sfx('tab' + SND.tab); }, 160); }
         });
     },
