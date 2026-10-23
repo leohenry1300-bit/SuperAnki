@@ -808,7 +808,7 @@ class SuperAnki {
         if (source === 'legacy') this.toast('Tes cartes et ta progression ont été récupérées', 'success');
         this.initRipple();
         this.initScrollShadow();
-        this.initMascotEyes();
+        leoInit();
         this.initPull();
         this.focusInit();
         this.extrasInit();
@@ -1214,7 +1214,24 @@ class SuperAnki {
             clearTimeout(idle); idle = setTimeout(() => { const go = acc; acc = 0; if (go * .1 >= 54) { d = 54; release(); } else hide(); }, 220);
         }, { passive: true });
     }
+    /* end of a session: he reacts to the score (cap in the air above 90 %, a hop above 80 %, thoughtful above 50 %, a thumbs-up to comfort otherwise) */
+    mascotSummary(acc) {
+        const pick = l => l[Math.floor(Math.random() * l.length)];
+        if (acc >= 90) return leoSvg('happy', { intro: 'toss' });
+        if (acc >= 80) return leoSvg('happy', { intro: pick(['hop', 'joy']) });
+        if (acc >= 50) return leoSvg('ready', { intro: 'think' });
+        return leoSvg('tough', { state: 's0', intro: 'shrug0' });
+    }
     mascotSvg(mood = 'ready', opts = {}) { return leoSvg(mood, opts); }
+    /* how Léo shows up on the home card: the very first time in a session he pulls out his ✓ tablet (or hops if today is done, or dozes if it is late and nothing is due) */
+    mascotHome(mood) {
+        const night = (new Date().getHours() >= 23 || new Date().getHours() < 5), first = !window._leoIntro;
+        window._leoIntro = true;
+        if (mood === 'calm' && night) return leoSvg(mood, { state: 'sleep', amb: 'yawn' });
+        if (mood === 'calm') return leoSvg(mood, { intro: first ? 'tablet' : '', amb: 'nap,yawn,tablet' });
+        if (mood === 'happy') return leoSvg(mood, { intro: first ? 'joy' : '', amb: 'joy,hop,wave,tablet' });
+        return first ? leoSvg(mood, { state: 's0', intro: 'reveal', amb: 'foot,pointwave,tablet,wave' }) : leoSvg(mood, { amb: 'foot,pointwave,tablet,wave' });
+    }
     /* Léo's mood follows the day: asleep late at night or when everything is done, cheering once today's review is done */
     mascotMood(toStudy) {
         const h = new Date().getHours(), done = this.data.stats.lastStudyDate === dayKey();
@@ -1228,18 +1245,18 @@ class SuperAnki {
             if (this.view !== 'dashboard' || document.hidden || !$('.hero-sub') || !this.data) return;
             let st = {}; try { st = JSON.parse(localStorage.getItem('lh_leo_auto') || '{}'); } catch { st = {}; }
             const today = dayKey(), stats = this.data.stats, streak = stats.streak || 0;
-            let line = '', party = false, mark = null;
+            let line = '', party = false, mark = null, cat = 'ready';
             const MS = [365, 200, 100, 50, 30, 14, 7, 3];
             const ms = MS.find(n => streak === n);
-            if (ms && stats.lastStudyDate === today && st.milestone !== ms) { line = leoPick(LEO_SAYS.milestone[ms]); party = true; mark = { milestone: ms }; }
+            if (ms && stats.lastStudyDate === today && st.milestone !== ms) { line = leoPick(LEO_SAYS.milestone[ms]); party = true; cat = 'milestone'; mark = { milestone: ms }; }
             if (!line) {
                 const g = this.goalsAll().find(x => x.days >= 0 && [0, 1, 2, 3, 5, 7, 14].includes(x.days));
-                if (g && st.examDay !== today + ':' + g.days) { line = leoPick(LEO_SAYS.exam[g.days], { exam: g.name }); mark = { examDay: today + ':' + g.days }; }
+                if (g && st.examDay !== today + ':' + g.days) { line = leoPick(LEO_SAYS.exam[g.days], { exam: g.name }); cat = 'exam'; mark = { examDay: today + ':' + g.days }; }
             }
-            if (!line && stats.lastStudyDate && st.missedDay !== today && daysBetweenKeys(stats.lastStudyDate, today) >= 2) { line = leoPick('missed'); mark = { missedDay: today }; }
+            if (!line && stats.lastStudyDate && st.missedDay !== today && daysBetweenKeys(stats.lastStudyDate, today) >= 2) { line = leoPick('missed'); cat = 'missed'; mark = { missedDay: today }; }
             if (!line) return;
             localStorage.setItem('lh_leo_auto', JSON.stringify({ ...st, ...mark }));
-            this.mascotSay(line, { sound: party ? 'leocheer' : 'leo' });
+            this.mascotSay(line, { sound: party ? 'leocheer' : 'leo', cat });
             const m = $('.hero .mascot'); if (m) { m.classList.remove('hop'); void m.offsetWidth; m.classList.add('hop'); }
             if (party) { this.confetti(); leoTrail($('.hero .mascot')); }
         } catch { /* ignore */ }
@@ -1257,9 +1274,9 @@ class SuperAnki {
             box.classList.remove('out');
         } else { if (!sub.dataset.orig) sub.dataset.orig = sub.innerHTML; sub.classList.add('speaking'); }
         box.textContent = '';
-        const pose = $('.leo-ready .leo-pose');
-        if (pose && !this.calm()) pose.classList.add('talk');
-        const stopTalk = () => { const q = $('.leo-ready .leo-pose'); if (q) q.classList.remove('talk'); };
+        const root = $('.hero .leo3d');
+        if (root && !this.calm()) leoPlay(root, opts.clip || leoClipFor(root, opts.cat || root.dataset.mood));
+        const stopTalk = () => {};
         let i = 0; const full = [...text];
         const end = () => { stopTalk(); this._bubbleT = setTimeout(() => {
             if (wide) { box.classList.add('out'); setTimeout(() => box.remove(), 260); }
@@ -1285,23 +1302,6 @@ class SuperAnki {
     }
     /* zen mode: only the card and the answers stay on screen */
     toggleZen() { document.body.classList.toggle('zen'); this.toast(document.body.classList.contains('zen') ? 'Mode zen activé' : 'Mode zen désactivé', 'success'); }
-    /* Léo's eyes follow the finger / mouse */
-    initMascotEyes() {
-        let pend = null;
-        const move = (x, y) => {
-            if (pend) return;
-            pend = requestAnimationFrame(() => {
-                pend = null;
-                $$('.leo3d').forEach(el => {
-                    const r = el.getBoundingClientRect(); if (!r.width) return;
-                    const dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height * .4), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 160);
-                    el.style.setProperty('--ex', (dx / d * k).toFixed(2)); el.style.setProperty('--ey', (dy / d * k).toFixed(2)); el.style.setProperty('--rot', (dx / d * k * 1.6).toFixed(2) + 'deg');
-                });
-            });
-        };
-        document.addEventListener('pointermove', e => move(e.clientX, e.clientY), { passive: true });
-        document.addEventListener('touchmove', e => { const t = e.touches[0]; if (t) move(t.clientX, t.clientY); }, { passive: true });
-    }
     /* the top bar gets a soft shadow once the page is scrolled */
     initScrollShadow() {
         const bar = $('.topbar'); if (!bar) return;
@@ -1441,7 +1441,7 @@ class SuperAnki {
         $('#view-dashboard').innerHTML = `
         <div class="stack">
             <div class="hero">
-                <button class="mascot" data-action="mascot" aria-label="Léo, ta mascotte : touche-le pour un encouragement" data-mood="${this.mascotMood(toStudy)}">${this.mascotSvg(this.mascotMood(toStudy), { streak: this.data.stats.streak })}</button>
+                <button class="mascot" data-action="mascot" aria-label="Léo, ta mascotte : touche-le pour un encouragement" data-mood="${this.mascotMood(toStudy)}">${this.mascotHome(this.mascotMood(toStudy))}</button>
                 <div class="hero-inner">
                     <div>
                         <span class="hero-kicker">${hello} 👋${goal ? ` · <b>${esc(goal.name)} : ${goal.days > 0 ? `J-${goal.days}` : goal.days === 0 ? 'c\'est aujourd\'hui !' : 'terminé'}</b>` : ''}</span>
@@ -1501,7 +1501,7 @@ class SuperAnki {
                 <label class="sort-pick"><span class="sr-only">Trier</span><select class="select select-sm" aria-label="Trier les paquets" data-input="deck-sort">${[['recent', 'Plus récents'], ['due', 'À revoir d\'abord'], ['studied', 'Révisés récemment'], ['alpha', 'A → Z'], ['size', 'Plus de cartes']].map(([v, l]) => `<option value="${v}" ${(d.settings.deckSort || 'recent') === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label></div>
                 <div id="dash-find-res" class="panel dl-results hidden"></div>
                 <div id="dash-decks" class="deck-grid ${this.deckCompact() ? 'compact' : ''}">${this.dashboardDeckCards()}</div>`
-                    : `<div class="panel empty"><div class="empty-mascot">${this.mascotSvg('calm')}</div><p>Aucun paquet pour l'instant.</p><button class="btn btn-primary" style="margin-top:14px" data-action="new-deck">${ic('folderPlus')}Créer un paquet</button></div>`}
+                    : `<div class="panel empty"><div class="empty-mascot">${leoSvg('ready', { state: 's0', intro: 'hello0', amb: 'aha0,read0,point0,arms0,talk0' })}</div><p>Aucun paquet pour l'instant.</p><button class="btn btn-primary" style="margin-top:14px" data-action="new-deck">${ic('folderPlus')}Créer un paquet</button></div>`}
             </div>
             ${libBanner}
             ${this.tipsHtml()}
@@ -2761,7 +2761,7 @@ class SuperAnki {
         document.body.classList.add('in-session');
         $('#view-session').innerHTML = `
         <div class="summary">
-            ${kind === 'chrono' ? `<div class="summary-emoji">${emoji}</div>` : `<div class="summary-mascot">${this.mascotSvg(acc >= 80 ? 'happy' : acc >= 50 ? 'ready' : 'tough', { streak: this.data.stats.streak })}</div>`}
+            ${kind === 'chrono' ? `<div class="summary-emoji">${emoji}</div>` : `<div class="summary-mascot">${this.mascotSummary(acc)}</div>`}
             <h2 class="page-title" style="margin-top:12px">${title}</h2>
             ${lead ? `<p class="page-sub">${lead}</p>` : ''}
             ${kind === 'chrono' ? '' : `<div class="summary-ring" style="--off:${100 - acc}"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="rg-bg" cx="50" cy="50" r="44"/><circle class="rg-fg" cx="50" cy="50" r="44" pathLength="100"/></svg><div class="ring-in"><b>${acc}%</b><small>réussite</small></div></div>`}
@@ -3839,11 +3839,11 @@ class SuperAnki {
             case 'mascot': {
                 const m = el.dataset ? el.dataset.mood : 'ready', now = Date.now(), h = new Date().getHours();
                 this._mTaps = (this._mTaps || []).filter(t => now - t < 2500); this._mTaps.push(now);
-                if (this._mTaps.length >= 5) { this._mTaps = []; this.mascotSay(leoPick('roar'), { sound: 'leoroar' }); el.classList.add('roar'); setTimeout(() => el.classList.remove('roar'), 900); }
-                else if (this._mTaps.length >= 3) this.mascotSay(leoPick('tap'), { sound: 'leotickle' });
-                else this.mascotSay(leoPick(m === 'calm' && (h >= 23 || h < 5) ? 'night' : m));
+                const root = el.querySelector && el.querySelector('.leo3d'), asleep = root && root.dataset.state === 'sleep';
+                if (this._mTaps.length >= 5) { this._mTaps = []; this.mascotSay(leoPick('roar'), { sound: 'leoroar', cat: 'roar' }); }
+                else if (this._mTaps.length >= 3) this.mascotSay(leoPick('tap'), { sound: 'leotickle', cat: 'tickle' });
+                else this.mascotSay(leoPick(m === 'calm' && (h >= 23 || h < 5) ? 'night' : m), { cat: asleep ? 'night' : this._mTaps.length === 2 ? 'tap' : m });
                 el.classList && el.classList.remove('hop'); void (el.offsetWidth); el.classList && el.classList.add('hop');
-                const pose = el.querySelector && el.querySelector('.leo-pose'); if (pose && m !== 'calm') { pose.classList.remove('wink'); void pose.offsetWidth; pose.classList.add('wink'); setTimeout(() => pose.classList.remove('wink'), 700); }
                 break;
             }
             case 'undo': this.undo(); break;

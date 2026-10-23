@@ -1,25 +1,112 @@
-/* Léo the lion cub: a clay-style character built as a layered puppet (body, tail, irises, lids, mouth; art in mascot-img.js, geometry in styles.css).
-   Everything moves live: breathing, tail, blinking, glances, eyes that follow the pointer, a mouth that opens while he talks, a wink on tap, hops when happy;
-   the glow takes the colour of the app's theme. Moods: ready (waits), happy (cheers), calm (asleep), tough (determined). */
+/* Léo the lion cub: a clay-style character. He is a still picture (three resting poses: with his ✓ tablet, without it, asleep) plus a library of short
+   animated clips (mascot/*.webp, transparent) that play on top of it: he waves, talks, points, yawns, tosses his cap, naps...
+   The app decides which clip fits the moment (see leoClipFor); the glow and shadow around him follow the app's theme colour.
+   States: s1 = holding the ✓ tablet (home, summaries), s0 = hands free (empty states, comforting a bad session), sleep = dozing. */
+const LEO_CACHE = new Map();
+const leoMotionOff = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function leoInstall() {
     if (document.getElementById('leo-art')) return;
     const st = document.createElement('style'); st.id = 'leo-art';
-    st.textContent = `.lf-base{background-image:url(${LEO_ASSET.base})}.lf-tail{background-image:url(${LEO_ASSET.tail})}.lf-eye.L .lf-ir{background-image:url(${LEO_ASSET.irisL})}.lf-eye.R .lf-ir{background-image:url(${LEO_ASSET.irisR})}`;
+    st.textContent = `:root{--leo-s1:url(${LEO_STILL.s1});--leo-s0:url(${LEO_STILL.s0});--leo-sleep:url(${LEO_STILL.sleep})}`;
     document.head.appendChild(st);
+}
+/* a clip is fetched once, kept in memory as a blob (the service worker also keeps it for offline use) */
+function leoLoad(key) {
+    if (!LEO_CACHE.has(key)) {
+        LEO_CACHE.set(key, fetch(LEO_CLIPS[key].f).then(r => { if (!r.ok) throw new Error('clip'); return r.blob(); }).then(b => URL.createObjectURL(b)).catch(e => { LEO_CACHE.delete(key); throw e; }));
+    }
+    return LEO_CACHE.get(key);
+}
+function leoImg(url, cls, key) {
+    const img = new Image(); img.className = cls; const r = LEO_CLIPS[key].r, c = LEO_CLIPS[key], l = c.flip ? 2 * LEO_GEO.ax - r[0] - r[2] : r[0]; img.style.cssText = `left:${l}%;top:${r[1]}%;width:${r[2]}%;height:${r[3]}%`; img.alt = ''; img.draggable = false; img.decoding = 'async'; img.src = url;
+    return (img.decode ? img.decode() : Promise.resolve()).catch(() => {}).then(() => img);
+}
+function leoSetState(root, st) { root.dataset.state = st; }
+/* the looping "alive" clip under everything: breathing, blinking, small movements (only while he rests holding his tablet) */
+function leoIdle(root) {
+    if (!root || !root.isConnected || leoMotionOff() || document.hidden || root.dataset.state !== 's1') return;
+    const fig = root.querySelector('.leo-fig'); if (!fig) return;
+    const old = fig.querySelector('.lf-idle'); if (old) old.remove();
+    const tok = root._leoTok || 0;
+    leoLoad('idle').then(url => leoImg(url, 'lf-clip lf-idle', 'idle')).then(img => {
+        if (!root.isConnected || (root._leoTok || 0) !== tok || root.dataset.state !== 's1' || root.classList.contains('lv-clip')) return;
+        const o = fig.querySelector('.lf-idle'); if (o) o.remove();
+        fig.appendChild(img); root.classList.add('lv-idle');
+    }).catch(() => {});
+}
+function leoPlay(root, key, o = {}) {
+    const c = LEO_CLIPS[key];
+    if (!root || !c || !root.isConnected || leoMotionOff()) return Promise.resolve(false);
+    const fig = root.querySelector('.leo-fig'); if (!fig) return Promise.resolve(false);
+    const tok = root._leoTok = (root._leoTok || 0) + 1;
+    return leoLoad(key).then(url => leoImg(url, 'lf-clip lf-play' + (c.flip ? ' flip' : ''), key)).then(img => {
+        if (root._leoTok !== tok || !root.isConnected) return false;
+        fig.querySelectorAll('.lf-clip').forEach(x => x.remove());
+        if (root.dataset.state !== c.from) leoSetState(root, c.from);
+        fig.appendChild(img); root.classList.remove('lv-idle'); root.classList.add('lv-clip');
+        return new Promise(res => setTimeout(() => {
+            if (root._leoTok !== tok) return res(false);
+            leoSetState(root, c.to || c.from);
+            root.classList.remove('lv-clip'); img.remove();
+            if (!o.hold) leoIdle(root);
+            res(true);
+        }, c.d * 1000 - 40));
+    }).catch(() => { if (root._leoTok === tok && o.fallback) leoSetState(root, o.fallback); return false; });
+}
+/* which clip fits what he is saying */
+function leoClipFor(root, cat = 'ready') {
+    const st = root ? root.dataset.state : 's1', mood = root && root.dataset.mood || 'ready';
+    const pick = a => a[Math.floor(Math.random() * a.length)];
+    if (st === 'sleep') return 'yawn';
+    if (st === 's0') return pick(cat === 'tap' ? ['hello0'] : cat === 'exam' ? ['aha0', 'talk0'] : ['talk0', 'talk0', 'point0']);
+    const T = {
+        ready: ['talk', 'talk', 'talk', 'pointwave', 'tablet'], happy: ['talk', 'joy', 'hop', 'wave'], calm: ['talk', 'nap', 'tablet'], night: ['yawn'],
+        tap: ['wave', 'talk', 'sitwave'], tickle: ['sitwave'], roar: ['roar'], milestone: ['toss', 'hop', 'joy'], exam: ['think', 'tablet', 'talk'], missed: ['foot', 'wave']
+    };
+    return pick(T[cat] || T[mood] || T.ready);
+}
+/* wires up every Léo that has just appeared on screen: resting pose, idle loop, intro clip, now and then a little spontaneous move */
+function leoBoot() {
+    document.querySelectorAll('.leo3d:not([data-live])').forEach(root => {
+        root.dataset.live = '1';
+        const intro = root.dataset.intro, amb = (root.dataset.amb || '').split(',').filter(Boolean);
+        if (leoMotionOff()) return;
+        if (root.dataset.state === 's1') leoIdle(root);
+        if (intro) setTimeout(() => leoPlay(root, intro, { fallback: 's1', hold: root.dataset.hold === '1' }), 380);
+        if (amb.length) {
+            const tick = () => {
+                if (!root.isConnected) return;
+                if (!document.hidden && !root.classList.contains('lv-clip') && root.dataset.state !== 'sleep') leoPlay(root, amb[Math.floor(Math.random() * amb.length)]);
+                setTimeout(tick, 32000 + Math.random() * 28000);
+            };
+            setTimeout(tick, 20000 + Math.random() * 15000);
+        }
+    });
+}
+function leoInit() {
+    let q = 0;
+    new MutationObserver(() => { if (q) return; q = requestAnimationFrame(() => { q = 0; leoBoot(); }); }).observe(document.body, { childList: true, subtree: true });
+    document.addEventListener('visibilitychange', () => {
+        document.querySelectorAll('.leo3d').forEach(r => {
+            if (document.hidden) { const i = r.querySelector('.lf-idle'); if (i) i.remove(); r.classList.remove('lv-idle'); }
+            else leoIdle(r);
+        });
+    });
+    leoBoot();
 }
 function leoSvg(mood = 'ready', opts = {}) {
     leoInstall();
+    const state = opts.state || 's1';
     let stars = '';
     const n = mood === 'happy' ? 14 : 8;
     for (let i = 0; i < n; i++) {
         const a = (i / n) * 6.283 + (i % 3) * .4, r = 52 + (i * 37 % 26);
         stars += `<i class="leo-star" style="--x:${(50 + Math.cos(a) * r).toFixed(1)}%;--y:${(46 + Math.sin(a) * r * .9).toFixed(1)}%;--d:${(i * .43 % 3).toFixed(2)}s;--s:${(6 + (i * 5 % 9)).toFixed(0)}px"></i>`;
     }
-    const bd = (1.2 + Math.random() * 4).toFixed(2) + 's';
-    const eye = k => `<i class="lf-eye ${k}"><i class="lf-in"><i class="lf-gl"><i class="lf-ir"></i></i></i></i>`;
-    const extra = mood === 'calm' ? '<span class="leo-z z1">z</span><span class="leo-z z2">Z</span>' : '';
-    return `<div class="leo3d leo-${mood}" aria-hidden="true" style="--bd:${bd}"><span class="leo-glow"></span>${stars}<span class="leo-shadow"></span>
-        <span class="leo-pose"><span class="leo-fig"><i class="lf-tail"></i><i class="lf-base"></i>${eye('L')}${eye('R')}<i class="lf-lid L"></i><i class="lf-lid R"></i><i class="lf-mouth"><i class="lf-mo"></i></i></span></span>${extra}</div>`;
+    const extra = state === 'sleep' ? '<span class="leo-z z1">z</span><span class="leo-z z2">Z</span>' : '';
+    const at = k => opts[k] ? ` data-${k}="${opts[k]}"` : '';
+    return `<div class="leo3d leo-${mood}" aria-hidden="true" data-state="${state}" data-mood="${mood}"${at('intro')}${at('amb')}${at('hold')} style="--ar:${LEO_GEO.w / LEO_GEO.h}"><span class="leo-glow"></span>${stars}<span class="leo-shadow"></span>
+        <span class="leo-pose"><span class="leo-fig"><i class="lf-still"></i></span></span>${extra}</div>`;
 }
 
 /* ---------- What Léo says: a big bank of short lines (encouraging, a bit teasing, student-to-student), picked without repeats ---------- */

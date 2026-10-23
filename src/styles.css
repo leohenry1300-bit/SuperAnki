@@ -2248,63 +2248,31 @@ html[data-vt="l"]::view-transition-new(root) { animation-name: vtInL; }
 @media (max-width: 767px) { .leo-bubble { display: none; } }
 @media (prefers-reduced-motion: reduce) { .leo-bubble { animation: none; } }
 
-/* ================= Léo, the clay lion: a layered puppet (body, tail, eyes, lids, mouth), animated live ================= */
-.leo3d { position: relative; width: 100%; height: 100%; --ex: 0; --ey: 0; --rot: 0deg; }
+/* ================= Léo, the clay lion: resting stills + transparent animated clips (see mascot.js) ================= */
+.leo3d { position: relative; width: 100%; height: 100%; }
 .leo-glow { position: absolute; left: 50%; top: 58%; width: 150%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; z-index: 0; pointer-events: none; animation: leoGlow 4.2s ease-in-out infinite alternate;
   background: radial-gradient(closest-side, color-mix(in srgb, #ffc860 55%, var(--primary, #6366f1)) 0, color-mix(in srgb, #ffa530 20%, var(--primary, #6366f1)) 50%, transparent 74%); }
-@keyframes leoGlow { from { opacity: .62; transform: translate(-50%, -50%) scale(.94); } to { opacity: .95; transform: translate(-50%, -50%) scale(1.05); } }
+@keyframes leoGlow { from { opacity: .6; transform: translate(-50%, -50%) scale(.94); } to { opacity: .92; transform: translate(-50%, -50%) scale(1.05); } }
 .leo-star { position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s); background: #fff1b8; clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); opacity: 0; animation: leoTwinkle 3.4s ease-in-out infinite; animation-delay: var(--d); z-index: 0; pointer-events: none; }
 @keyframes leoTwinkle { 0%, 100% { opacity: 0; transform: scale(.4) rotate(0); } 45% { opacity: .95; transform: scale(1) rotate(25deg); } 70% { opacity: .3; transform: scale(.7) rotate(40deg); } }
-/* the figure sits on the floor of its slot; its layers share one box (920 x 870 units, everything below is in %) */
-.leo-pose { position: absolute; left: 0; bottom: 0; width: 100%; aspect-ratio: 920 / 870; z-index: 1; transform-origin: 50% 96%;
-  transform: translateX(calc(var(--ex) * 1.2%)) rotate(var(--rot)); transition: transform .35s cubic-bezier(.2,.8,.2,1); }
-.leo-shadow { position: absolute; left: 22%; bottom: -1%; width: 52%; height: 6%; border-radius: 50%; background: radial-gradient(closest-side, rgba(20, 8, 50, .5), transparent); animation: leoShadow 4.4s ease-in-out infinite; z-index: 0; pointer-events: none; }
-@keyframes leoShadow { 0%, 100% { transform: scaleX(1); opacity: .9; } 50% { transform: scaleX(1.04); opacity: .75; } }
-.leo-fig { position: absolute; inset: 0; transform-origin: 50% 96%; animation: leoBreath 4.4s ease-in-out infinite; }
-@keyframes leoBreath { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.006, 1.016); } }
-.leo-fig > * { position: absolute; background-repeat: no-repeat; background-size: 100% 100%; pointer-events: none; user-select: none; }
-.lf-base { inset: 0; filter: drop-shadow(0 6px 7px rgba(20, 8, 50, .35)); }
-.lf-tail { animation: leoTail 3.2s ease-in-out infinite; }
-@keyframes leoTail { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(8deg); } }
-/* eyes: the irises are separate discs that slide inside the white; lids close over them */
-.lf-eye { overflow: hidden; border-radius: 50%; }
-.lf-eye.L { --cr: 15.3deg; } .lf-eye.R { --cr: -.5deg; }
-.lf-in, .lf-gl { position: absolute; inset: 0; }
-.lf-in { transform: rotate(var(--cr)); }
-.lf-gl { animation: leoGlance 9s ease-in-out infinite; }
-@keyframes leoGlance { 0%, 38%, 100% { transform: none; } 44%, 56% { transform: translate(-11%, -3%); } 62%, 72% { transform: translate(9%, 4%); } 78% { transform: none; } }
-.lf-ir { position: absolute; background-repeat: no-repeat; background-size: 100% 100%; transform: translate(calc(var(--ex) * 15%), calc(var(--ey) * 13%)); transition: transform .14s ease-out; }
-.lf-lid { transform-origin: 50% 0; border-radius: 50% 50% 46% 46%; background: radial-gradient(ellipse at 50% 80%, #f0cc9a, #e4b073 70%, #d9a060); box-shadow: inset 0 -.35em 0 -.12em #6a3a1c; scale: 1 0; will-change: scale; }
-.lf-lid.R { background: radial-gradient(ellipse at 50% 80%, #ecc088, #de9f5e 70%, #d09050); }
-.lf-lid { animation: leoBlink 6.5s infinite; animation-delay: var(--bd, 1.5s); }
-@keyframes leoBlink { 0%, 90%, 100% { scale: 1 0; } 92%, 94% { scale: 1 1; } 96% { scale: 1 0; } 97.5% { scale: 1 .9; } 99% { scale: 1 0; } }
-.leo-pose.wink .lf-lid.R { animation: leoWink .55s ease-in-out; }
-@keyframes leoWink { 0%, 100% { scale: 1 0; } 25%, 70% { scale: 1 1; } }
-/* mouth: an extra dark opening drawn over the smile while he talks (under the upper lip) */
-.lf-mouth { overflow: visible; }
-.lf-mo { position: absolute; left: 4%; top: 6%; width: 92%; height: 70%; border-radius: 20% 20% 50% 50% / 10% 10% 90% 90%; background: radial-gradient(ellipse at 50% 28%, #2a0a10 0, #4a1018 58%, #6a1c26); transform-origin: 50% 0; scale: 1 .01; opacity: 0; overflow: hidden; }
-.lf-mo::after { content: ""; position: absolute; left: 22%; right: 22%; bottom: -8%; height: 46%; border-radius: 50%; background: #e88a98; }
-.leo-pose.talk .lf-mo { opacity: 1; animation: leoTalk .42s steps(1, end) infinite; }
-@keyframes leoTalk { 0% { scale: 1 .55; } 14% { scale: .86 .95; } 30% { scale: 1.02 .42; } 46% { scale: .78 .85; } 62% { scale: .95 .62; } 80% { scale: .84 1; } }
-.leo-pose.talk .leo-fig { animation: leoBreath 4.4s ease-in-out infinite, leoNod .84s ease-in-out infinite; }
-@keyframes leoNod { 0%, 100% { translate: 0 0; } 50% { translate: 0 -.5%; } }
-/* moods */
-.leo-happy .leo-fig { animation: leoJump 1.3s ease-in-out infinite; }
-@keyframes leoJump { 0%, 100% { transform: translateY(0) scale(1.01, .985); } 40%, 56% { transform: translateY(-7%) scale(.99, 1.015); } 78% { transform: translateY(0) scale(1.02, .975); } }
-.leo-happy .lf-tail { animation-duration: .9s; }
-.leo-happy .lf-lid { animation: none; scale: 1 .14; }
-.leo-happy .lf-mo { opacity: 1; scale: 1 .8; animation: none; }
-.leo-calm .lf-lid { animation: none; scale: 1 1; }
-.leo-calm .lf-fig, .leo-calm .leo-fig { animation-duration: 6.4s; }
-.leo-calm .lf-tail { animation-duration: 6s; }
-.leo-tough .lf-lid { animation: none; scale: 1 .34; }
-.leo-tough .leo-pose { rotate: -2deg; }
-.leo-z { position: absolute; z-index: 2; font-weight: 900; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,.35); animation: leoZ 3s ease-in infinite; opacity: 0; }
+/* the figure sits on the floor of its slot; every layer shares the same box (the crop of the clips) */
+.leo-pose { position: absolute; left: 50%; bottom: 0; height: 100%; aspect-ratio: var(--ar, 1); max-width: 100%; transform: translateX(-50%); z-index: 1; }
+.leo-shadow { position: absolute; left: 50%; bottom: 1%; width: 46%; height: 6%; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(closest-side, rgba(20, 8, 50, .45), transparent); z-index: 0; pointer-events: none; }
+.leo-fig { position: absolute; inset: 0; filter: drop-shadow(0 6px 8px rgba(20, 8, 50, .28)); }
+.lf-still { position: absolute; inset: 0; }
+.lf-still, .lf-clip { max-width: none; background-repeat: no-repeat; background-size: 100% 100%; pointer-events: none; user-select: none; -webkit-user-drag: none; }
+.leo3d[data-state="s1"] .lf-still { background-image: var(--leo-s1); }
+.leo3d[data-state="s0"] .lf-still { background-image: var(--leo-s0); }
+.leo3d[data-state="sleep"] .lf-still { background-image: var(--leo-sleep); }
+.lv-idle .lf-still, .lv-clip .lf-still { visibility: hidden; }
+.lf-clip { position: absolute; }
+.lf-clip.flip { transform: scaleX(-1); }
+.lf-idle { z-index: 1; }
+.lf-play { z-index: 2; }
+.leo-z { display: none; position: absolute; z-index: 2; font-weight: 900; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,.35); animation: leoZ 3s ease-in infinite; opacity: 0; }
+.leo3d[data-state="sleep"] .leo-z { display: block; }
 .leo-z.z1 { right: 12%; top: 18%; font-size: 1.2rem; } .leo-z.z2 { right: 2%; top: 4%; font-size: .9rem; animation-delay: 1.2s; }
 @keyframes leoZ { 0% { opacity: 0; transform: translateY(8px) scale(.7); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(-16px) scale(1.1); } }
-.mascot.roar .leo-fig { animation: leoRoar .9s ease-in-out; }
-.mascot.roar .lf-mo { opacity: 1; scale: 1.08 1.35; animation: none; }
-@keyframes leoRoar { 0%, 100% { transform: scale(1); } 15% { transform: translateX(-3px) scale(1.1); } 30% { transform: translateX(3px) scale(1.1); } 45% { transform: translateX(-3px) scale(1.08); } 60% { transform: translateX(3px) scale(1.08); } 80% { transform: scale(1.03); } }
 /* golden ribbon of sparkles for milestones */
 .leo-trail { position: absolute; left: 50%; top: 50%; width: 260%; aspect-ratio: 4 / 3; transform: translate(-50%, -50%); pointer-events: none; z-index: 3; overflow: visible; filter: drop-shadow(0 0 6px rgba(255, 200, 80, .8)); animation: trailFade 3.2s ease-out forwards; }
 .leo-trail .tp { stroke-dasharray: 1; stroke-dashoffset: 1; animation: trailDraw 1.5s ease-out forwards; }
@@ -2314,17 +2282,7 @@ html[data-vt="l"]::view-transition-new(root) { animation-name: vtInL; }
 @keyframes trailFade { 0%, 60% { opacity: 1; } 100% { opacity: 0; } }
 .hero .mascot, .summary-mascot, .empty-mascot { overflow: visible; }
 .hero .mascot::before { display: none; }
-.hero .mascot .leo3d { filter: none; }
-.summary-mascot { width: 210px; height: 200px; }
-.empty-mascot { width: 160px; height: 152px; }
+.summary-mascot { width: 220px; height: 220px; }
+.empty-mascot { width: 160px; height: 160px; }
 .hero { overflow-x: clip; overflow-y: visible; } body { overflow-x: clip; }
-@media (prefers-reduced-motion: reduce) { .leo-glow, .leo-star, .leo-fig, .lf-tail, .lf-gl, .lf-lid, .leo-shadow, .leo-z, .leo-trail, .leo-trail *, .lf-mo { animation: none !important; } .leo-star { opacity: .6; } .leo-trail { display: none; } .lf-lid { scale: 1 0; } .leo-calm .lf-lid { scale: 1 1; } }
-/* geometry of the layers (generated from the character art) */
-.lf-eye.L { left:40.527%;top:27.167%;width:5.728%;height:5.368%; transform: rotate(-15.3deg); }
-.lf-eye.L .lf-ir { left:25.90%;top:13.17%;width:83.49%;height:94.22%; }
-.lf-lid.L { left:39.984%;top:25.902%;width:6.815%;height:7.322%; transform: rotate(-15.3deg); }
-.lf-eye.R { left:54.413%;top:28.351%;width:6.652%;height:6.149%; transform: rotate(0.5deg); }
-.lf-eye.R .lf-ir { left:-7.52%;top:17.48%;width:81.70%;height:93.46%; }
-.lf-lid.R { left:53.870%;top:27.086%;width:7.739%;height:8.103%; transform: rotate(0.5deg); }
-.lf-tail { left:64.783%;top:63.448%;width:31.630%;height:20.805%; transform-origin: 4.8% 84.5%; }
-.lf-mouth { left:42.391%;top:39.080%;width:14.348%;height:6.897%; clip-path: polygon(6.1% 15.0%,18.2% 28.3%,21.2% 45.0%,24.2% 28.3%,43.9% 23.3%,64.4% 41.7%,66.7% 53.3%,69.7% 41.7%,83.3% 31.7%,92.4% 25.0%,101.5% 30.0%,101.5% 100.0%,6.1% 100.0%); }
+@media (prefers-reduced-motion: reduce) { .leo-glow, .leo-star, .leo-z, .leo-trail, .leo-trail * { animation: none !important; } .leo-star { opacity: .6; } .leo-trail { display: none; } }
