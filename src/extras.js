@@ -155,6 +155,7 @@ function sfx(name) {
     try { if (navigator.vibrate) { if (name === 'right' || name === 'g3' || name === 'g4') navigator.vibrate(12); else if (name === 'wrong' || name === 'g1') navigator.vibrate([18, 40, 18]); } } catch { /* ignore */ }
     const ac = sndCtx(); if (!ac) return;
     SND_LAST = performance.now(); SND_LAST_NAME = name;
+    if (sndStandalone()) { const c = sndClip(name, SFX[name], name === 'done' ? 3 : 1.6); if (c && sndPlayClip(c)) return; }   // clip not ready yet: the synth plays this once
     try { SFX[name](ac, sndChain(ac).bus, ac.currentTime + 0.02, SND.vol); } catch { /* ignore */ }
 }
 
@@ -172,9 +173,47 @@ const RINGTONES = {
 function ringPlay(id, repeat = true) {
     const ac = sndCtx(), r = RINGTONES[id] || RINGTONES.bell;
     if (!ac) return;
+    if (sndStandalone()) {
+        const key = 'ring:' + id + (repeat ? ':2' : ':1'), c = sndClip(key, (a, o, t, v) => { [0, ...(repeat ? [r.len + 0.5] : [])].forEach(d => r.play(a, o, t + d, Math.max(0.4, v) * 1.1)); }, r.len * (repeat ? 2 : 1) + 1.5);
+        if (c) { sndPlayClip(c); return; }
+    }
     const v = Math.max(0.4, SND.vol) * 1.1, t0 = ac.currentTime + 0.05, bus = sndChain(ac).bus;
     try { [0, ...(repeat ? [r.len + 0.5] : [])].forEach(d => r.play(ac, bus, t0 + d, v)); } catch { /* ignore */ }
 }
+
+
+/* Installed web app on iPhone: the ring/silent switch mutes Web Audio but never a real <audio> clip. So there each sound is rendered once
+   (same synth, drawn offline into a WAV) and played through a normal audio element: it is heard exactly like in Safari. */
+function sndStandalone() { try { return navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches; } catch { return false; } }
+const SND_CLIPS = {};   // key -> { url, pool, idx } once rendered, 'wait' while rendering
+function sndWav(buf) {
+    const ch = Math.min(2, buf.numberOfChannels), n = buf.length, out = new ArrayBuffer(44 + n * ch * 2), v = new DataView(out), w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+    w(0, 'RIFF'); v.setUint32(4, 36 + n * ch * 2, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, ch, true);
+    v.setUint32(24, buf.sampleRate, true); v.setUint32(28, buf.sampleRate * ch * 2, true); v.setUint16(32, ch * 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * ch * 2, true);
+    const d = []; for (let c = 0; c < ch; c++) d.push(buf.getChannelData(c));
+    let o = 44; for (let i = 0; i < n; i++) for (let c = 0; c < ch; c++) { const x = Math.max(-1, Math.min(1, d[c][i])); v.setInt16(o, x < 0 ? x * 0x8000 : x * 0x7fff, true); o += 2; }
+    return new Blob([out], { type: 'audio/wav' });
+}
+async function sndRender(key, play, secs) {
+    const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext; if (!OAC) return null;
+    const sr = 44100, oac = new OAC(2, Math.ceil(sr * secs), sr);
+    play(oac, sndChain(oac).bus, 0.02, 0.8);
+    const buf = await oac.startRendering();
+    return URL.createObjectURL(sndWav(buf));
+}
+function sndClip(key, play, secs) {   // returns the clip when ready, else starts rendering it
+    const c = SND_CLIPS[key];
+    if (c && c !== 'wait') return c;
+    if (!c) {
+        SND_CLIPS[key] = 'wait';
+        sndRender(key, play, secs).then(url => { SND_CLIPS[key] = url ? { url, pool: [new Audio(url), new Audio(url)], idx: 0 } : 'wait'; }).catch(() => { SND_CLIPS[key] = 'wait'; });
+    }
+    return null;
+}
+function sndPlayClip(c) {
+    try { const a = c.pool[c.idx = (c.idx + 1) % c.pool.length]; a.setAttribute('playsinline', ''); a.volume = Math.max(0.05, Math.min(1, SND.vol / 0.8)); a.currentTime = 0; const p = a.play(); if (p && p.catch) p.catch(() => { }); return true; } catch { return false; }
+}
+function sndPrerender() { ['reveal', 'g1', 'g2', 'g3', 'g4', 'right', 'wrong', 'done', 'tap', 'pop'].forEach((n, i) => setTimeout(() => SFX[n] && sndClip(n, SFX[n], n === 'done' ? 3 : 1.6), 300 + i * 120)); }
 
 /* iPhone: Web Audio is muted by the ring/silent switch and needs a real touch to start.
    On the first tap we (1) ask for the "playback" audio session, (2) play one silent <audio> clip (what makes iOS treat the page as media),
@@ -184,9 +223,10 @@ function sndUnlock() {
     try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch { /* ignore */ }
     const ac = sndCtx(); if (!ac) return;
     try { const b = ac.createBuffer(1, 1, 22050), s = ac.createBufferSource(); s.buffer = b; s.connect(ac.destination); s.start(0); } catch { /* ignore */ }
-    if (SND_UNLOCK.done) { sndKeepAlive(); return; }
+    if (SND_UNLOCK.done) return;
     SND_UNLOCK.done = true;
-    sndKeepAlive();
+    if (!(window.OfflineAudioContext || window.webkitOfflineAudioContext)) sndKeepAlive();   // old browsers only: the clip route below needs offline rendering
+    else if (sndStandalone()) sndPrerender();
 }
 /* installed web app on iPhone: Web Audio stays muted unless the page is "playing media". A silent clip played in a loop
    (in the page, not muted, a hair above silence) keeps the "playback" audio session alive, so the sounds are heard like in Safari. */
