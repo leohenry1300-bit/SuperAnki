@@ -4,7 +4,7 @@
    - Bell sounds for the focus timer: a list to choose from, one for the end of study and one for the end of the break.
    ============================================================ */
 const SND_KEY = 'superanki_sound';
-const SND = (() => { let st = { on: true, ui: true, tab: 'swipe', vol: 0.5, mode: 'mix' }; try { const x = JSON.parse(localStorage.getItem(SND_KEY) || 'null'); if (x && typeof x === 'object') st = { on: x.on !== false, ui: x.ui !== false, tab: ['swipe', 'bubble', 'click', 'none'].includes(x.tab) ? x.tab : 'swipe', vol: Math.min(1, Math.max(0, Number(x.vol) || 0.5)), mode: x.mode === 'prio' ? 'prio' : 'mix' }; } catch { /* ignore */ } return st; })();
+const SND = (() => { let st = { on: true, ui: true, tab: 'swipe', vol: 0.5, mode: 'mix' }; try { const x = JSON.parse(localStorage.getItem(SND_KEY) || 'null'); if (x && typeof x === 'object') st = { on: x.on !== false, ui: x.ui !== false, tab: ['swipe', 'bubble', 'click', 'none'].includes(x.tab) ? x.tab : 'swipe', vol: Math.min(1, Math.max(0, Number(x.vol) || 0.5)), mode: 'mix' }; } catch { /* ignore */ } return st; })();
 function sndSave() { try { localStorage.setItem(SND_KEY, JSON.stringify(SND)); } catch { /* ignore */ } }
 function sndCtx() {
     try {
@@ -308,7 +308,7 @@ Object.assign(SuperAnki.prototype, {
             else if (a === 'snd-toggle') { SND.on = !SND.on; sndSave(); this.updRefresh(); this.extrasSoundRefresh(); if (SND.on) sfx('pop'); }
             else if (a === 'ui-toggle') { SND.ui = !SND.ui; sndSave(); if (SND.ui) sfx('on'); }
             else if (a === 'snd-test') {
-                sndUnlock(); sndDiag(); setTimeout(sndDiag, 900);
+                sndUnlock();
                 if (sndClipsOk()) {
                     sndClipP('g3', SFX.g3, 1.6).then(async c => {
                         if (!c) { this.toast('Ce téléphone ne peut pas préparer les sons.', 'warning'); return; }
@@ -387,8 +387,6 @@ Object.assign(SuperAnki.prototype, {
                 <label class="switch"><input type="checkbox" ${SND.ui ? 'checked' : ''} data-ex="ui-toggle" aria-label="Petits sons d'interface"><span></span></label></div>
             <div class="set-row"><div class="txt"><b>Son du changement d'onglet</b></div>
                 <select class="select select-sm" id="snd-tab" aria-label="Son du changement d'onglet">${[['swipe', 'Souffle doux'], ['bubble', 'Bulle'], ['click', 'Petit clic'], ['none', 'Aucun']].map(([v, l]) => `<option value="${v}" ${SND.tab === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
-            <div class="set-row"><div class="txt"><b>Sons et musique</b><span id="snd-diag" class="small muted">${sndDiagText()}</span></div>
-                <select class="select select-sm" id="snd-mode" aria-label="Sons et musique">${[['mix', 'Mélangés à ma musique'], ['prio', 'Prioritaires (coupent la musique)']].map(([v, l]) => `<option value="${v}" ${SND.mode === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
             <div class="set-row"><div class="txt"><b>Volume</b></div><input type="range" id="snd-vol" min="5" max="100" value="${Math.round(SND.vol * 100)}" style="width:160px" aria-label="Volume"></div>
         </div>`;
     },
