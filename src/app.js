@@ -1239,14 +1239,15 @@ class SuperAnki {
             if (!line && stats.lastStudyDate && st.missedDay !== today && daysBetweenKeys(stats.lastStudyDate, today) >= 2) { line = leoPick('missed'); mark = { missedDay: today }; }
             if (!line) return;
             localStorage.setItem('lh_leo_auto', JSON.stringify({ ...st, ...mark }));
-            this.mascotSay(line);
+            this.mascotSay(line, { sound: party ? 'leocheer' : 'leo' });
             const m = $('.hero .mascot'); if (m) { m.classList.remove('hop'); void m.offsetWidth; m.classList.add('hop'); }
             if (party) this.confetti();
         } catch { /* ignore */ }
     }
     /* Léo talks: his words replace the sub-title of the home card for a few seconds (typed letter by letter), so he never covers anything */
-    mascotSay(text) {
+    mascotSay(text, opts = {}) {
         const sub = $('.hero .hero-sub'); if (!sub) return;
+        sfx(opts.sound || 'leo');
         if (!sub.dataset.orig) sub.dataset.orig = sub.innerHTML;
         clearInterval(this._typeT); clearTimeout(this._bubbleT);
         sub.classList.add('speaking'); sub.textContent = '';
@@ -3826,8 +3827,8 @@ class SuperAnki {
             case 'mascot': {
                 const m = el.dataset ? el.dataset.mood : 'ready', now = Date.now(), h = new Date().getHours();
                 this._mTaps = (this._mTaps || []).filter(t => now - t < 2500); this._mTaps.push(now);
-                if (this._mTaps.length >= 5) { this._mTaps = []; this.mascotSay(leoPick('roar')); el.classList.add('roar'); setTimeout(() => el.classList.remove('roar'), 900); }
-                else if (this._mTaps.length >= 3) this.mascotSay(leoPick('tap'));
+                if (this._mTaps.length >= 5) { this._mTaps = []; this.mascotSay(leoPick('roar'), { sound: 'leoroar' }); el.classList.add('roar'); setTimeout(() => el.classList.remove('roar'), 900); }
+                else if (this._mTaps.length >= 3) this.mascotSay(leoPick('tap'), { sound: 'leotickle' });
                 else this.mascotSay(leoPick(m === 'calm' && (h >= 23 || h < 5) ? 'night' : m));
                 el.classList && el.classList.remove('hop'); void (el.offsetWidth); el.classList && el.classList.add('hop');
                 break;

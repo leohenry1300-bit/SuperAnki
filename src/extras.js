@@ -143,6 +143,29 @@ Object.assign(SFX, {
     success: (ac, o, t, v) => { iPluck(ac, o, t, NOTE.G5, v * 0.2, 0.4); iPluck(ac, o, t + 0.07, NOTE.D6, v * 0.2, 0.5); },
     error: (ac, o, t, v) => { iPad(ac, o, t, NOTE.A4, v * 0.14, 0.25); iMarimba(ac, o, t + 0.07, NOTE.E4, v * 0.14, 0.3); }
 });
+/* Léo's voice: tiny, soft and friendly (never harsh) */
+Object.assign(SFX, {
+    leo: (ac, o, t, v) => {   // two small rising "mrip" blips
+        [[520, 660, 0], [600, 760, 0.11]].forEach(([a, b, d]) => { const x = sndOsc(ac, sndLP(ac, o, 2600), 'triangle', a, t + d, 0.16, v * 0.3, 0.008, 0.05); x.o.frequency.exponentialRampToValueAtTime(b, t + d + 0.09); });
+    },
+    leotickle: (ac, o, t, v) => {   // a squeaky giggle: quick up-down blips
+        [0, 1, 2, 3, 4].forEach(i => { const hz = i % 2 ? 760 : 960, x = sndOsc(ac, sndLP(ac, o, 3200), 'triangle', hz, t + i * 0.075, 0.1, v * 0.26, 0.005, 0.03); x.o.frequency.exponentialRampToValueAtTime(hz * 1.18, t + i * 0.075 + 0.05); });
+    },
+    leoroar: (ac, o, t, v) => {   // a gentle growl: low saw with vibrato through a moving low-pass, plus a breath of noise
+        const car = ac.createOscillator(), lfo = ac.createOscillator(), lg = ac.createGain(), g = ac.createGain(), f = ac.createBiquadFilter();
+        car.type = 'sawtooth'; car.frequency.setValueAtTime(120, t); car.frequency.exponentialRampToValueAtTime(70, t + 0.75);
+        lfo.frequency.value = 22; lg.gain.value = 9; lfo.connect(lg); lg.connect(car.frequency);
+        f.type = 'lowpass'; f.Q.value = 2.5; f.frequency.setValueAtTime(260, t); f.frequency.linearRampToValueAtTime(900, t + 0.28); f.frequency.linearRampToValueAtTime(240, t + 0.8);
+        sndEnv(g, t, v * 0.34, 0.07, 0.2, 0.35); car.connect(f); f.connect(g); g.connect(o);
+        car.start(t); lfo.start(t); car.stop(t + 1.1); lfo.stop(t + 1.1);
+        iPuff(ac, o, t + 0.02, 0.4, v * 0.18, 700);
+    },
+    leocheer: (ac, o, t, v) => {   // a happy little fanfare
+        [NOTE.C5, NOTE.E5, NOTE.G5, NOTE.C6].forEach((h, i) => iPluck(ac, o, t + i * 0.07, h, v * 0.34, 0.8));
+        iBell(ac, o, t + 0.28, NOTE.E6, v * 0.13, 0.9);
+        const x = sndOsc(ac, sndLP(ac, o, 3000), 'triangle', 700, t + 0.4, 0.16, v * 0.22, 0.01, 0.06); x.o.frequency.exponentialRampToValueAtTime(980, t + 0.5);
+    }
+});
 let SND_LAST = 0, SND_LAST_NAME = '';
 function sfxUi(name) {
     if (!SND.on || !SND.ui) return;
@@ -248,7 +271,7 @@ function sndPlayClip(c) {
 }
 /* the volume changed: sounds are rendered again at the new volume, in the background */
 function sndVolChanged() { Object.keys(SND_PROM).forEach(k => delete SND_PROM[k]); if (sndClipsOk()) sndPrerender(); }
-const SND_PRE = ['reveal', 'g1', 'g2', 'g3', 'g4', 'right', 'wrong', 'done', 'tap', 'pop', 'tabswipe', 'tabbubble', 'tabclick', 'on', 'off', 'select', 'tick', 'open', 'close', 'success', 'error'];
+const SND_PRE = ['leo', 'leotickle', 'leoroar', 'leocheer', 'reveal', 'g1', 'g2', 'g3', 'g4', 'right', 'wrong', 'done', 'tap', 'pop', 'tabswipe', 'tabbubble', 'tabclick', 'on', 'off', 'select', 'tick', 'open', 'close', 'success', 'error'];
 function sndPrerender() { SND_PRE.forEach((n, i) => setTimeout(() => SFX[n] && sndClipP(n, SFX[n], n === 'done' ? 3 : 1.6), 150 + i * 90)); }
 
 /* iPhone: Web Audio is muted by the ring/silent switch and needs a real touch to start.
