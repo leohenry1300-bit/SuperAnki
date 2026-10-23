@@ -1437,6 +1437,7 @@ class SuperAnki {
         const libTotal = PACKS.reduce((n, p) => n + this.packCardIds(p).length, 0);
         const libBanner = !d.settings.libSeen && !d.cards.some(c => c.id.startsWith('pk_')) ? `<div class="panel lib-banner"><span class="lib-ico">${ic('sparkles')}</span><div style="flex:1;min-width:200px"><b>Nouveau : la bibliothèque de paquets</b><p class="small muted">${libTotal.toLocaleString('fr-FR')} cartes prêtes à apprendre : anglais et TOEIC, banque, assurance, finance, BUT TC.</p></div><button class="btn btn-primary btn-sm" data-action="open-library">Découvrir</button><button class="icon-btn icon-btn-sm" data-action="lib-dismiss" aria-label="Fermer" title="Fermer">${ic('x')}</button></div>` : '';
 
+        const keepLeo = $('#view-dashboard .hero .leo3d');   // the same Léo stays on screen when the card is redrawn (no reload, no flash)
         $('#view-dashboard').innerHTML = `
         <div class="stack">
             <div class="hero">
@@ -1505,6 +1506,8 @@ class SuperAnki {
             ${libBanner}
             ${this.tipsHtml()}
         </div>`;
+        const fresh = $('#view-dashboard .hero .leo3d');
+        if (keepLeo && fresh && keepLeo.isConnected === false && keepLeo.dataset.mood === fresh.dataset.mood) fresh.replaceWith(keepLeo);
     }
     tipsHtml() {
         if (this.data.settings.tipsSeen || !this.data.cards.length) return '';

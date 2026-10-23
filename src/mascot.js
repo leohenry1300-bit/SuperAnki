@@ -24,7 +24,7 @@ function leoImg(url, cls, key) {
 function leoSetState(root, st) { root.dataset.state = st; }
 /* the looping "alive" clip under everything: breathing, blinking, small movements (only while he rests holding his tablet) */
 function leoIdle(root) {
-    if (!root || !root.isConnected || leoMotionOff() || document.hidden || root.dataset.state !== 's1') return;
+    if (!root || !root.isConnected || leoMotionOff() || document.hidden || root.dataset.state !== 's1' || root.classList.contains('leo-off')) return;
     const fig = root.querySelector('.leo-fig'); if (!fig) return;
     const old = fig.querySelector('.lf-idle'); if (old) old.remove();
     const tok = root._leoTok || 0;
@@ -43,11 +43,11 @@ function leoPlay(root, key, o = {}) {
     return leoLoad(key).then(url => leoImg(url, 'lf-clip lf-play' + (c.flip ? ' flip' : ''), key)).then(img => {
         if (root._leoTok !== tok || !root.isConnected) return false;
         if (o.intro) root._leoBusy = Date.now() + c.d * 1000;
-        fig.querySelectorAll('.lf-clip').forEach(x => x.remove());
         if (root.dataset.state !== c.from) leoSetState(root, c.from);
-        /* he appears over his resting pose with a short cross-fade (the first frame of every clip is the rest pose), so nothing jumps */
+        /* he appears over what is already on screen (his rest pose / idle loop, same pose as the first frame of every clip) with a short cross-fade: he never blinks out */
+        fig.querySelectorAll('.lf-play').forEach(x => x.remove());
         fig.appendChild(img); img.getBoundingClientRect(); img.classList.add('on');
-        setTimeout(() => { if (root._leoTok === tok) { root.classList.remove('lv-idle'); root.classList.add('lv-clip'); } }, 140);
+        setTimeout(() => { if (root._leoTok === tok) { fig.querySelectorAll('.lf-idle').forEach(x => x.remove()); root.classList.remove('lv-idle'); root.classList.add('lv-clip'); } }, 160);
         return new Promise(res => setTimeout(() => {
             if (root._leoTok !== tok) return res(false);
             leoSetState(root, c.to || c.from);
@@ -93,7 +93,7 @@ const LEO_VOICE = {
 /* wires up every Léo that has just appeared on screen: resting pose, idle loop, intro clip, now and then a little spontaneous move */
 function leoBoot() {
     document.querySelectorAll('.leo3d:not([data-live])').forEach(root => {
-        root.dataset.live = '1';
+        root.dataset.live = '1'; if (LEO_IO) LEO_IO.observe(root);
         const intro = root.dataset.intro, amb = (root.dataset.amb || '').split(',').filter(Boolean);
         if (leoMotionOff()) return;
         if (root.dataset.state === 's1') leoIdle(root);
@@ -102,7 +102,7 @@ function leoBoot() {
         if (amb.length) {
             const tick = () => {
                 if (!root.isConnected) return;
-                if (!document.hidden && !root.classList.contains('lv-clip') && root.dataset.state !== 'sleep') leoPlay(root, amb[Math.floor(Math.random() * amb.length)]);
+                if (!document.hidden && !root.classList.contains('leo-off') && !root.classList.contains('lv-clip') && root.dataset.state !== 'sleep') leoPlay(root, amb[Math.floor(Math.random() * amb.length)]);
                 setTimeout(tick, 32000 + Math.random() * 28000);
             };
             setTimeout(tick, 20000 + Math.random() * 15000);
@@ -117,6 +117,11 @@ function leoPrefetch() {
     const go = () => ['idle', 'talk', 'tablet', 'wave', 'roar'].reduce((p, k) => p.then(() => leoLoad(k)).catch(() => {}), Promise.resolve());
     (window.requestIdleCallback || (f => setTimeout(f, 2500)))(go);
 }
+/* off screen (scrolled away, another tab) he stops: no idle loop, no CSS animation */
+const LEO_IO = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => {
+    const r = e.target; r.classList.toggle('leo-off', !e.isIntersecting);
+    if (!e.isIntersecting) { const i = r.querySelector('.lf-idle'); if (i) i.remove(); r.classList.remove('lv-idle'); } else leoIdle(r);
+}), { rootMargin: '80px' }) : null;
 function leoInit() {
     let q = 0;
     new MutationObserver(() => { if (q) return; q = requestAnimationFrame(() => { q = 0; leoBoot(); }); }).observe(document.body, { childList: true, subtree: true });

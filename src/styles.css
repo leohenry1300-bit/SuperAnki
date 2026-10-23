@@ -2256,7 +2256,8 @@ html[data-vt="l"]::view-transition-new(root) { animation-name: vtInL; }
 .leo-star { position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s); background: #fff1b8; clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); opacity: 0; animation: leoTwinkle 3.4s ease-in-out infinite; animation-delay: var(--d); z-index: 0; pointer-events: none; }
 @keyframes leoTwinkle { 0%, 100% { opacity: 0; transform: scale(.4) rotate(0); } 45% { opacity: .95; transform: scale(1) rotate(25deg); } 70% { opacity: .3; transform: scale(.7) rotate(40deg); } }
 /* the figure sits on the floor of its slot; every layer shares the same box (the crop of the clips) */
-.leo-pose { position: absolute; left: 0; bottom: 0; width: 100%; aspect-ratio: var(--ar, 1); z-index: 1; }
+.leo-pose { position: absolute; left: 0; bottom: 0; width: 100%; aspect-ratio: var(--ar, 1); z-index: 1; will-change: transform; transform: translateZ(0); }   /* his own layer: a new frame never repaints the card behind him */
+.leo-off *, .leo-off { animation-play-state: paused !important; }
 .leo-shadow { position: absolute; left: 50%; bottom: 1%; width: 46%; height: 6%; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(closest-side, rgba(20, 8, 50, .45), transparent); z-index: 0; pointer-events: none; }
 .leo-fig { position: absolute; inset: 0; }
 .lf-still { position: absolute; inset: 0; }
