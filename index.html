@@ -1920,6 +1920,21 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .add-top { display: none; }
 @media (max-width: 767px) { .add-top { display: inline-flex; } }
 
+/* ---- top bar on phone: five evenly spaced, same-size controls ---- */
+@media (max-width: 767px) {
+  .topbar-inner { padding: 0 12px; gap: 8px; }
+  .topbar-actions { gap: 2px; }
+  .topbar-actions .icon-btn, .topbar-actions .sync-dot, .topbar-actions .focus-btn { width: 40px; height: 40px; min-width: 40px; min-height: 40px; padding: 0; border-radius: 12px; display: inline-grid; place-items: center; }
+  .topbar-actions .focus-btn:has(.nav-chip:not(:empty)) { width: auto; padding: 0 10px; display: inline-flex; gap: 5px; }
+  .topbar-actions .icon-btn .i, .topbar-actions .sync-dot .i { width: 22px; height: 22px; }
+  .topbar-actions .focus-btn.active { background: var(--primary-soft); color: var(--primary); }
+  .topbar-actions .streak-chip { height: 40px; margin-left: 6px; padding: 0 12px; }
+  .topbar-actions .add-top { color: var(--primary); }
+}
+.logo-mark { flex: none; min-width: 36px; }
+@media (max-width: 767px) { .brand { flex: 0 1 auto; } .brand > span:last-child { white-space: nowrap; } }
+@media (max-width: 379px) { .brand > span:last-child { display: none; } }
+
 </style>
 </head>
 <body>
@@ -1938,7 +1953,7 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
         </nav>
         <div class="topbar-actions" style="margin-left:auto">
             <button class="icon-btn focus-btn" data-action="focus-toggle" title="Temps de concentration (minuteur étude / pause)" aria-label="Temps de concentration"><svg class="i" viewBox="0 0 24 24"><use href="#i-timer"/></svg><span class="nav-chip" id="focus-chip"></span></button>
-            <button class="icon-btn add-top" data-action="new-card" title="Nouvelle carte" aria-label="Nouvelle carte"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+            <button class="icon-btn add-top" data-action="new-card" title="Nouvelle carte" aria-label="Nouvelle carte"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
             <button class="icon-btn" data-action="global-search" title="Rechercher une carte (Ctrl+K)" aria-label="Rechercher"><svg class="i" viewBox="0 0 24 24"><use href="#i-search"/></svg></button>
             <button id="sync-indicator" class="sync-dot hidden" title="Synchronisation cloud" data-action="pop-sync" aria-label="Synchronisation cloud"><svg class="i" viewBox="0 0 24 24"><use href="#i-cloud"/></svg></button>
             <button id="streak-chip" class="streak-chip cold" data-action="pop-streak" title="Série actuelle" aria-label="Série actuelle">

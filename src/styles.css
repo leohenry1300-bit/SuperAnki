@@ -1900,3 +1900,18 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 
 .add-top { display: none; }
 @media (max-width: 767px) { .add-top { display: inline-flex; } }
+
+/* ---- top bar on phone: five evenly spaced, same-size controls ---- */
+@media (max-width: 767px) {
+  .topbar-inner { padding: 0 12px; gap: 8px; }
+  .topbar-actions { gap: 2px; }
+  .topbar-actions .icon-btn, .topbar-actions .sync-dot, .topbar-actions .focus-btn { width: 40px; height: 40px; min-width: 40px; min-height: 40px; padding: 0; border-radius: 12px; display: inline-grid; place-items: center; }
+  .topbar-actions .focus-btn:has(.nav-chip:not(:empty)) { width: auto; padding: 0 10px; display: inline-flex; gap: 5px; }
+  .topbar-actions .icon-btn .i, .topbar-actions .sync-dot .i { width: 22px; height: 22px; }
+  .topbar-actions .focus-btn.active { background: var(--primary-soft); color: var(--primary); }
+  .topbar-actions .streak-chip { height: 40px; margin-left: 6px; padding: 0 12px; }
+  .topbar-actions .add-top { color: var(--primary); }
+}
+.logo-mark { flex: none; min-width: 36px; }
+@media (max-width: 767px) { .brand { flex: 0 1 auto; } .brand > span:last-child { white-space: nowrap; } }
+@media (max-width: 379px) { .brand > span:last-child { display: none; } }
