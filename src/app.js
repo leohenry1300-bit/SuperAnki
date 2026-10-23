@@ -1206,7 +1206,6 @@ class SuperAnki {
             </div>
 
             ${this.resumeHtml()}
-            ${this.goalsHtml()}
             ${libBanner}
             ${this.tipsHtml()}
             <div class="status-grid">
@@ -1219,6 +1218,7 @@ class SuperAnki {
             </div>
 
             ${this.recentsHtml()}
+            ${this.goalsHtml()}
             <div>
                 ${this.secToggle('modes', "Modes d'entraînement", `<button class="link" data-action="custom-study">${ic('sliders')}Révisions personnalisées</button>`)}
                 ${this.homeOpen('modes') ? '<div class="mode-grid">' : '<div class="mode-grid hidden">'}
@@ -3327,7 +3327,7 @@ class SuperAnki {
                 break;
             }
             case 'home-toggle': {
-                const o = { ...(this.data.settings.homeOpen || {}) }; o[ds.sec] = !this.homeOpen(ds.sec, ds.sec === 'recents');
+                const o = { ...(this.data.settings.homeOpen || {}) }; o[ds.sec] = !this.homeOpen(ds.sec, ds.sec === 'recents' || ds.sec === 'goals');
                 this.setSetting('homeOpen', o); this.renderDashboard(); break;
             }
             case 'resume-last': {
@@ -3442,6 +3442,7 @@ class SuperAnki {
             case 'toggle-deck': this.toggleOpen('side', ds.deck); this.renderDeckSidebar(); break;
             case 'dash-toggle': this.toggleOpen('dash', ds.deck); this.renderDashboard(); break;
             case 'tree-all': this.setAllOpen(ds.key, ds.open === '1'); this.renderDeckSidebar(); break;
+            case 'goals-manage': this.go('settings'); setTimeout(() => { const g = $('#goals-panel'); if (g) { const sp = g.closest('details'); if (sp) sp.open = true; g.scrollIntoView({ block: 'start' }); window.scrollBy(0, -120); } }, 80); break;
             case 'goal-add': {
                 const name = (($('#goal-name') || {}).value || '').trim(), date = ($('#goal-date') || {}).value || '';
                 if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { this.toast('Choisis une date pour ton objectif.', 'warning'); break; }

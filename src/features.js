@@ -856,7 +856,8 @@ Object.assign(SuperAnki.prototype, {
             }
             return `<div class="panel exam-row ${soon ? 'soon' : ''}"><div class="ex-top"><b>${esc(g.name)}</b><span class="goal-days ${soon ? 'soon' : ''}">${left}</span></div>${body}</div>`;
         }).join('');
-        return `<div><div class="section-head"><h3 class="section-title">Examens</h3><button class="link" data-nav="settings">Gérer</button></div><div class="exam-list">${rows}</div></div>`;
+        const open = this.homeOpen('goals', true);
+        return `<div>${this.secToggle('goals', 'Examens', `<button class="link" data-action="goals-manage">Gérer</button>`, true)}<div class="exam-list${open ? '' : ' hidden'}">${rows}</div></div>`;
     },
 
     /* ============================================================
