@@ -1844,17 +1844,7 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .goal-add #goal-deck { grid-column: 1 / -1; }
 @media (max-width: 560px) { .goal-add { grid-template-columns: 1fr; } }
 
-.fab-add { display: none; }
 .dup-warn { color: var(--warning, #b45309); font-weight: 600; }
-@media (max-width: 767px) {
-  body.can-fab:not(.in-session) .fab-add {
-    display: flex; align-items: center; justify-content: center; position: fixed; z-index: 39;
-    right: 16px; bottom: calc(78px + env(safe-area-inset-bottom, 0px));
-    width: 54px; height: 54px; border-radius: 50%; background: var(--primary); color: var(--on-primary, #fff);
-    box-shadow: 0 6px 18px rgba(0,0,0,.28);
-  }
-  .fab-add .i { width: 26px; height: 26px; }
-}
 
 .fc-size { display: inline-flex; gap: 4px; margin-left: auto; margin-right: 8px; }
 .fc-size-btn { min-width: 34px; height: 30px; padding: 0 8px; border-radius: 8px; border: var(--border-w) solid var(--border); background: transparent; color: var(--text); font-weight: 800; font-size: .85rem; cursor: pointer; }
@@ -1907,3 +1897,6 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 @media (max-width: 960px) { #deck-sidebar .dl-row .dl-item .nm { white-space: normal; -webkit-line-clamp: 2; } }
 #deck-find-res .dl-item .nm, #dash-find-res .dl-item .nm { max-width: none; flex: 1; min-width: 0; }
 #deck-find-res .dl-item, #dash-find-res .dl-item { flex: none; }
+
+.add-top { display: none; }
+@media (max-width: 767px) { .add-top { display: inline-flex; } }

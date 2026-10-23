@@ -1863,17 +1863,7 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .goal-add #goal-deck { grid-column: 1 / -1; }
 @media (max-width: 560px) { .goal-add { grid-template-columns: 1fr; } }
 
-.fab-add { display: none; }
 .dup-warn { color: var(--warning, #b45309); font-weight: 600; }
-@media (max-width: 767px) {
-  body.can-fab:not(.in-session) .fab-add {
-    display: flex; align-items: center; justify-content: center; position: fixed; z-index: 39;
-    right: 16px; bottom: calc(78px + env(safe-area-inset-bottom, 0px));
-    width: 54px; height: 54px; border-radius: 50%; background: var(--primary); color: var(--on-primary, #fff);
-    box-shadow: 0 6px 18px rgba(0,0,0,.28);
-  }
-  .fab-add .i { width: 26px; height: 26px; }
-}
 
 .fc-size { display: inline-flex; gap: 4px; margin-left: auto; margin-right: 8px; }
 .fc-size-btn { min-width: 34px; height: 30px; padding: 0 8px; border-radius: 8px; border: var(--border-w) solid var(--border); background: transparent; color: var(--text); font-weight: 800; font-size: .85rem; cursor: pointer; }
@@ -1927,6 +1917,9 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 #deck-find-res .dl-item .nm, #dash-find-res .dl-item .nm { max-width: none; flex: 1; min-width: 0; }
 #deck-find-res .dl-item, #dash-find-res .dl-item { flex: none; }
 
+.add-top { display: none; }
+@media (max-width: 767px) { .add-top { display: inline-flex; } }
+
 </style>
 </head>
 <body>
@@ -1945,6 +1938,7 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
         </nav>
         <div class="topbar-actions" style="margin-left:auto">
             <button class="icon-btn focus-btn" data-action="focus-toggle" title="Temps de concentration (minuteur étude / pause)" aria-label="Temps de concentration"><svg class="i" viewBox="0 0 24 24"><use href="#i-timer"/></svg><span class="nav-chip" id="focus-chip"></span></button>
+            <button class="icon-btn add-top" data-action="new-card" title="Nouvelle carte" aria-label="Nouvelle carte"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
             <button class="icon-btn" data-action="global-search" title="Rechercher une carte (Ctrl+K)" aria-label="Rechercher"><svg class="i" viewBox="0 0 24 24"><use href="#i-search"/></svg></button>
             <button id="sync-indicator" class="sync-dot hidden" title="Synchronisation cloud" data-action="pop-sync" aria-label="Synchronisation cloud"><svg class="i" viewBox="0 0 24 24"><use href="#i-cloud"/></svg></button>
             <button id="streak-chip" class="streak-chip cold" data-action="pop-streak" title="Série actuelle" aria-label="Série actuelle">
@@ -1972,8 +1966,6 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
     <button data-nav="stats"><svg class="i" viewBox="0 0 24 24"><use href="#i-chart"/></svg>Stats</button>
     <button data-nav="settings"><svg class="i" viewBox="0 0 24 24"><use href="#i-settings"/></svg>Réglages</button>
 </nav>
-
-<button class="fab-add" data-action="new-card" aria-label="Nouvelle carte" title="Nouvelle carte"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
 
 <div id="modal-root"></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
@@ -3167,7 +3159,6 @@ class SuperAnki {
         document.body.classList.toggle('in-session', this.view === 'session' || this.view === 'exam');
         document.body.classList.toggle('in-exam', this.view === 'exam');
         if (this.view !== 'decks') document.body.classList.remove('deck-sheet');
-        document.body.classList.toggle('can-fab', this.view === 'dashboard' || this.view === 'decks');
         this.renderStreak();
         this.renderSyncIndicator();
         if (this.view === 'dashboard') this.renderDashboard();
@@ -3243,8 +3234,6 @@ class SuperAnki {
             </div>
 
             ${this.resumeHtml()}
-            ${libBanner}
-            ${this.tipsHtml()}
             <div class="status-grid">
                 ${['new', 'learn', 'due', 'mature'].map(k => `
                 <button class="panel status-tile" style="--c:${STATUS[k].color}" data-action="goto-filter" data-filter="${k}">
@@ -3254,8 +3243,8 @@ class SuperAnki {
                 </button>`).join('')}
             </div>
 
-            ${this.recentsHtml()}
             ${this.goalsHtml()}
+            ${this.recentsHtml()}
             <div>
                 ${this.secToggle('modes', "Modes d'entraînement", `<button class="link" data-action="custom-study">${ic('sliders')}Révisions personnalisées</button>`)}
                 ${this.homeOpen('modes') ? '<div class="mode-grid">' : '<div class="mode-grid hidden">'}
@@ -3287,6 +3276,8 @@ class SuperAnki {
                 <div id="dash-decks" class="deck-grid ${this.deckCompact() ? 'compact' : ''}">${this.dashboardDeckCards()}</div>`
                     : `<div class="panel empty">${ic('layers')}<p>Aucun paquet pour l'instant.</p><button class="btn btn-primary" style="margin-top:14px" data-action="new-deck">${ic('folderPlus')}Créer un paquet</button></div>`}
             </div>
+            ${libBanner}
+            ${this.tipsHtml()}
         </div>`;
     }
     tipsHtml() {

@@ -1131,7 +1131,6 @@ class SuperAnki {
         document.body.classList.toggle('in-session', this.view === 'session' || this.view === 'exam');
         document.body.classList.toggle('in-exam', this.view === 'exam');
         if (this.view !== 'decks') document.body.classList.remove('deck-sheet');
-        document.body.classList.toggle('can-fab', this.view === 'dashboard' || this.view === 'decks');
         this.renderStreak();
         this.renderSyncIndicator();
         if (this.view === 'dashboard') this.renderDashboard();
@@ -1207,8 +1206,6 @@ class SuperAnki {
             </div>
 
             ${this.resumeHtml()}
-            ${libBanner}
-            ${this.tipsHtml()}
             <div class="status-grid">
                 ${['new', 'learn', 'due', 'mature'].map(k => `
                 <button class="panel status-tile" style="--c:${STATUS[k].color}" data-action="goto-filter" data-filter="${k}">
@@ -1218,8 +1215,8 @@ class SuperAnki {
                 </button>`).join('')}
             </div>
 
-            ${this.recentsHtml()}
             ${this.goalsHtml()}
+            ${this.recentsHtml()}
             <div>
                 ${this.secToggle('modes', "Modes d'entraînement", `<button class="link" data-action="custom-study">${ic('sliders')}Révisions personnalisées</button>`)}
                 ${this.homeOpen('modes') ? '<div class="mode-grid">' : '<div class="mode-grid hidden">'}
@@ -1251,6 +1248,8 @@ class SuperAnki {
                 <div id="dash-decks" class="deck-grid ${this.deckCompact() ? 'compact' : ''}">${this.dashboardDeckCards()}</div>`
                     : `<div class="panel empty">${ic('layers')}<p>Aucun paquet pour l'instant.</p><button class="btn btn-primary" style="margin-top:14px" data-action="new-deck">${ic('folderPlus')}Créer un paquet</button></div>`}
             </div>
+            ${libBanner}
+            ${this.tipsHtml()}
         </div>`;
     }
     tipsHtml() {
