@@ -322,8 +322,10 @@ Object.assign(SuperAnki.prototype, {
         if (P.rev) ['Réviser par petits groupes', 'Équilibrer la charge'].forEach(t => { const r = rowOf(new RegExp('^' + t)); if (r) P.rev.appendChild(r); });
         /* risky actions get their own panel at the very end */
         const dz = document.createElement('div'); dz.className = 'panel panel-pad set-section set-danger'; dz.id = 'set-danger';
-        dz.innerHTML = `<h3>${ic('alert')} Zone sensible</h3><p class="small muted">Ces actions effacent de la progression ou des données. Elles demandent toujours une confirmation.</p>`;
+        dz.innerHTML = `<h3>${ic('alert')} Zone sensible</h3><p class="small muted">Ces actions effacent de la progression ou des données. Elles demandent une confirmation, et tu peux toujours revenir en arrière (7 jours).</p>`;
         let nd = 0; ['Remettre la progression', 'Réinitialiser l.application'].forEach(t => { const r = rowOf(new RegExp('^' + t)); if (r) { dz.appendChild(r); nd++; } });
+        const sens = this.sensitiveInfo && this.sensitiveInfo();
+        if (sens) { const r = document.createElement('div'); r.className = 'set-row'; r.innerHTML = `<div class="txt"><b>Revenir en arrière</b><span>Dernière action : ${sens.label} (${new Date(sens.at).toLocaleString('fr-FR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}). Tu peux tout remettre comme avant pendant 7 jours.</span></div><button class="btn btn-soft btn-sm" data-action="sens-undo">${ic('undo')}Annuler</button>`; dz.insertBefore(r, dz.children[2] || null); nd++; }
         P.danger = nd ? dz : null;
         /* heavy panels fold away (closed by default) */
         const fold = (panel, label) => {

@@ -135,6 +135,30 @@ Object.assign(SuperAnki.prototype, {
         this.undoStack.push(e);
         this.toast(`Rétabli : ${e.label}`, 'success', ic('redo'));
     },
+    /* Sensitive actions (reset progress / reset app): a full copy is kept first, so the user can always go back (7 days) */
+    async sensitiveSnapshot(label) {
+        const json = this.serialize(); let key = null;
+        if (Storage.db) { try { key = await Storage.backupSave(`avant : ${label}`, json, this.data); } catch (e) { console.warn(e); } }
+        this.lastSens = { at: Date.now(), label, json };
+        try { localStorage.setItem('superanki_last_sens', JSON.stringify({ at: this.lastSens.at, label, key })); } catch { /* ignore */ }
+    },
+    sensitiveInfo() {
+        try { const x = JSON.parse(localStorage.getItem('superanki_last_sens') || 'null'); if (x && x.at && Date.now() - x.at < 7 * 86400000) return x; } catch { /* ignore */ }
+        return null;
+    },
+    async sensitiveUndo() {
+        const info = this.sensitiveInfo(); if (!info) { this.toast('Rien à annuler.', 'warning'); return; }
+        let json = this.lastSens && this.lastSens.at === info.at ? this.lastSens.json : null;
+        if (!json && info.key) json = await Storage.backupLoad(info.key);
+        const data = json && normalizeState(json);
+        if (!data) { this.toast('Impossible de revenir en arrière : la copie est introuvable.', 'error'); return; }
+        data.settings = Object.assign({}, data.settings, { syncKey: this.data.settings.syncKey, cloudSync: this.data.settings.cloudSync });
+        data.updatedAt = Date.now();
+        this.replaceData(data); this.save();
+        try { localStorage.removeItem('superanki_last_sens'); } catch { /* ignore */ }
+        this.toast('Retour en arrière effectué', 'success', ic('undo'));
+        if (this.view === 'settings') this.renderSettings(); else this.render();
+    },
     undoToast(msg, icon) { this.toast(msg, 'success', icon, { label: 'Annuler', fn: () => this.undoGlobal() }); },
 
     /* ============================================================
@@ -791,11 +815,29 @@ Object.assign(SuperAnki.prototype, {
     settingsSeenLibrary() { if (!this.data.settings.libSeen) { this.data.settings.libSeen = true; this.save(false); } },
 
     /* ---------- Goal / exam countdown ---------- */
-    goalInfo() {
+    /* all goals (the old single goal is migrated on first read), nearest first; past ones last */
+    goalsRaw() {
         const s = this.data.settings;
-        if (!s.goalDate || !/^\d{4}-\d{2}-\d{2}$/.test(s.goalDate)) return null;
-        const days = daysBetweenKeys(dayKey(), s.goalDate);
-        return { name: s.goalName || 'Objectif', days, date: s.goalDate };
+        if (!Array.isArray(s.goals)) s.goals = [];
+        if (!s.goals.length && s.goalDate && /^\d{4}-\d{2}-\d{2}$/.test(s.goalDate)) { s.goals = [{ id: uid('g'), name: s.goalName || 'Objectif', date: s.goalDate }]; s.goalDate = ''; s.goalName = ''; }
+        return s.goals.filter(g => g && /^\d{4}-\d{2}-\d{2}$/.test(g.date));
+    },
+    goalsAll() {
+        const today = dayKey();
+        return this.goalsRaw().map(g => ({ ...g, days: daysBetweenKeys(today, g.date) })).sort((a, b) => (a.days < 0) - (b.days < 0) || (a.days < 0 ? b.days - a.days : a.days - b.days));
+    },
+    goalDateLabel(date) {
+        const [y, m, d] = date.split('-').map(Number);
+        return new Date(y, m - 1, d).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    },
+    goalInfo() {
+        const g = this.goalsAll()[0];
+        return g ? { name: g.name, days: g.days, date: g.date } : null;
+    },
+    goalsHtml() {
+        const all = this.goalsAll();
+        if (all.length < 2) return '';
+        return `<div><div class="section-head"><h3 class="section-title">Échéances</h3><button class="link" data-nav="settings">Gérer</button></div><div class="goal-chips">${all.slice(0, 8).map(g => `<span class="goal-chip ${g.days < 0 ? 'past' : g.days <= 7 ? 'soon' : ''}">${ic('target')}<b>${esc(g.name)}</b><em>${g.days > 0 ? `J-${g.days}` : g.days === 0 ? "aujourd'hui" : 'terminé'}</em></span>`).join('')}</div></div>`;
     },
 
     /* ============================================================

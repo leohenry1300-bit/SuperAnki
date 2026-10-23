@@ -272,7 +272,7 @@ const DEFAULT_SETTINGS = {
     theme: 'auto', cardSize: 'm', showIntervals: true,
     autoSpeak: false, autoAudio: false, loadBalance: true, filters: [], sessionSize: 0, fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
     quizCount: 20, writeCount: 20, chronoDuration: 60,
-    rolloverHour: 4, syncKey: '', settingsMod: 0, autoBackup: true, libSeen: false, goalName: '', goalDate: '', deckSort: 'recent',
+    rolloverHour: 4, syncKey: '', settingsMod: 0, autoBackup: true, libSeen: false, goalName: '', goalDate: '', goals: [], deckSort: 'recent',
     ...OPT_DEFAULTS
 };
 function parseSteps(str, def) {
@@ -516,6 +516,7 @@ const Storage = {
         kept.slice(14).forEach(b => drop.add(b.key));
         kept = kept.slice(0, 14);
         await this.tx('readwrite', st => { drop.forEach(k => st.delete(k)); st.put(JSON.stringify(kept), 'backups'); });
+        return key;
     },
     async backupLoad(key) { return this.db ? this.tx('readonly', st => st.get(key)) : null; },
     async backupDelete(key) {
@@ -1206,6 +1207,7 @@ class SuperAnki {
                 </div>
             </div>
 
+            ${this.goalsHtml()}
             ${this.recentsHtml()}
             <div class="status-grid">
                 ${['new', 'learn', 'due', 'mature'].map(k => `
@@ -1231,10 +1233,7 @@ class SuperAnki {
                         <span class="mode-ico">${ic('timer')}</span>
                         <span><h4>Chrono</h4><p>${chronoBest ? `Record : ${chronoBest} pts en ${d.settings.chronoDuration} s` : 'Un max de bonnes réponses, vite !'}</p></span>${ic('chevronRight', 'chev')}
                     </button>
-                    <button class="panel mode-tile wide" style="--c:#4f46e5" data-nav="toeic">
-                        <span class="mode-ico">${ic('headphones')}</span>
-                        <span><h4>Simulateur TOEIC</h4><p>${(() => { const sc = (d.toeic ? d.toeic.attempts : []).filter(a => a.total != null); const g = d.toeic && d.toeic.goalDate ? daysBetweenKeys(dayKey(), d.toeic.goalDate) : null; return `Tests complets en conditions réelles${sc.length ? ` · dernier score estimé ${sc[sc.length - 1].total}` : ''}${g != null && g > 0 ? ` · J-${g}` : ''}`; })()}</p></span>${ic('chevronRight', 'chev')}
-                    </button>
+
                 </div>
             </div>
 
@@ -1746,12 +1745,15 @@ class SuperAnki {
                 </div>
             </div>
 
-            <div class="panel panel-pad set-section">
-                <h3>${ic('target')} Objectif / examen</h3>
-                <p class="small muted">Un compte à rebours s'affiche sur l'accueil (ex. ton TOEIC).</p>
-                <div class="set-row"><div class="txt"><b>Nom</b></div><div class="opt-ctl"><input class="input" id="goal-name" value="${esc(s.goalName)}" placeholder="TOEIC" style="min-width:200px"></div></div>
-                <div class="set-row"><div class="txt"><b>Date</b><span>Laisse vide pour supprimer l'objectif.</span></div><div class="opt-ctl"><input class="input" id="goal-date" aria-label="Date de l'objectif" type="date" value="${esc(s.goalDate)}"></div></div>
-                <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn btn-primary btn-sm" data-action="save-goal">${ic('check')}Enregistrer</button></div>
+            <div class="panel panel-pad set-section" id="goals-panel">
+                <h3>${ic('target')} Objectifs / examens</h3>
+                <p class="small muted">Chaque objectif a son compte à rebours sur l'accueil. Ajoute-en autant que tu veux.</p>
+                <div class="goal-list">${this.goalsAll().map(g => `<div class="goal-row ${g.days < 0 ? 'past' : ''}"><div class="gr-main"><b>${esc(g.name)}</b><span class="small muted">${esc(this.goalDateLabel(g.date))}</span></div><span class="goal-days ${g.days <= 7 && g.days >= 0 ? 'soon' : ''}">${g.days > 0 ? `J-${g.days}` : g.days === 0 ? 'Aujourd\'hui' : 'Terminé'}</span><button class="icon-btn" data-action="goal-del" data-id="${esc(g.id)}" title="Supprimer cet objectif" aria-label="Supprimer ${esc(g.name)}">${ic('trash')}</button></div>`).join('') || '<p class="small muted" style="margin:6px 0">Aucun objectif pour l\'instant.</p>'}</div>
+                <div class="goal-add">
+                    <input class="input" id="goal-name" placeholder="Nom (ex. Partiel R5.11)" aria-label="Nom de l'objectif" maxlength="40">
+                    <input class="input" id="goal-date" aria-label="Date de l'objectif" type="date">
+                    <button class="btn btn-primary btn-sm" data-action="goal-add">${ic('plus')}Ajouter</button>
+                </div>
             </div>
 
             <div class="panel panel-pad set-section" id="study-options">
@@ -3029,7 +3031,7 @@ class SuperAnki {
         if (action) t.querySelector('button').addEventListener('click', () => { close(); action.fn(); });
         box.appendChild(t);
         while (box.children.length > 3) box.firstElementChild.remove();
-        setTimeout(close, action ? 6500 : type === 'error' ? 5000 : 3000);
+        setTimeout(close, action ? (action.ms || 6500) : type === 'error' ? 5000 : 3000);
     }
 
     /* ============================================================
@@ -3278,23 +3280,30 @@ class SuperAnki {
             case 'reset-progress': {
                 const ok = await this.confirm({ title: 'Remettre la progression à zéro ?', message: 'Toutes les cartes redeviennent « nouvelles ». Tes cartes, tes images et ta série sont conservées.', ok: 'Remettre à zéro', danger: true });
                 if (!ok) break;
+                await this.sensitiveSnapshot('remise à zéro de la progression');
                 const now = Date.now();
                 this.data.cards.forEach(c => Object.assign(c, { state: 'new', step: 0, interval: 0, ease: this.deckCfg(c.deckId).startEase, due: now, reps: 0, lapses: 0, lastReview: null, errors: 0, fs: null, buriedUntil: 0 }));
                 this.data.revlog = [];
                 this.data.stats.newSeen = { date: dayKey(), count: 0 };
                 this.save(); this.render();
-                this.toast('Progression remise à zéro', 'success');
+                this.toast('Progression remise à zéro', 'success', undefined, { label: 'Annuler', ms: 15000, fn: () => this.sensitiveUndo() });
                 break;
             }
             case 'reset-all': {
                 const ok = await this.confirm({ title: 'Tout réinitialiser ?', message: 'Tes paquets, cartes, images et statistiques seront effacés et remplacés par les cartes d\'origine. Pense à exporter une sauvegarde avant.', ok: 'Tout effacer', danger: true });
                 if (!ok) break;
-                if (Storage.db) await Storage.backupSave('avant réinitialisation', this.serialize(), this.data);
+                await this.sensitiveSnapshot('réinitialisation de l\'application');
                 const fresh = seedState();
                 fresh.settings = Object.assign({}, this.data.settings);
                 this.replaceData(fresh);
                 this.save();
-                this.toast('Application réinitialisée', 'success');
+                this.toast('Application réinitialisée', 'success', undefined, { label: 'Annuler', ms: 15000, fn: () => this.sensitiveUndo() });
+                break;
+            }
+            case 'sens-undo': {
+                const info = this.sensitiveInfo(); if (!info) break;
+                const ok = await this.confirm({ title: 'Revenir en arrière ?', message: `L'application revient à l'état d'avant « ${esc(info.label)} » (${esc(new Date(info.at).toLocaleString('fr-FR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }))}). Ce qui a été fait depuis sera perdu.`, ok: 'Revenir en arrière' });
+                if (ok) this.sensitiveUndo();
                 break;
             }
             case 'undo-global': this.undoGlobal(); break;
@@ -3337,12 +3346,20 @@ class SuperAnki {
             case 'toggle-deck': this.toggleOpen('side', ds.deck); this.renderDeckSidebar(); break;
             case 'dash-toggle': this.toggleOpen('dash', ds.deck); this.renderDashboard(); break;
             case 'tree-all': this.setAllOpen(ds.key, ds.open === '1'); this.renderDeckSidebar(); break;
-            case 'save-goal': {
-                this.data.settings.goalName = ($('#goal-name') || {}).value || '';
-                this.data.settings.goalDate = ($('#goal-date') || {}).value || '';
+            case 'goal-add': {
+                const name = (($('#goal-name') || {}).value || '').trim(), date = ($('#goal-date') || {}).value || '';
+                if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { this.toast('Choisis une date pour ton objectif.', 'warning'); break; }
+                this.data.settings.goals = [...this.goalsRaw(), { id: uid('g'), name: name || 'Objectif', date }];
                 this.data.settings.settingsMod = Date.now();
                 this.save(); this.renderSettings();
-                this.toast(this.data.settings.goalDate ? 'Objectif enregistré' : 'Objectif supprimé', 'success', ic('target'));
+                this.toast('Objectif ajouté', 'success', ic('target'));
+                break;
+            }
+            case 'goal-del': {
+                this.data.settings.goals = this.goalsRaw().filter(g => g.id !== ds.id);
+                this.data.settings.settingsMod = Date.now();
+                this.save(); this.renderSettings();
+                this.toast('Objectif supprimé', 'success', ic('target'));
                 break;
             }
             case 'backup-now': this.manualBackup(); break;
