@@ -1581,6 +1581,51 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .amb-credits summary { cursor: pointer; font-weight: 700; color: var(--text-muted); }
 .amb-credit-list { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 4px; }
 
+
+/* ---- ergonomics: compact decks, pins, tidy phone layout, settings shortcuts ---- */
+.pin-btn { margin-left: auto; opacity: .45; flex: none; }
+.pin-btn.on { opacity: 1; color: var(--primary); }
+.deck-card:hover .pin-btn { opacity: .9; }
+.deck-grid.compact { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.deck-grid.compact .deck-card { padding: 12px 14px; gap: 8px; }
+.deck-grid.compact .deck-card > .progress, .deck-grid.compact .deck-card .deck-meta { display: none; }
+.deck-grid.compact .deck-emoji { font-size: 1.5rem; }
+.search-more { margin-top: 2px; }
+.search-more > summary { cursor: pointer; font-weight: 700; font-size: .86rem; color: var(--text-muted); padding: 6px 2px; list-style: none; }
+.search-more > summary::before { content: '▸ '; }
+.search-more[open] > summary::before { content: '▾ '; }
+.search-more > label, .search-more > .quick-q { display: block; margin-top: 8px; }
+.set-nav { position: sticky; top: 56px; z-index: 8; display: flex; gap: 8px; overflow-x: auto; padding: 8px 0; background: var(--bg); scrollbar-width: none; margin: 0 -2px; }
+.set-nav::-webkit-scrollbar { display: none; }
+.set-nav .chip { flex: none; }
+.set-section { scroll-margin-top: 112px; }
+@media (max-width: 767px) {
+  .stats-head .page-sub, .settings .page-sub { display: none; }
+  .status-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .status-tile { padding: 10px 8px; gap: 4px; align-items: center; text-align: center; }
+  .status-tile .top { justify-content: center; }
+  .status-tile .top .tiny, .status-tile .bar { display: none; }
+  .status-tile .status-num { font-size: 1.35rem; }
+  .status-tile .status-label { font-size: .68rem; }
+  .mode-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .mode-tile { flex-direction: column; padding: 12px 6px; text-align: center; gap: 6px; }
+  .mode-tile p, .mode-tile .chev { display: none; }
+  .mode-tile h4 { font-size: .9rem; }
+  .mode-tile.wide { grid-column: 1 / -1; flex-direction: row; text-align: left; padding: 12px 14px; }
+  .mode-tile.wide p { display: block; }
+  .mode-tile.wide .chev { display: block; }
+}
+
+.section-head { flex-wrap: wrap; gap: 6px 12px; }
+.section-head .link { font-size: .84rem; }
+
+@media (max-width: 767px) {
+  .filter-grid { grid-template-columns: 1fr; }
+  .mode-tile.filter-tile { flex-direction: row; text-align: left; padding: 10px 14px; gap: 12px; }
+  .mode-tile.filter-tile p { display: block; }
+  .mode-tile.filter-tile h4 { font-size: .95rem; }
+}
+
 </style>
 </head>
 <body>
@@ -1720,6 +1765,7 @@ const ICONS = {
     target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
     image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>',
     list: '<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
+    pin: '<path d="M12 17v5"/><path d="M9 3h6l-1 6 3.5 3.5H6.5L10 9z"/>',
     listOrdered: '<path d="M10 6h11M10 12h11M10 18h11M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>',
     eraser: '<path d="M4 7V4h16v3"/><path d="M5 20h6"/><path d="M13 4 8 20"/><path d="m15 15 5 5M20 15l-5 5"/>',
     chevronRight: '<path d="m9 18 6-6-6-6"/>',
@@ -2431,6 +2477,7 @@ class SuperAnki {
                     }
                 });
             });
+            if (!st.pinInit) { st.pinInit = true; st.pinnedDecks = [...(st.pinnedDecks || []), 'mes_but_tc']; }
             const fid = `flt_${co.id}`;
             if (!Array.isArray(st.filters)) st.filters = [];
             if (!st.filters.some(f => f.id === fid)) st.filters.push({ id: fid, name: `${co.title.split(' · ')[0]} · révision complète`, query: `tag:${co.tags[co.tags.length - 1]}`, order: 'random', limit: 400 });
@@ -2920,12 +2967,17 @@ class SuperAnki {
                 <div class="section-head">
                     <h3 class="section-title">Tes paquets</h3>
                     <span style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+                        <button class="icon-btn icon-btn-sm" data-action="deck-view" title="${this.deckCompact() ? 'Vue détaillée' : 'Vue compacte'}" aria-label="Changer l'affichage des paquets">${ic(this.deckCompact() ? 'layers' : 'list')}</button>
                         <label class="sort-pick"><span class="sr-only">Trier les paquets</span>${ic('sliders')}<select class="select select-sm" data-input="deck-sort">${[['recent', 'Plus récents'], ['due', 'À revoir d\'abord'], ['studied', 'Révisés récemment'], ['alpha', 'A → Z'], ['size', 'Plus de cartes']].map(([v, l]) => `<option value="${v}" ${(d.settings.deckSort || 'recent') === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label><button class="link" data-action="open-library">${ic('layers')}Bibliothèque</button><button class="link" data-nav="decks">Gérer ${ic('chevronRight')}</button></span>
                 </div>
-                ${d.decks.length ? `<div class="deck-grid">${this.dashboardDeckCards()}</div>`
+                ${d.decks.length ? `<div class="deck-grid ${this.deckCompact() ? 'compact' : ''}">${this.dashboardDeckCards()}</div>`
                     : `<div class="panel empty">${ic('layers')}<p>Aucun paquet pour l'instant.</p><button class="btn btn-primary" style="margin-top:14px" data-action="new-deck">${ic('folderPlus')}Créer un paquet</button></div>`}
             </div>
         </div>`;
+    }
+    deckCompact() {
+        const v = this.data.settings.deckView;
+        return v ? v === 'compact' : window.matchMedia('(max-width: 767px)').matches;
     }
     dashboardDeckCards() {
         const now = Date.now(), eod = endOfDay(now);
@@ -2947,6 +2999,8 @@ class SuperAnki {
             : mode === 'alpha' ? byName
             : mode === 'size' ? (a, b) => b.cards.length - a.cards.length || byName(a, b)
             : (a, b) => recency(b) - recency(a) || byName(a, b));
+        const pins = this.data.settings.pinnedDecks || [];
+        if (pins.length) rows.sort((a, b) => pins.includes(b.deck.id) - pins.includes(a.deck.id));   // pinned decks first (stable)
         const stats = this.deckStats(), openD = this.openSet('dash');
         const subRows = (parentId, depth) => this.childrenOf(parentId).map(k => {
             const st = stats.get(k.id), kids = this.childrenOf(k.id), isOpen = openD.has(k.id);
@@ -2968,6 +3022,7 @@ class SuperAnki {
                 <div class="deck-head">
                     <span class="deck-emoji">${esc(deck.emoji)}</span>
                     <div style="min-width:0"><div class="deck-name">${esc(deck.name)}</div><div class="deck-meta">${plural(cards.length, 'carte')} · ${this.pctSeen(st)} % vu · ${this.pctMature(st)} % maîtrisé</div></div>
+                    <button class="icon-btn icon-btn-sm pin-btn ${pins.includes(deck.id) ? 'on' : ''}" data-action="pin-deck" data-deck="${esc(deck.id)}" title="${pins.includes(deck.id) ? 'Désépingler' : 'Épingler en haut'}" aria-label="Épingler le paquet" aria-pressed="${pins.includes(deck.id)}">${ic('pin')}</button>
                 </div>
                 <div class="counts">
                     <span style="color:var(--new)" title="Nouvelles">${ic('sparkle')}${c.new}</span>
@@ -3020,6 +3075,7 @@ class SuperAnki {
                     </label>
                     <button class="search-clear" data-action="clear-search" aria-label="Effacer la recherche" title="Effacer (Échap)">${ic('x')}</button>
                 </div>
+                <details class="search-more" style="grid-column:1/-1" ${ui.sort !== 'auto' || ui.search ? 'open' : ''}><summary>Trier et filtrer</summary>
                 <label><span class="sr-only">Trier</span>
                     <select class="select" data-input="sort">
                         ${[['auto', 'Pertinence / récentes'], ['recent', 'Plus récentes'], ['alpha', 'Alphabétique (A → Z)'], ['alpha-rev', 'Alphabétique (Z → A)'], ['due', 'Prochaine révision'], ['hard', 'Plus difficiles d\'abord']]
@@ -3028,6 +3084,7 @@ class SuperAnki {
                 </label>
                 <div class="quick-q" id="quick-q">${this.quickQueryHtml()}</div>
                 <details class="search-help"><summary>Astuces de recherche</summary><p>Plusieurs mots = tous requis · <code>"mot exact"</code> · <code>-exclure</code> · <code>deck:nom</code> · <code>tag:x</code> · <code>is:due</code> <code>is:new</code> <code>is:suspended</code> <code>is:marked</code> <code>is:leech</code> · <code>flag:1</code> · <code>prop:ivl&gt;30</code> · <code>added:7</code> · <code>rated:1</code> · accents et petites fautes tolérés.</p></details>
+                </details>
             </div>
             <div class="manager">
                 <aside class="panel deck-list" id="deck-sidebar" aria-label="Paquets"></aside>
@@ -4844,6 +4901,14 @@ class SuperAnki {
                 break;
             }
             case 'sync-now': Cloud.sync(true); break;
+            case 'pin-deck': {
+                const pins = [...(this.data.settings.pinnedDecks || [])], i = pins.indexOf(ds.deck);
+                if (i >= 0) pins.splice(i, 1); else pins.unshift(ds.deck);
+                this.setSetting('pinnedDecks', pins); this.renderDashboard();
+                this.toast(i >= 0 ? 'Paquet désépinglé' : 'Paquet épinglé en haut', 'success', ic('pin'));
+                break;
+            }
+            case 'deck-view': this.setSetting('deckView', this.deckCompact() ? 'full' : 'compact'); this.renderDashboard(); break;
             case 'reset-deck': {
                 const d = this.deck(ds.deck); if (!d) break;
                 const ids = this.poolFor([ds.deck]).map(c => c.id);
@@ -7276,9 +7341,9 @@ Object.assign(SuperAnki.prototype, {
         if (!fl.length) return '';
         const eod = endOfDay(), now = Date.now();
         return `<div><div class="section-head"><h3 class="section-title">Paquets filtrés</h3><button class="link" data-action="filter-edit" data-id="">${ic('plus')}Nouveau</button></div>
-            <div class="mode-grid">${fl.map(f => {
+            <div class="mode-grid filter-grid">${fl.map(f => {
                 const cards = this.queryCards(f.query).filter(c => !c.suspended), due = cards.filter(c => cardStatus(c, now, eod) === 'due').length;
-                return `<div class="panel mode-tile" style="--c:#0ea5e9;cursor:default"><span class="mode-ico">${ic('filter')}</span><span class="grow"><h4>${esc(f.name)}</h4><p>${plural(cards.length, 'carte')} · ${due} à réviser</p></span>
+                return `<div class="panel mode-tile filter-tile" style="--c:#0ea5e9;cursor:default"><span class="mode-ico">${ic('filter')}</span><span class="grow"><h4>${esc(f.name)}</h4><p>${plural(cards.length, 'carte')} · ${due} à réviser</p></span>
                     <button class="btn btn-primary btn-sm" data-action="filter-start" data-id="${esc(f.id)}" ${cards.length ? '' : 'disabled'}>${ic('play')}</button>
                     <button class="icon-btn" data-action="filter-edit" data-id="${esc(f.id)}" title="Modifier" aria-label="Modifier">${ic('pencil')}</button></div>`;
             }).join('')}</div></div>`;
@@ -8871,6 +8936,28 @@ Object.assign(SuperAnki.prototype, {
     },
     extrasSoundRefresh() { const cb = $('#ex-settings input[data-ex="snd-toggle"]'); if (cb) cb.checked = SND.on; }
 });
+
+
+/* Settings: panels reordered (study settings first, sounds after) + a sticky row of shortcuts to jump to a section */
+Object.assign(SuperAnki.prototype, {
+    settingsNav() {
+        const root = document.getElementById('view-settings'); if (!root) return;
+        const panels = () => [...root.querySelectorAll('.set-section')];
+        const title = p => ((p.querySelector('h3') || {}).textContent || '').replace(/\s+/g, ' ').trim();
+        const algo = panels().find(p => /Algorithme/.test(title(p))), ex = document.getElementById('ex-settings'), amb = document.getElementById('amb-panel');
+        if (algo && ex) { algo.after(ex); if (amb) ex.after(amb); }
+        const theme = panels().find(p => /^Thème/.test(title(p)));   // rarely changed: after the sounds
+        if (theme && (amb || ex)) (amb || ex).after(theme);
+        root.querySelectorAll('.set-nav').forEach(n => n.remove());
+        const short = t => t.replace(/ et mises à jour/, '').replace(/ \/ examen/, '').replace(/^Algorithme.*/, 'Algorithme').replace(/^Synchronisation.*/, 'Cloud').replace(/^Raccourcis.*/, 'Clavier');
+        const items = panels().map((p, i) => { p.id = p.id || `set-sec-${i}`; return { id: p.id, label: short(title(p)) }; }).filter(x => x.label);
+        const nav = document.createElement('nav'); nav.className = 'set-nav'; nav.setAttribute('aria-label', 'Sections des réglages');
+        nav.innerHTML = items.map(x => `<button class="chip" data-jump="${x.id}">${x.label}</button>`).join('');
+        nav.addEventListener('click', e => { const b = e.target.closest('[data-jump]'); const t = b && document.getElementById(b.dataset.jump); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+        const head = root.querySelector('.page-title'); (head ? head.parentElement : root.firstElementChild).after(nav);
+    }
+});
+(() => { const base = SuperAnki.prototype.renderSettings; SuperAnki.prototype.renderSettings = function (...a) { const r = base.apply(this, a); try { this.settingsNav(); } catch { /* ignore */ } return r; }; })();
 
 /* ============================================================
    Ambiance sonore (comme « A Soft Murmur »): a mixer of soft background sounds with one slider each.

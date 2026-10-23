@@ -32,6 +32,7 @@ const ICONS = {
     target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
     image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>',
     list: '<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
+    pin: '<path d="M12 17v5"/><path d="M9 3h6l-1 6 3.5 3.5H6.5L10 9z"/>',
     listOrdered: '<path d="M10 6h11M10 12h11M10 18h11M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>',
     eraser: '<path d="M4 7V4h16v3"/><path d="M5 20h6"/><path d="M13 4 8 20"/><path d="m15 15 5 5M20 15l-5 5"/>',
     chevronRight: '<path d="m9 18 6-6-6-6"/>',
@@ -743,6 +744,7 @@ class SuperAnki {
                     }
                 });
             });
+            if (!st.pinInit) { st.pinInit = true; st.pinnedDecks = [...(st.pinnedDecks || []), 'mes_but_tc']; }
             const fid = `flt_${co.id}`;
             if (!Array.isArray(st.filters)) st.filters = [];
             if (!st.filters.some(f => f.id === fid)) st.filters.push({ id: fid, name: `${co.title.split(' · ')[0]} · révision complète`, query: `tag:${co.tags[co.tags.length - 1]}`, order: 'random', limit: 400 });
@@ -1232,12 +1234,17 @@ class SuperAnki {
                 <div class="section-head">
                     <h3 class="section-title">Tes paquets</h3>
                     <span style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+                        <button class="icon-btn icon-btn-sm" data-action="deck-view" title="${this.deckCompact() ? 'Vue détaillée' : 'Vue compacte'}" aria-label="Changer l'affichage des paquets">${ic(this.deckCompact() ? 'layers' : 'list')}</button>
                         <label class="sort-pick"><span class="sr-only">Trier les paquets</span>${ic('sliders')}<select class="select select-sm" data-input="deck-sort">${[['recent', 'Plus récents'], ['due', 'À revoir d\'abord'], ['studied', 'Révisés récemment'], ['alpha', 'A → Z'], ['size', 'Plus de cartes']].map(([v, l]) => `<option value="${v}" ${(d.settings.deckSort || 'recent') === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label><button class="link" data-action="open-library">${ic('layers')}Bibliothèque</button><button class="link" data-nav="decks">Gérer ${ic('chevronRight')}</button></span>
                 </div>
-                ${d.decks.length ? `<div class="deck-grid">${this.dashboardDeckCards()}</div>`
+                ${d.decks.length ? `<div class="deck-grid ${this.deckCompact() ? 'compact' : ''}">${this.dashboardDeckCards()}</div>`
                     : `<div class="panel empty">${ic('layers')}<p>Aucun paquet pour l'instant.</p><button class="btn btn-primary" style="margin-top:14px" data-action="new-deck">${ic('folderPlus')}Créer un paquet</button></div>`}
             </div>
         </div>`;
+    }
+    deckCompact() {
+        const v = this.data.settings.deckView;
+        return v ? v === 'compact' : window.matchMedia('(max-width: 767px)').matches;
     }
     dashboardDeckCards() {
         const now = Date.now(), eod = endOfDay(now);
@@ -1259,6 +1266,8 @@ class SuperAnki {
             : mode === 'alpha' ? byName
             : mode === 'size' ? (a, b) => b.cards.length - a.cards.length || byName(a, b)
             : (a, b) => recency(b) - recency(a) || byName(a, b));
+        const pins = this.data.settings.pinnedDecks || [];
+        if (pins.length) rows.sort((a, b) => pins.includes(b.deck.id) - pins.includes(a.deck.id));   // pinned decks first (stable)
         const stats = this.deckStats(), openD = this.openSet('dash');
         const subRows = (parentId, depth) => this.childrenOf(parentId).map(k => {
             const st = stats.get(k.id), kids = this.childrenOf(k.id), isOpen = openD.has(k.id);
@@ -1280,6 +1289,7 @@ class SuperAnki {
                 <div class="deck-head">
                     <span class="deck-emoji">${esc(deck.emoji)}</span>
                     <div style="min-width:0"><div class="deck-name">${esc(deck.name)}</div><div class="deck-meta">${plural(cards.length, 'carte')} · ${this.pctSeen(st)} % vu · ${this.pctMature(st)} % maîtrisé</div></div>
+                    <button class="icon-btn icon-btn-sm pin-btn ${pins.includes(deck.id) ? 'on' : ''}" data-action="pin-deck" data-deck="${esc(deck.id)}" title="${pins.includes(deck.id) ? 'Désépingler' : 'Épingler en haut'}" aria-label="Épingler le paquet" aria-pressed="${pins.includes(deck.id)}">${ic('pin')}</button>
                 </div>
                 <div class="counts">
                     <span style="color:var(--new)" title="Nouvelles">${ic('sparkle')}${c.new}</span>
@@ -1332,6 +1342,7 @@ class SuperAnki {
                     </label>
                     <button class="search-clear" data-action="clear-search" aria-label="Effacer la recherche" title="Effacer (Échap)">${ic('x')}</button>
                 </div>
+                <details class="search-more" style="grid-column:1/-1" ${ui.sort !== 'auto' || ui.search ? 'open' : ''}><summary>Trier et filtrer</summary>
                 <label><span class="sr-only">Trier</span>
                     <select class="select" data-input="sort">
                         ${[['auto', 'Pertinence / récentes'], ['recent', 'Plus récentes'], ['alpha', 'Alphabétique (A → Z)'], ['alpha-rev', 'Alphabétique (Z → A)'], ['due', 'Prochaine révision'], ['hard', 'Plus difficiles d\'abord']]
@@ -1340,6 +1351,7 @@ class SuperAnki {
                 </label>
                 <div class="quick-q" id="quick-q">${this.quickQueryHtml()}</div>
                 <details class="search-help"><summary>Astuces de recherche</summary><p>Plusieurs mots = tous requis · <code>"mot exact"</code> · <code>-exclure</code> · <code>deck:nom</code> · <code>tag:x</code> · <code>is:due</code> <code>is:new</code> <code>is:suspended</code> <code>is:marked</code> <code>is:leech</code> · <code>flag:1</code> · <code>prop:ivl&gt;30</code> · <code>added:7</code> · <code>rated:1</code> · accents et petites fautes tolérés.</p></details>
+                </details>
             </div>
             <div class="manager">
                 <aside class="panel deck-list" id="deck-sidebar" aria-label="Paquets"></aside>
@@ -3156,6 +3168,14 @@ class SuperAnki {
                 break;
             }
             case 'sync-now': Cloud.sync(true); break;
+            case 'pin-deck': {
+                const pins = [...(this.data.settings.pinnedDecks || [])], i = pins.indexOf(ds.deck);
+                if (i >= 0) pins.splice(i, 1); else pins.unshift(ds.deck);
+                this.setSetting('pinnedDecks', pins); this.renderDashboard();
+                this.toast(i >= 0 ? 'Paquet désépinglé' : 'Paquet épinglé en haut', 'success', ic('pin'));
+                break;
+            }
+            case 'deck-view': this.setSetting('deckView', this.deckCompact() ? 'full' : 'compact'); this.renderDashboard(); break;
             case 'reset-deck': {
                 const d = this.deck(ds.deck); if (!d) break;
                 const ids = this.poolFor([ds.deck]).map(c => c.id);

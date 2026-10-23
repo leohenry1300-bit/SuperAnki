@@ -304,3 +304,25 @@ Object.assign(SuperAnki.prototype, {
     },
     extrasSoundRefresh() { const cb = $('#ex-settings input[data-ex="snd-toggle"]'); if (cb) cb.checked = SND.on; }
 });
+
+
+/* Settings: panels reordered (study settings first, sounds after) + a sticky row of shortcuts to jump to a section */
+Object.assign(SuperAnki.prototype, {
+    settingsNav() {
+        const root = document.getElementById('view-settings'); if (!root) return;
+        const panels = () => [...root.querySelectorAll('.set-section')];
+        const title = p => ((p.querySelector('h3') || {}).textContent || '').replace(/\s+/g, ' ').trim();
+        const algo = panels().find(p => /Algorithme/.test(title(p))), ex = document.getElementById('ex-settings'), amb = document.getElementById('amb-panel');
+        if (algo && ex) { algo.after(ex); if (amb) ex.after(amb); }
+        const theme = panels().find(p => /^Thème/.test(title(p)));   // rarely changed: after the sounds
+        if (theme && (amb || ex)) (amb || ex).after(theme);
+        root.querySelectorAll('.set-nav').forEach(n => n.remove());
+        const short = t => t.replace(/ et mises à jour/, '').replace(/ \/ examen/, '').replace(/^Algorithme.*/, 'Algorithme').replace(/^Synchronisation.*/, 'Cloud').replace(/^Raccourcis.*/, 'Clavier');
+        const items = panels().map((p, i) => { p.id = p.id || `set-sec-${i}`; return { id: p.id, label: short(title(p)) }; }).filter(x => x.label);
+        const nav = document.createElement('nav'); nav.className = 'set-nav'; nav.setAttribute('aria-label', 'Sections des réglages');
+        nav.innerHTML = items.map(x => `<button class="chip" data-jump="${x.id}">${x.label}</button>`).join('');
+        nav.addEventListener('click', e => { const b = e.target.closest('[data-jump]'); const t = b && document.getElementById(b.dataset.jump); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+        const head = root.querySelector('.page-title'); (head ? head.parentElement : root.firstElementChild).after(nav);
+    }
+});
+(() => { const base = SuperAnki.prototype.renderSettings; SuperAnki.prototype.renderSettings = function (...a) { const r = base.apply(this, a); try { this.settingsNav(); } catch { /* ignore */ } return r; }; })();
