@@ -2360,7 +2360,6 @@ class SuperAnki {
                 <button class="icon-btn sess-extra" title="Écouter" data-action="speak">${ic('volume')}</button>
                 <button class="icon-btn" title="Annuler la dernière réponse (Z)" data-action="undo" ${s.history.length ? '' : 'disabled style="opacity:.35"'}>${ic('undo')}</button>
                 <button class="icon-btn sess-extra" title="Modifier la carte (E)" data-action="edit-current">${ic('pencil')}</button>
-                <button class="icon-btn sess-extra" title="Minuteur de concentration" aria-label="Minuteur" data-action="focus-toggle">${ic('timer')}</button>
                 <button class="icon-btn" title="Plus d'actions" data-action="session-menu" aria-label="Plus d'actions">${ic('more')}</button>
             </div>
             <div class="pbar"><i style="width:${progress}%"></i></div>

@@ -4627,7 +4627,6 @@ class SuperAnki {
                 <button class="icon-btn sess-extra" title="Écouter" data-action="speak">${ic('volume')}</button>
                 <button class="icon-btn" title="Annuler la dernière réponse (Z)" data-action="undo" ${s.history.length ? '' : 'disabled style="opacity:.35"'}>${ic('undo')}</button>
                 <button class="icon-btn sess-extra" title="Modifier la carte (E)" data-action="edit-current">${ic('pencil')}</button>
-                <button class="icon-btn sess-extra" title="Minuteur de concentration" aria-label="Minuteur" data-action="focus-toggle">${ic('timer')}</button>
                 <button class="icon-btn" title="Plus d'actions" data-action="session-menu" aria-label="Plus d'actions">${ic('more')}</button>
             </div>
             <div class="pbar"><i style="width:${progress}%"></i></div>
@@ -7219,7 +7218,6 @@ Object.assign(SuperAnki.prototype, {
         const ids = [s.current], c = this.card(s.current);
         const extra = [
             { icon: 'volume', label: 'Écouter la carte', fn: () => this.speak() },
-            { icon: 'timer', label: 'Minuteur de concentration', fn: () => this.handleAction('focus-toggle', {}) },
             { icon: 'eyeOff', label: document.body.classList.contains('zen') ? 'Quitter le mode zen' : 'Mode zen (masquer le reste)', fn: () => this.toggleZen() },
             { sep: true }
         ];
