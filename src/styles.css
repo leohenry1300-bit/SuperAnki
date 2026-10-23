@@ -1821,3 +1821,10 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .resume-tile h4 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .resume-tile .grow { min-width: 0; flex: 1; }
 @media (max-width: 767px) { .resume-tile { flex-direction: row; text-align: left; } .resume-tile p, .resume-tile .chev { display: block; } }
+
+/* foldable sections of the home screen */
+.sec-toggle { display: inline-flex; align-items: center; gap: 8px; text-align: left; padding: 4px 0; }
+.sec-toggle .i { width: 18px; height: 18px; color: var(--text-faint); transition: transform .18s; flex: none; }
+.sec-toggle.open .i { transform: rotate(90deg); }
+.sec-toggle h3 { margin: 0; }
+.sec-count { font-size: .75rem; font-weight: 800; color: var(--text-faint); background: var(--surface-2); border-radius: 99px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }

@@ -1841,6 +1841,13 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .resume-tile .grow { min-width: 0; flex: 1; }
 @media (max-width: 767px) { .resume-tile { flex-direction: row; text-align: left; } .resume-tile p, .resume-tile .chev { display: block; } }
 
+/* foldable sections of the home screen */
+.sec-toggle { display: inline-flex; align-items: center; gap: 8px; text-align: left; padding: 4px 0; }
+.sec-toggle .i { width: 18px; height: 18px; color: var(--text-faint); transition: transform .18s; flex: none; }
+.sec-toggle.open .i { transform: rotate(90deg); }
+.sec-toggle h3 { margin: 0; }
+.sec-count { font-size: .75rem; font-weight: 800; color: var(--text-faint); background: var(--surface-2); border-radius: 99px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
+
 </style>
 </head>
 <body>
@@ -3167,8 +3174,8 @@ class SuperAnki {
 
             ${this.recentsHtml()}
             <div>
-                <div class="section-head"><h3 class="section-title">Modes d'entraînement</h3><button class="link" data-action="custom-study">${ic('sliders')}Révisions personnalisées</button></div>
-                <div class="mode-grid">
+                ${this.secToggle('modes', "Modes d'entraînement", `<button class="link" data-action="custom-study">${ic('sliders')}Révisions personnalisées</button>`)}
+                ${this.homeOpen('modes') ? '<div class="mode-grid">' : '<div class="mode-grid hidden">'}
                     <button class="panel mode-tile" style="--c:#0ea5e9" data-action="mode" data-mode="write">
                         <span class="mode-ico">${ic('keyboard')}</span>
                         <span><h4>Écrire</h4><p>Tape la réponse, correction automatique</p></span>${ic('chevronRight', 'chev')}
@@ -3336,6 +3343,12 @@ class SuperAnki {
     noteLast(kind, deckId) {
         this.data.settings.lastRun = { kind, deck: deckId || '', at: Date.now() };
         this.save(false);
+    }
+    /* foldable home sections (closed by default, remembered) */
+    homeOpen(key) { const o = this.data.settings.homeOpen || {}; return o[key] === true; }
+    secToggle(key, title, extra = '') {
+        const open = this.homeOpen(key);
+        return `<div class="section-head"><button class="sec-toggle ${open ? 'open' : ''}" data-action="home-toggle" data-sec="${key}" aria-expanded="${open}">${ic('chevronRight')}<h3 class="section-title">${title}</h3></button>${open ? extra : ''}</div>`;
     }
     resumeHtml() {
         const r = this.data.settings.lastRun;
@@ -5249,6 +5262,10 @@ class SuperAnki {
                     { icon: 'trash', label: 'Supprimer le paquet…', fn: () => this.handleAction('delete-deck', { dataset: { deck: id } }) }
                 ]);
                 break;
+            }
+            case 'home-toggle': {
+                const o = { ...(this.data.settings.homeOpen || {}) }; o[ds.sec] = !(o[ds.sec] === true);
+                this.setSetting('homeOpen', o); this.renderDashboard(); break;
             }
             case 'resume-last': {
                 const r = this.data.settings.lastRun; if (!r) break;
@@ -7780,10 +7797,11 @@ Object.assign(SuperAnki.prototype, {
     },
     filtersHtml() {
         const fl = this.data.settings.filters || [];
+        const open = this.homeOpen('filters');
         if (!fl.length) return `<div><div class="section-head"><h3 class="section-title">Paquets filtrés</h3><button class="link" data-action="filter-edit" data-id="">${ic('plus')}Nouveau</button></div><p class="small muted" style="margin-top:-6px">Un paquet filtré rassemble les cartes qui correspondent à une recherche (un tag, un mot…), même si elles sont dans plusieurs paquets.</p></div>`;
         const eod = endOfDay(), now = Date.now();
-        return `<div><div class="section-head"><h3 class="section-title">Paquets filtrés</h3><button class="link" data-action="filter-edit" data-id="">${ic('plus')}Nouveau</button></div>
-            <div class="mode-grid filter-grid">${fl.map(f => {
+        return `<div>${this.secToggle('filters', `Paquets filtrés <span class="sec-count">${fl.length}</span>`, `<button class="link" data-action="filter-edit" data-id="">${ic('plus')}Nouveau</button>`)}
+            <div class="mode-grid filter-grid ${open ? '' : 'hidden'}">${fl.map(f => {
                 const cards = this.queryCards(f.query).filter(c => !c.suspended), due = cards.filter(c => cardStatus(c, now, eod) === 'due').length;
                 return `<div class="panel mode-tile filter-tile" style="--c:#0ea5e9;cursor:default"><span class="mode-ico">${ic('filter')}</span><span class="grow"><h4>${esc(f.name)}</h4><p>${plural(cards.length, 'carte')} · ${due} à réviser</p></span>
                     <button class="btn btn-primary btn-sm" data-action="filter-start" data-id="${esc(f.id)}" aria-label="Lancer : ${esc(f.name)}" title="Lancer la révision" ${cards.length ? '' : 'disabled'}>${ic('play')}</button>

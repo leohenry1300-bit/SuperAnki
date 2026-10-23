@@ -1219,8 +1219,8 @@ class SuperAnki {
 
             ${this.recentsHtml()}
             <div>
-                <div class="section-head"><h3 class="section-title">Modes d'entraînement</h3><button class="link" data-action="custom-study">${ic('sliders')}Révisions personnalisées</button></div>
-                <div class="mode-grid">
+                ${this.secToggle('modes', "Modes d'entraînement", `<button class="link" data-action="custom-study">${ic('sliders')}Révisions personnalisées</button>`)}
+                ${this.homeOpen('modes') ? '<div class="mode-grid">' : '<div class="mode-grid hidden">'}
                     <button class="panel mode-tile" style="--c:#0ea5e9" data-action="mode" data-mode="write">
                         <span class="mode-ico">${ic('keyboard')}</span>
                         <span><h4>Écrire</h4><p>Tape la réponse, correction automatique</p></span>${ic('chevronRight', 'chev')}
@@ -1388,6 +1388,12 @@ class SuperAnki {
     noteLast(kind, deckId) {
         this.data.settings.lastRun = { kind, deck: deckId || '', at: Date.now() };
         this.save(false);
+    }
+    /* foldable home sections (closed by default, remembered) */
+    homeOpen(key) { const o = this.data.settings.homeOpen || {}; return o[key] === true; }
+    secToggle(key, title, extra = '') {
+        const open = this.homeOpen(key);
+        return `<div class="section-head"><button class="sec-toggle ${open ? 'open' : ''}" data-action="home-toggle" data-sec="${key}" aria-expanded="${open}">${ic('chevronRight')}<h3 class="section-title">${title}</h3></button>${open ? extra : ''}</div>`;
     }
     resumeHtml() {
         const r = this.data.settings.lastRun;
@@ -3301,6 +3307,10 @@ class SuperAnki {
                     { icon: 'trash', label: 'Supprimer le paquet…', fn: () => this.handleAction('delete-deck', { dataset: { deck: id } }) }
                 ]);
                 break;
+            }
+            case 'home-toggle': {
+                const o = { ...(this.data.settings.homeOpen || {}) }; o[ds.sec] = !(o[ds.sec] === true);
+                this.setSetting('homeOpen', o); this.renderDashboard(); break;
             }
             case 'resume-last': {
                 const r = this.data.settings.lastRun; if (!r) break;
