@@ -908,11 +908,12 @@ class SuperAnki {
         fsrsApplyParams(s.fsrsW);
         const resolved = s.theme === 'auto' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'nuit' : 'clair') : s.theme;
         const root = document.documentElement;
-        if (this._themeSeen && root.dataset.theme !== resolved && !this.calm()) {   // colours melt into the new theme instead of jumping
-            root.classList.add('theme-fade'); clearTimeout(this._themeT); this._themeT = setTimeout(() => root.classList.remove('theme-fade'), 520);
-        }
+        const swap = () => { root.dataset.theme = resolved; };
+        if (this._themeSeen && root.dataset.theme !== resolved && !this.calm()) {
+            if (document.startViewTransition) document.startViewTransition(swap);   // the browser cross-fades two snapshots of the screen: smooth, no per-element transitions
+            else { this.themeVeil(swap); }
+        } else swap();
         this._themeSeen = true;
-        root.dataset.theme = resolved;
         try { localStorage.setItem('superanki_theme', s.theme); } catch { /* private mode */ }
         document.documentElement.style.setProperty('--card-size', CARD_SIZES[s.cardSize] || CARD_SIZES.m);
         requestAnimationFrame(() => {
@@ -1151,7 +1152,7 @@ class SuperAnki {
             el.classList.remove('view-in', 'view-in-l', 'view-in-r', 'view-in-n', 'view-in-zoom', 'cascade'); void el.offsetWidth;
             const zoom = opts.from && !this.calm();
             if (zoom) { el.style.setProperty('--ox', opts.from.x + 'px'); el.style.setProperty('--oy', opts.from.y + 'px'); }
-            el.classList.add('view-in', 'cascade', zoom ? 'view-in-zoom' : a >= 0 && b >= 0 && a !== b ? (b > a ? 'view-in-r' : 'view-in-l') : 'view-in-n');
+            el.classList.add('view-in', 'cascade', zoom ? 'view-in-zoom' : this._vtOn ? 'view-in-n' : a >= 0 && b >= 0 && a !== b ? (b > a ? 'view-in-r' : 'view-in-l') : 'view-in-n');
             clearTimeout(this._viewInT); this._viewInT = setTimeout(() => el.classList.remove('cascade'), 900);   // the cascade only plays on arrival, not on later redraws
         }
         if (view === 'dashboard' && prevView !== 'dashboard') this.countUp('#view-dashboard .status-num, #view-dashboard .btn-hero .cnt');
@@ -1183,6 +1184,59 @@ class SuperAnki {
             ind.classList.remove('spin', 'ready'); ind.style.opacity = 0; ind.style.transform = 'translate(-50%, 0)'; d = 0;
         };
         document.addEventListener('touchend', end, { passive: true }); document.addEventListener('touchcancel', end, { passive: true });
+    }
+    /* Léo the lion cub: a small animated SVG character with four moods (ready, happy, calm, tough) */
+    mascotSvg(mood = 'ready') {
+        const eyes = {
+            ready: '<g class="mc-eye"><ellipse cx="46" cy="58" rx="4.6" ry="6.2" fill="#1f2937"/><circle cx="47.6" cy="55.6" r="1.7" fill="#fff"/></g><g class="mc-eye"><ellipse cx="74" cy="58" rx="4.6" ry="6.2" fill="#1f2937"/><circle cx="75.6" cy="55.6" r="1.7" fill="#fff"/></g>',
+            happy: '<path d="M40 61 Q46 51 52 61" fill="none" stroke="#1f2937" stroke-width="3.4" stroke-linecap="round"/><path d="M68 61 Q74 51 80 61" fill="none" stroke="#1f2937" stroke-width="3.4" stroke-linecap="round"/>',
+            calm: '<path d="M40 58 Q46 64 52 58" fill="none" stroke="#1f2937" stroke-width="3.2" stroke-linecap="round"/><path d="M68 58 Q74 64 80 58" fill="none" stroke="#1f2937" stroke-width="3.2" stroke-linecap="round"/>',
+            tough: '<g class="mc-eye"><ellipse cx="46" cy="59" rx="4.4" ry="5.6" fill="#1f2937"/><circle cx="47.5" cy="57" r="1.6" fill="#fff"/></g><g class="mc-eye"><ellipse cx="74" cy="59" rx="4.4" ry="5.6" fill="#1f2937"/><circle cx="75.5" cy="57" r="1.6" fill="#fff"/></g><path d="M39 49 L52 53" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/><path d="M81 49 L68 53" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/>'
+        }[mood] || '';
+        const mouth = {
+            ready: '<path d="M51 80 Q60 88 69 80" fill="none" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/>',
+            happy: '<path d="M48 78 Q60 98 72 78 Z" fill="#7f1d1d" stroke="#7c2d12" stroke-width="2.4" stroke-linejoin="round"/><path d="M54 87 Q60 92 66 87 Q60 83 54 87 Z" fill="#fb7185"/>',
+            calm: '<path d="M54 82 Q60 86 66 82" fill="none" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/>',
+            tough: '<path d="M52 83 Q60 79 68 83" fill="none" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/>'
+        }[mood] || '';
+        const mane = Array.from({ length: 12 }, (_, i) => { const a = (Math.PI * 2 * i) / 12; return `<circle cx="${(60 + Math.cos(a) * 38).toFixed(1)}" cy="${(62 + Math.sin(a) * 38).toFixed(1)}" r="13" fill="#d97706"/>`; }).join('');
+        const extra = mood === 'happy' ? '<g class="mc-spark"><path d="M14 30 l2.4 6 6 2.4 -6 2.4 -2.4 6 -2.4 -6 -6 -2.4 6 -2.4z" fill="#fde047"/><path d="M104 22 l1.8 4.4 4.4 1.8 -4.4 1.8 -1.8 4.4 -1.8 -4.4 -4.4 -1.8 4.4 -1.8z" fill="#fde047"/></g>'
+            : mood === 'calm' ? '<g class="mc-z"><text x="92" y="30" font-size="16" font-weight="800" fill="#fff" opacity=".9">z</text><text x="102" y="18" font-size="11" font-weight="800" fill="#fff" opacity=".7">z</text></g>' : '';
+        const wave = mood === 'ready' ? '<g class="mc-wave"><path d="M82 100 Q96 104 101 88" fill="none" stroke="#d97706" stroke-width="12" stroke-linecap="round"/><path d="M82 100 Q96 104 101 88" fill="none" stroke="#fbbf24" stroke-width="8" stroke-linecap="round"/><circle cx="101" cy="85" r="8.5" fill="#fbbf24" stroke="#d97706" stroke-width="2.4"/></g>' : '';
+        return `<svg class="mc mc-${mood}" viewBox="0 0 120 120" aria-hidden="true"><g class="mc-body">${mane}
+            <circle cx="30" cy="40" r="12" fill="#fbbf24"/><circle cx="30" cy="40" r="6" fill="#fda4af"/><circle cx="90" cy="40" r="12" fill="#fbbf24"/><circle cx="90" cy="40" r="6" fill="#fda4af"/>
+            <circle cx="60" cy="62" r="35" fill="#fbbf24"/>
+            <ellipse cx="60" cy="76" rx="17" ry="13" fill="#fef3c7"/>
+            <path d="M55 68 Q60 65 65 68 Q63 73 60 74 Q57 73 55 68Z" fill="#92400e"/>
+            <circle cx="36" cy="70" r="6" fill="#fb7185" opacity=".45"/><circle cx="84" cy="70" r="6" fill="#fb7185" opacity=".45"/>
+            ${eyes}${mouth}
+            <path d="M34 32 L60 20 L86 32 L60 44 Z" fill="#1e3a8a"/><path d="M46 38 L46 48 Q60 56 74 48 L74 38 L60 44 Z" fill="#1e40af"/><path d="M86 32 L92 46" stroke="#fbbf24" stroke-width="2.4" stroke-linecap="round"/><circle cx="92" cy="48" r="3" fill="#fbbf24"/>
+            ${wave}</g>${extra}</svg>`;
+    }
+    /* speech bubble next to the mascot, gone after a few seconds */
+    mascotSay(text) {
+        const hero = $('.hero'); if (!hero) return;
+        const old = $('.mascot-bubble'); if (old) old.remove();
+        const b = document.createElement('div'); b.className = 'mascot-bubble'; b.textContent = text; b.setAttribute('role', 'status');
+        hero.appendChild(b); clearTimeout(this._bubbleT); this._bubbleT = setTimeout(() => { b.classList.add('out'); setTimeout(() => b.remove(), 250); }, 3200);
+    }
+    /* switching tabs: the browser cross-fades and slides two snapshots of the page (GPU, no jank); older browsers use the CSS slide */
+    tabGo(view) {
+        const order = ['dashboard', 'decks', 'toeic', 'stats', 'settings'], a = order.indexOf(this.view), b = order.indexOf(view);
+        if (!document.startViewTransition || this.calm() || a < 0 || b < 0 || a === b || this.session || this.modals.length) { this.go(view); return; }
+        const root = document.documentElement;
+        root.dataset.vt = b > a ? 'r' : 'l'; this._vtOn = true;
+        const t = document.startViewTransition(() => { this.go(view); });
+        const done = () => { delete root.dataset.vt; this._vtOn = false; };
+        t.finished.then(done, done);
+    }
+    /* fallback for browsers without view transitions: a veil of the old background fades out over the new theme */
+    themeVeil(swap) {
+        const v = document.createElement('div'), bg = getComputedStyle(document.body).backgroundColor;
+        v.style.cssText = `position:fixed;inset:0;z-index:9999;pointer-events:none;background:${bg};opacity:1;transition:opacity .45s ease`;
+        document.body.appendChild(v); swap();
+        requestAnimationFrame(() => requestAnimationFrame(() => { v.style.opacity = '0'; }));
+        setTimeout(() => v.remove(), 600);
     }
     /* centre of the tapped element, in page coordinates: a deck opens by growing from there */
     originOf(el) {
@@ -1327,7 +1381,7 @@ class SuperAnki {
         $('#view-dashboard').innerHTML = `
         <div class="stack">
             <div class="hero">
-                <button class="mascot" data-action="mascot" aria-label="Ta mascotte : touche-la pour un encouragement" data-mood="${toStudy === 0 ? 'calm' : (this.data.stats.lastStudyDate === dayKey() ? 'happy' : 'ready')}">${toStudy === 0 ? '😌' : (this.data.stats.lastStudyDate === dayKey() ? '🥳' : '🦉')}</button>
+                <button class="mascot" data-action="mascot" aria-label="Léo, ta mascotte : touche-le pour un encouragement" data-mood="${toStudy === 0 ? 'calm' : (this.data.stats.lastStudyDate === dayKey() ? 'happy' : 'ready')}">${this.mascotSvg(toStudy === 0 ? 'calm' : (this.data.stats.lastStudyDate === dayKey() ? 'happy' : 'ready'))}</button>
                 <div class="hero-inner">
                     <div>
                         <span class="hero-kicker">${hello} 👋${goal ? ` · <b>${esc(goal.name)} : ${goal.days > 0 ? `J-${goal.days}` : goal.days === 0 ? 'c\'est aujourd\'hui !' : 'terminé'}</b>` : ''}</span>
@@ -2647,7 +2701,7 @@ class SuperAnki {
         document.body.classList.add('in-session');
         $('#view-session').innerHTML = `
         <div class="summary">
-            <div class="summary-emoji">${emoji}</div>
+            ${kind === 'chrono' ? `<div class="summary-emoji">${emoji}</div>` : `<div class="summary-mascot">${this.mascotSvg(acc >= 80 ? 'happy' : acc >= 50 ? 'ready' : 'tough')}</div>`}
             <h2 class="page-title" style="margin-top:12px">${title}</h2>
             ${lead ? `<p class="page-sub">${lead}</p>` : ''}
             ${kind === 'chrono' ? '' : `<div class="summary-ring" style="--p:${acc}"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="rg-bg" cx="50" cy="50" r="44"/><circle class="rg-fg" cx="50" cy="50" r="44" pathLength="100"/></svg><div class="ring-in"><b>${acc}%</b><small>réussite</small></div></div>`}
@@ -3305,7 +3359,7 @@ class SuperAnki {
             if (this.popover && !this.popover.contains(e.target) && !(this.popoverAnchor && this.popoverAnchor.contains(e.target))) this.closePopover();
             else if (this.popover && e.target.closest('.popover [data-action], .popover [data-nav]')) setTimeout(() => this.closePopover(), 0);
             const nav = e.target.closest('[data-nav]');
-            if (nav) { this.go(nav.dataset.nav); return; }
+            if (nav) { this.tabGo(nav.dataset.nav); return; }
             const tb = e.target.closest('.tb-btn');
             if (tb) { const area = tb.closest('.editor').querySelector('.editor-area'); this.execEditor(tb.dataset.cmd, area, e); return; }
             const el = e.target.closest('[data-action]');
@@ -3725,7 +3779,7 @@ class SuperAnki {
             case 'mascot': {
                 const m = el.dataset ? el.dataset.mood : 'ready';
                 const say = { ready: ['On y va ? Quelques cartes suffisent !', 'Une petite session et c\'est lancé 💪', 'Ta série compte sur toi 🔥'], happy: ['Bien joué, tu as déjà révisé aujourd\'hui !', 'Ta série est sauvée 🔥', 'Continue si tu as encore de l\'énergie !'], calm: ['Tout est à jour, profite 😌', 'Rien à réviser : repose-toi !', 'Une révision libre pour s\'amuser ?'] }[m] || [];
-                this.toast(say[Math.floor(Math.random() * say.length)] || 'Allez !', 'success');
+                this.mascotSay(say[Math.floor(Math.random() * say.length)] || 'Allez !');
                 el.classList && el.classList.remove('hop'); void (el.offsetWidth); el.classList && el.classList.add('hop');
                 break;
             }

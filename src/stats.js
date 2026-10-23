@@ -57,7 +57,7 @@ function barsSVG(W, o) {
             if (v <= 0) return;
             const h = Math.max(1, v / yMax * ph);
             y -= h;
-            g += `<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}" ${w > 6 ? 'rx="2"' : ''} style="fill:${s.colorAt ? s.colorAt(i) : s.color}"/>`;
+            g += `<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}" ${w > 6 ? 'rx="2"' : ''} style="fill:${s.colorAt ? s.colorAt(i) : s.color};--i:${i}"/>`;
         });
     }
     if (o.line && o.line.values.some(v => v !== null && v !== undefined)) {

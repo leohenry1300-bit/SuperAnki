@@ -2037,11 +2037,11 @@ details[open] > :not(summary) { animation: unfold .3s cubic-bezier(.2,.7,.2,1); 
 .spark { position: fixed; z-index: 130; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: #f97316; box-shadow: 0 0 6px #fbbf24; pointer-events: none; animation: spark .7s ease-out forwards; }
 .spark:nth-of-type(even) { background: #fbbf24; }
 @keyframes spark { from { transform: translate(0, 0) scale(1); opacity: 1; } to { transform: translate(var(--dx), var(--dy)) scale(.2); opacity: 0; } }
-.cascade .chart svg rect:not(.hit) { transform-box: fill-box; transform-origin: 50% 100%; animation: barUp .6s cubic-bezier(.2,.7,.2,1) backwards; }
+.cascade .chart svg rect:not(.hit) { transform-box: fill-box; transform-origin: 50% 100%; animation: barUp 1.3s cubic-bezier(.22,.8,.25,1) backwards; animation-delay: min(calc(var(--i, 0) * 22ms), 800ms); }
 @keyframes barUp { from { transform: scaleY(0); } }
-.cascade .chart svg path[stroke-linecap="round"] { stroke-dasharray: 1; animation: lineDraw 1s .1s ease-out backwards; }
+.cascade .chart svg path[stroke-linecap="round"] { stroke-dasharray: 1; animation: lineDraw 2s .3s ease-in-out backwards; }
 @keyframes lineDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
-.cascade .chart svg circle:not(.slice) { animation: dotIn .4s .8s ease-out backwards; transform-box: fill-box; transform-origin: center; }
+.cascade .chart svg circle:not(.slice) { animation: dotIn .5s 1.9s ease-out backwards; transform-box: fill-box; transform-origin: center; }
 @keyframes dotIn { from { transform: scale(0); } }
 @media (prefers-reduced-motion: reduce) { .unfold, details[open] > :not(summary), .btn-hero.breathe, .streak-chip.flame-pop, .spark, .cascade .chart svg * { animation: none !important; } }
 
@@ -2065,7 +2065,6 @@ html { overscroll-behavior-y: contain; }
 .grade-btn:active { background: color-mix(in srgb, var(--c) 38%, var(--surface)); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 40%, transparent); }
 .flashcard.fly-right { box-shadow: 0 0 0 3px color-mix(in srgb, var(--easy, #10b981) 65%, transparent), var(--shadow); }
 .flashcard.fly-left { box-shadow: 0 0 0 3px color-mix(in srgb, var(--again, #ef4444) 65%, transparent), var(--shadow); }
-html.theme-fade, html.theme-fade *, html.theme-fade *::before, html.theme-fade *::after { transition: background-color .45s ease, color .45s ease, border-color .45s ease, fill .45s ease, stroke .45s ease, box-shadow .45s ease !important; }
 .switch span::after { transition: transform .3s cubic-bezier(.3, 1.7, .5, 1), background .2s; }
 .switch input:checked + span::after { transform: translate(20px, -50%) scale(1.06); }
 .switch input:active + span::after { width: 24px; }
@@ -2077,7 +2076,7 @@ html.theme-fade, html.theme-fade *, html.theme-fade *::before, html.theme-fade *
 .view-in-zoom { transform-origin: var(--ox, 50%) var(--oy, 30%); animation: viewZoom .34s cubic-bezier(.2,.8,.2,1) backwards; }
 @keyframes viewZoom { from { opacity: 0; transform: scale(.9); } }
 .hero { position: relative; }
-.mascot { position: absolute; right: 18px; top: 14px; z-index: 2; font-size: 2rem; line-height: 1; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; background: rgba(255,255,255,.14); animation: mascotIdle 3.4s ease-in-out infinite; }
+.mascot { position: absolute; right: 14px; top: 10px; z-index: 2; width: 64px; height: 64px; display: grid; place-items: center; border-radius: 50%; background: rgba(255,255,255,.16); padding: 3px; animation: mascotIdle 3.4s ease-in-out infinite; }
 .mascot.hop { animation: mascotHop .5s cubic-bezier(.3,1.6,.5,1); }
 @keyframes mascotIdle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 @keyframes mascotHop { 0% { transform: translateY(0) scale(1); } 35% { transform: translateY(-14px) scale(1.15) rotate(-8deg); } 100% { transform: none; } }
@@ -2086,3 +2085,46 @@ body.zen .session-top { justify-content: space-between; opacity: .55; }
 body.zen::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 5; background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.28) 100%); animation: fadeBg .6s ease; }
 @media (prefers-reduced-motion: reduce) { .mascot, .view-in-zoom { animation: none !important; } }
 body.zen .audio-bar { display: none !important; }
+
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .55s; animation-timing-function: ease-in-out; }
+.topbar { view-transition-name: topbar; }
+.bottom-nav { view-transition-name: bottomnav; }
+html[data-vt] .view-in-n { animation: none; }
+html[data-vt]::view-transition-old(root) { animation: vtOut .24s cubic-bezier(.4,0,.6,1) both; }
+html[data-vt]::view-transition-new(root) { animation: vtIn .34s cubic-bezier(.2,.8,.2,1) both; }
+html[data-vt="l"]::view-transition-old(root) { animation-name: vtOutL; }
+html[data-vt="l"]::view-transition-new(root) { animation-name: vtInL; }
+@keyframes vtOut { to { opacity: 0; transform: translateX(-26px); } }
+@keyframes vtIn { from { opacity: 0; transform: translateX(26px); } }
+@keyframes vtOutL { to { opacity: 0; transform: translateX(26px); } }
+@keyframes vtInL { from { opacity: 0; transform: translateX(-26px); } }
+@media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; } }
+
+/* ---- Léo the lion cub ---- */
+.mc { width: 100%; height: 100%; overflow: visible; }
+.mc-eye { transform-box: fill-box; transform-origin: center; animation: mcBlink 4.6s infinite; }
+@keyframes mcBlink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.08); } }
+.mc-wave { transform-box: view-box; transform-origin: 100px 108px; animation: mcWave 1.5s ease-in-out infinite; }
+@keyframes mcWave { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(-22deg); } 60% { transform: rotate(10deg); } }
+.mc-happy .mc-body { animation: mcJump 1.1s ease-in-out infinite; transform-origin: 60px 100px; }
+@keyframes mcJump { 0%, 100% { transform: translateY(0) scale(1, 1); } 45% { transform: translateY(-7px) scale(.97, 1.04); } 60% { transform: translateY(0) scale(1.04, .96); } }
+.mc-spark { animation: mcTwinkle 1.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes mcTwinkle { 0%, 100% { opacity: .35; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.15); } }
+.mc-z { animation: mcZ 2.6s ease-in-out infinite; }
+@keyframes mcZ { 0% { opacity: 0; transform: translateY(6px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(-8px); } }
+.mc-calm .mc-body { animation: mcBreath 3.6s ease-in-out infinite; transform-origin: 60px 100px; }
+@keyframes mcBreath { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.025); } }
+.mascot-bubble { position: absolute; z-index: 3; right: 14px; top: 78px; max-width: min(230px, 70%); padding: 9px 13px; border-radius: 14px 4px 14px 14px; background: #fff; color: #1f2937; font-weight: 700; font-size: .85rem; line-height: 1.3; box-shadow: 0 8px 22px rgba(0,0,0,.28); animation: bubbleIn .28s cubic-bezier(.3,1.5,.5,1); transform-origin: top right; }
+.mascot-bubble.out { opacity: 0; transform: scale(.9); transition: .22s; }
+@keyframes bubbleIn { from { opacity: 0; transform: scale(.6); } }
+.summary-mascot { width: 118px; height: 118px; margin: 4px auto 0; }
+@media (max-width: 480px) { .hero .hero-title { padding-right: 58px; } }
+@media (prefers-reduced-motion: reduce) { .mc *, .mascot-bubble { animation: none !important; } }
+
+/* ---- home tool buttons: equal widths, label centred, chevron on the right edge ---- */
+.tool-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tool-btn { position: relative; justify-content: center; padding: 8px 30px; text-align: center; }
+.tool-btn span { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.2; text-align: center; }
+.tool-btn .tb-chev { position: absolute; right: 10px; top: 50%; margin-top: -8px; }
+.tool-btn > .i:first-child { display: none; }
+.mc-wave { transform-origin: 82px 100px; }
