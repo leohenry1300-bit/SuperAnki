@@ -678,7 +678,7 @@ img { max-width: 100%; }
 /* ============================================================
    Settings
    ============================================================ */
-.settings { max-width: 860px; margin-left: auto; margin-right: auto; width: 100%; }
+.settings { max-width: none; width: 100%; }
 .set-section h3 { font-size: 1rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
 .set-section > p { margin-top: 4px; }
 .set-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 0; border-top: var(--border-w) solid var(--border); flex-wrap: wrap; }
@@ -1785,6 +1785,7 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
   .set-row:has(.days-grid) { flex-direction: column; align-items: stretch; }
   .set-row:has(.days-grid) .opt-ctl { width: 100%; }
 }
+.set-nav { background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-radius: 14px; padding-left: 4px; padding-right: 4px; }
 
 </style>
 </head>
