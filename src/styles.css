@@ -2240,3 +2240,10 @@ html[data-vt="l"]::view-transition-new(root) { animation-name: vtInL; }
   .hero-actions { justify-self: start; }
   .hero .mascot { width: 190px; height: 207px; margin: -46px 8px -18px 0; align-self: center; }
 }
+
+/* ---- bubble next to Léo on wide screens ---- */
+.leo-bubble { position: absolute; z-index: 3; right: 232px; top: 34px; max-width: min(340px, 36%); padding: 12px 16px; border-radius: 16px 16px 4px 16px; background: rgba(255,255,255,.96); color: #1f2937; font-weight: 700; font-size: 1rem; line-height: 1.35; box-shadow: 0 10px 26px rgba(20,10,60,.3); animation: bubbleIn .25s cubic-bezier(.3,1.5,.5,1); transform-origin: right bottom; }
+.leo-bubble::after { content: ""; position: absolute; right: -8px; bottom: 10px; border: 8px solid transparent; border-left-color: rgba(255,255,255,.96); border-right: 0; }
+.leo-bubble.out { opacity: 0; transform: scale(.92); transition: .24s; }
+@media (max-width: 767px) { .leo-bubble { display: none; } }
+@media (prefers-reduced-motion: reduce) { .leo-bubble { animation: none; } }

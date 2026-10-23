@@ -3,11 +3,27 @@
 function leoSvg(mood = 'ready', opts = {}) {
     const id = 'lg' + (leoSvg.n = (leoSvg.n || 0) + 1);
     const streak = opts.streak || 0;
-    /* mane: two rings of tufts (teardrops) around the head */
-    const tuft = (cx, cy, r, ang, len, wid, fill) => `<path d="M0 0 C ${wid} ${-len * .35}, ${wid * .7} ${-len * .85}, 0 ${-len} C ${-wid * .7} ${-len * .85}, ${-wid} ${-len * .35}, 0 0 Z" transform="translate(${cx} ${cy}) rotate(${ang}) translate(0 ${-r})" fill="${fill}"/>`;
+    /* mane: three rings of S-curved tufts of different lengths (seeded, so Léo always looks the same) with a light strand in each, plus a ruff under the chin */
+    let seed = 7; const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+    const tuft = (cx, cy, r, ang, len, wid, curl, fill, strand) => `<g transform="translate(${cx} ${cy}) rotate(${ang}) translate(0 ${-r})"><path d="M${-wid * .55} 0 C ${-wid * 1.05} ${-len * .38}, ${-wid * .4 + curl * .35} ${-len * .86}, ${curl} ${-len} C ${wid * .4 + curl * .35} ${-len * .8}, ${wid * 1.05} ${-len * .36}, ${wid * .55} 0 Z" fill="${fill}"/>${strand ? `<path d="M${curl * .15} ${-len * .1} Q${curl * .5} ${-len * .5} ${curl * .75} ${-len * .85}" fill="none" stroke="${strand}" stroke-width="1.7" stroke-linecap="round" opacity=".5"/>` : ''}</g>`;
     let mane = '';
-    for (let i = 0; i < 16; i++) { const a = i * 22.5 + 11; mane += `<g class="mc-tuft t${i % 4}">${tuft(110, 98, 44, a, 40, 15, `url(#${id}m1)`)}</g>`; }
-    for (let i = 0; i < 14; i++) { const a = i * 25.7; mane += tuft(110, 98, 44, a, 30, 12, `url(#${id}m2)`); }
+    for (let i = 0; i < 22; i++) { const a = i * (360 / 22) + (rnd() - .5) * 6; mane += `<g class="mc-tuft t${i % 4}">${tuft(110, 98, 40, a, 40 + rnd() * 16, 14 + rnd() * 4, (rnd() - .5) * 16, `url(#${id}m1)`, '#e0782a')}</g>`; }
+    for (let i = 0; i < 19; i++) { const a = i * (360 / 19) + 9 + (rnd() - .5) * 6; mane += `<g class="mc-tuft t${(i + 2) % 4}">${tuft(110, 98, 42, a, 30 + rnd() * 12, 12 + rnd() * 3, (rnd() - .5) * 12, `url(#${id}m2)`, '#ffb85a')}</g>`; }
+    for (let i = 0; i < 17; i++) { const a = i * (360 / 17) + 4 + (rnd() - .5) * 5; mane += tuft(110, 98, 44, a, 20 + rnd() * 9, 10 + rnd() * 2.5, (rnd() - .5) * 8, `url(#${id}m3)`, '#ffe08a'); }
+    let ruff = '';
+    for (let i = 0; i < 9; i++) { const a = 118 + i * 15.5; ruff += tuft(110, 132, 6, a, 22 + rnd() * 8, 11 + rnd() * 2, (rnd() - .5) * 8, `url(#${id}${i % 2 ? 'm2' : 'm1'})`, '#ffb85a'); }
+    /* outfits: cap (default), santa hat, witch hat, crown, night cap, headband, sunglasses + flower */
+    const O = {
+        cap: `<g class="mc-hat mc-cap"><path d="M62 52 L110 31 L158 52 L110 69 Z" fill="url(#${id}k)"/><path d="M62 52 L110 69 L158 52 L158 56.5 L110 74 L62 56.5 Z" fill="#0f1747"/><path d="M87 58 V72 Q110 85 133 72 V58 L110 66 Z" fill="#1b2670"/><path d="M110 31 L158 52 L110 42 Z" fill="#fff" opacity=".12"/><circle cx="110" cy="50" r="3.2" fill="#fbbf24"/>
+              <g class="mc-tassel"><path d="M110 50 Q143 52 151 57 V78" fill="none" stroke="#f59e0b" stroke-width="2.8" stroke-linecap="round"/><path d="M146.5 76 h9 l2.4 12.5 h-13.8z" fill="url(#${id}g)"/></g></g>`,
+        santa: `<g class="mc-hat"><path d="M64 62 C66 30 100 14 140 26 C158 32 170 54 164 82 C158 66 150 58 140 56 L66 66 Z" fill="url(#${id}r)"/><path d="M104 22 C120 24 136 32 148 48" fill="none" stroke="#fff" stroke-width="2" opacity=".25" stroke-linecap="round"/><rect x="58" y="54" width="108" height="19" rx="9.5" fill="#fff"/><g fill="#e8eaf2"><circle cx="72" cy="63" r="2.2"/><circle cx="96" cy="66" r="2"/><circle cx="124" cy="66" r="2.2"/><circle cx="150" cy="63" r="2"/></g><circle cx="165" cy="86" r="10" fill="#fff"/><circle cx="162" cy="83" r="3.4" fill="#e8eaf2"/></g>`,
+        witch: `<g class="mc-hat"><ellipse cx="110" cy="62" rx="58" ry="11" fill="#2a1346"/><path d="M72 62 C84 46 96 28 112 4 C116 22 130 44 148 62 Z" fill="url(#${id}w)"/><path d="M76 58 Q110 70 146 58 L148 62 Q110 76 72 62 Z" fill="#f97316"/><rect x="100" y="52" width="20" height="14" rx="3" fill="none" stroke="#fbbf24" stroke-width="3"/><path d="M116 16 q8 -2 10 6" fill="none" stroke="#fff" stroke-width="2" opacity=".25" stroke-linecap="round"/><g fill="#fde047"><path d="M92 38 l1.8 4 4 .6 -3 2.8 .8 4 -3.6 -2 -3.6 2 .8 -4 -3 -2.8 4 -.6z" transform="scale(.8) translate(24 10)"/></g></g>`,
+        crown: `<g class="mc-hat"><path d="M66 66 L68 30 L88 48 L110 22 L132 48 L152 30 L154 66 Q110 76 66 66 Z" fill="url(#${id}g)" stroke="#b45309" stroke-width="2.4" stroke-linejoin="round"/><path d="M66 60 Q110 70 154 60" fill="none" stroke="#b45309" stroke-width="2" opacity=".6"/><circle cx="110" cy="48" r="5.6" fill="#e11d48" stroke="#9f1239" stroke-width="1.4"/><circle cx="84" cy="56" r="3.6" fill="#2563eb"/><circle cx="136" cy="56" r="3.6" fill="#2563eb"/><circle cx="68" cy="30" r="3" fill="#fff7c2"/><circle cx="110" cy="22" r="3.2" fill="#fff7c2"/><circle cx="152" cy="30" r="3" fill="#fff7c2"/><path d="M76 44 L82 58" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".5"/></g>`,
+        night: `<g class="mc-hat"><path d="M64 64 C68 38 100 24 130 32 C156 40 170 62 172 92 C160 80 150 70 138 66 L66 68 Z" fill="url(#${id}n)"/><rect x="60" y="56" width="104" height="17" rx="8.5" fill="#e0e7ff"/><circle cx="172" cy="96" r="10" fill="#e0e7ff"/><g fill="#fde047"><path d="M96 40 l2 4.6 5 .7 -3.6 3.4 .9 5 -4.3 -2.4 -4.3 2.4 .9 -5 -3.6 -3.4 5 -.7z"/><path d="M130 48 l1.4 3.2 3.4 .5 -2.5 2.3 .6 3.4 -2.9 -1.6 -2.9 1.6 .6 -3.4 -2.5 -2.3 3.4 -.5z"/></g></g>`,
+        headband: `<g class="mc-hat"><path d="M58 66 Q110 52 162 66 L162 78 Q110 64 58 78 Z" fill="#fff"/><path d="M58 66 Q110 52 162 66" fill="none" stroke="#e5e7eb" stroke-width="1.6"/><circle cx="110" cy="65" r="8.5" fill="#dc2626"/><path d="M160 70 Q178 66 184 82 M160 74 Q172 82 172 98" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/><path d="M160 70 Q178 66 184 82 M160 74 Q172 82 172 98" fill="none" stroke="#e5e7eb" stroke-width="1.2" stroke-linecap="round" opacity=".7"/></g>`,
+        sun: `<g class="mc-hat"><rect x="64" y="52" width="40" height="22" rx="10" fill="url(#${id}s)" stroke="#111827" stroke-width="3"/><rect x="116" y="52" width="40" height="22" rx="10" fill="url(#${id}s)" stroke="#111827" stroke-width="3"/><path d="M104 60 Q110 55 116 60" fill="none" stroke="#111827" stroke-width="3.4"/><path d="M72 58 l9 -0 M124 58 l9 0" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".6"/><g transform="translate(160 44)"><g fill="#fb7185"><circle cx="0" cy="-8" r="7"/><circle cx="8" cy="-2" r="7"/><circle cx="5" cy="7" r="7"/><circle cx="-5" cy="7" r="7"/><circle cx="-8" cy="-2" r="7"/></g><circle r="4" fill="#fde047"/></g></g>`
+    };
+    const hat = O[opts.outfit] || O.cap;
     /* eyes */
     const lid = (x) => `<path d="M${x - 11} 87 Q${x} 80 ${x + 11} 87" fill="none" stroke="#7a3a08" stroke-width="2.6" stroke-linecap="round"/>`;
     const openEye = (x, big = 1) => `<g class="mc-eye"><g class="mc-look">
@@ -50,10 +66,15 @@ function leoSvg(mood = 'ready', opts = {}) {
         <radialGradient id="${id}h" cx=".4" cy=".28" r=".85"><stop offset="0" stop-color="#ffe49a"/><stop offset=".5" stop-color="#fbbd3f"/><stop offset="1" stop-color="#e4871a"/></radialGradient>
         <linearGradient id="${id}m1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b54a0b"/><stop offset="1" stop-color="#8e3508"/></linearGradient>
         <linearGradient id="${id}m2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e3741a"/><stop offset="1" stop-color="#c25a10"/></linearGradient>
+        <linearGradient id="${id}m3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6a53a"/><stop offset="1" stop-color="#da7c14"/></linearGradient>
         <radialGradient id="${id}i" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#d98a2b"/><stop offset=".6" stop-color="#8a4510"/><stop offset="1" stop-color="#4a230a"/></radialGradient>
         <linearGradient id="${id}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf6"/><stop offset="1" stop-color="#ffefc7"/></linearGradient>
         <linearGradient id="${id}t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8fa3"/><stop offset="1" stop-color="#e5486a"/></linearGradient>
         <linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff176"/><stop offset="1" stop-color="#f59e0b"/></linearGradient>
+        <linearGradient id="${id}r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ef4444"/><stop offset="1" stop-color="#b91c1c"/></linearGradient>
+        <linearGradient id="${id}w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#3b0f6e"/></linearGradient>
+        <linearGradient id="${id}n" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#312e81"/></linearGradient>
+        <linearGradient id="${id}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#374151"/><stop offset="1" stop-color="#030712"/></linearGradient>
         <linearGradient id="${id}k" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b3a8f"/><stop offset="1" stop-color="#162058"/></linearGradient>
         <radialGradient id="${id}b" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff7a8a" stop-opacity=".7"/><stop offset="1" stop-color="#ff7a8a" stop-opacity="0"/></radialGradient>
     </defs>
@@ -72,6 +93,7 @@ function leoSvg(mood = 'ready', opts = {}) {
         <ellipse cx="86" cy="${cardY + 40}" rx="12" ry="11" fill="url(#${id}f)"/><ellipse cx="86" cy="${cardY + 41}" rx="6" ry="5.4" fill="#fff0d0"/>
         ${rightArm}
         <g class="mc-head">
+            <g class="mc-ruff">${ruff}</g>
             <g class="mc-ear l"><circle cx="64" cy="58" r="17" fill="#e98d17"/><circle cx="64" cy="58" r="14" fill="url(#${id}f)"/><circle cx="64.5" cy="60" r="8" fill="#f7a3b4"/></g>
             <g class="mc-ear r"><circle cx="156" cy="58" r="17" fill="#e98d17"/><circle cx="156" cy="58" r="14" fill="url(#${id}f)"/><circle cx="155.5" cy="60" r="8" fill="#f7a3b4"/></g>
             <ellipse cx="110" cy="98" rx="55" ry="49" fill="url(#${id}h)"/>
@@ -85,8 +107,7 @@ function leoSvg(mood = 'ready', opts = {}) {
             ${E}${M}
             <path d="M60 118 q-16 -3 -30 3 M60 124 q-16 2 -28 10 M160 118 q16 -3 30 3 M160 124 q16 2 28 10" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" opacity=".75"/>
             <path d="M100 52 Q104 40 110 50 Q114 38 120 52 Q112 56 100 52Z" fill="#e98d17"/>
-            <g class="mc-cap"><path d="M62 52 L110 31 L158 52 L110 69 Z" fill="url(#${id}k)"/><path d="M62 52 L110 69 L158 52 L158 56.5 L110 74 L62 56.5 Z" fill="#0f1747"/><path d="M87 58 V72 Q110 85 133 72 V58 L110 66 Z" fill="#1b2670"/><path d="M110 31 L158 52 L110 42 Z" fill="#fff" opacity=".12"/><circle cx="110" cy="50" r="3.2" fill="#fbbf24"/>
-              <g class="mc-tassel"><path d="M110 50 Q143 52 151 57 V78" fill="none" stroke="#f59e0b" stroke-width="2.8" stroke-linecap="round"/><path d="M146.5 76 h9 l2.4 12.5 h-13.8z" fill="url(#${id}g)"/></g></g></g>
+            ${hat}
         </g>
     </g>${sparks}${zs}</svg>`;
 }
