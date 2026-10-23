@@ -1682,6 +1682,20 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 @media (max-width: 767px) { .hero-actions .btn { font-size: .86rem; } }
 .set-row .txt span b, .set-row .txt span code { display: inline; font-size: inherit; color: inherit; }
 
+/* ---- settings: groups, folded panels, danger zone ---- */
+.set-group { display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 112px; }
+.set-group-title { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 800; margin: 18px 4px 0; }
+.set-group-sub { margin: -8px 4px 2px; color: var(--text-muted); font-size: .88rem; }
+.set-collapse > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 10px; }
+.set-collapse > summary::-webkit-details-marker { display: none; }
+.set-collapse > summary h3 { margin: 0; flex: 1; }
+.set-collapse > summary small { color: var(--text-faint); font-weight: 700; font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; }
+.set-collapse > summary::after { content: '▸'; color: var(--text-faint); font-size: 1rem; }
+.set-collapse[open] > summary::after { content: '▾'; }
+.set-collapse[open] > summary { margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line, var(--border)); }
+.set-danger { border-color: color-mix(in srgb, var(--again, #e11d48) 40%, transparent); }
+.set-danger h3 { color: var(--again, #e11d48); }
+
 </style>
 </head>
 <body>
@@ -9103,23 +9117,57 @@ Object.assign(SuperAnki.prototype, {
 });
 
 
-/* Settings: panels reordered (study settings first, sounds after) + a sticky row of shortcuts to jump to a section */
+/* Settings: the page is regrouped into clear sections (Révision / Sons / Apparence / Données / Avancé),
+   advanced panels fold away, and a sticky row of shortcuts jumps to a section. Done on the DOM after each render. */
 Object.assign(SuperAnki.prototype, {
     settingsNav() {
         const root = document.getElementById('view-settings'); if (!root) return;
-        const panels = () => [...root.querySelectorAll('.set-section')];
+        const stack = root.querySelector('.settings') || root.firstElementChild; if (!stack) return;
+        root.querySelectorAll('.set-nav, .set-group').forEach(n => n.remove());
+        const all = [...root.querySelectorAll('.set-section')];
         const title = p => ((p.querySelector('h3') || {}).textContent || '').replace(/\s+/g, ' ').trim();
-        const algo = panels().find(p => /Algorithme/.test(title(p))), ex = document.getElementById('ex-settings'), amb = document.getElementById('amb-panel');
-        if (algo && ex) { algo.after(ex); if (amb) ex.after(amb); }
-        const theme = panels().find(p => /^Thème/.test(title(p)));   // rarely changed: after the sounds
-        if (theme && (amb || ex)) (amb || ex).after(theme);
-        root.querySelectorAll('.set-nav').forEach(n => n.remove());
-        const short = t => t.replace(/ \/ examen/, '').replace(/^Algorithme.*/, 'Algorithme').replace(/^Synchronisation.*/, 'Cloud').replace(/^Raccourcis.*/, 'Clavier');
-        const items = panels().map((p, i) => { p.id = p.id || `set-sec-${i}`; return { id: p.id, label: short(title(p)) }; }).filter(x => x.label);
+        const by = re => all.find(p => re.test(title(p)));
+        const rowOf = re => [...root.querySelectorAll('.set-row')].find(r => re.test(((r.querySelector('.txt > b') || {}).textContent || '')));
+        const P = { upd: document.getElementById('ex-update'), rev: by(/^Révision/), goal: by(/^Objectif/), algo: document.getElementById('study-options'), fsrs: document.getElementById('fsrs-panel'),
+            snd: document.getElementById('ex-settings'), amb: document.getElementById('amb-panel'), theme: by(/^Thème/), cloud: by(/^Synchronisation/), data: by(/^Données/), tools: by(/^Outils/), keys: by(/^Raccourcis/) };
+        if (P.rev) { const h = P.rev.querySelector('h3'); if (h && h.lastChild && h.lastChild.nodeType === 3) h.lastChild.textContent = ' Séance de révision'; }
+        /* settings that were in "Données" but belong to the review: moved to "Révision" */
+        if (P.rev) ['Réviser par petits groupes', 'Équilibrer la charge'].forEach(t => { const r = rowOf(new RegExp('^' + t)); if (r) P.rev.appendChild(r); });
+        /* risky actions get their own panel at the very end */
+        const dz = document.createElement('div'); dz.className = 'panel panel-pad set-section set-danger'; dz.id = 'set-danger';
+        dz.innerHTML = `<h3>${ic('alert')} Zone sensible</h3><p class="small muted">Ces actions effacent de la progression ou des données. Elles demandent toujours une confirmation.</p>`;
+        let nd = 0; ['Remettre la progression', 'Réinitialiser l.application'].forEach(t => { const r = rowOf(new RegExp('^' + t)); if (r) { dz.appendChild(r); nd++; } });
+        P.danger = nd ? dz : null;
+        /* heavy panels fold away (closed by default) */
+        const fold = (panel, label) => {
+            if (!panel) return;
+            const h = panel.querySelector('h3'); if (!h) return;
+            const det = document.createElement('details'); det.className = 'set-collapse';
+            const sum = document.createElement('summary'); h.after(det); sum.appendChild(h); det.appendChild(sum);
+            while (det.nextSibling) det.appendChild(det.nextSibling);
+            if (label) { const sm = document.createElement('small'); sm.textContent = label; sum.appendChild(sm); }
+        };
+        fold(P.algo, 'avancé'); fold(P.fsrs, 'avancé'); fold(P.tools); fold(P.keys);
+        const groups = [
+            ['grp-rev', '📚', 'Révision', 'Ta façon d\'étudier : objectifs, planification et mémoire.', [P.rev, P.goal, P.algo, P.fsrs]],
+            ['grp-snd', '🔊', 'Sons et ambiance', 'Sons de l\'appli et mixeur d\'ambiance.', [P.snd, P.amb]],
+            ['grp-look', '🎨', 'Apparence', 'Thème et taille du texte.', [P.theme]],
+            ['grp-data', '☁️', 'Données et synchronisation', 'Cloud, sauvegardes, import / export et outils.', [P.cloud, P.data, P.tools]],
+            ['grp-adv', '⚙️', 'Avancé', 'Raccourcis clavier et actions sensibles.', [P.keys, P.danger]]
+        ];
         const nav = document.createElement('nav'); nav.className = 'set-nav'; nav.setAttribute('aria-label', 'Sections des réglages');
-        nav.innerHTML = items.map(x => `<button class="chip" data-jump="${x.id}">${x.label}</button>`).join('');
+        const chips = [];
+        let anchor = P.upd || root.querySelector('.page-title').parentElement;
+        groups.forEach(([id, em, name, sub, panels]) => {
+            panels = panels.filter(Boolean); if (!panels.length) return;
+            const g = document.createElement('section'); g.className = 'set-group'; g.id = id;
+            g.innerHTML = `<h2 class="set-group-title"><span>${em}</span>${name}</h2><p class="set-group-sub">${sub}</p>`;
+            panels.forEach(pn => g.appendChild(pn));
+            anchor.after(g); anchor = g; chips.push([id, name.replace(' et synchronisation', '').replace('Sons et ambiance', 'Sons')]);
+        });
+        nav.innerHTML = chips.map(([id, l]) => `<button class="chip" data-jump="${id}">${l}</button>`).join('');
         nav.addEventListener('click', e => { const b = e.target.closest('[data-jump]'); const t = b && document.getElementById(b.dataset.jump); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-        const head = root.querySelector('.page-title'); (head ? head.parentElement : root.firstElementChild).after(nav);
+        const head = root.querySelector('.page-title'); (head ? head.parentElement : stack.firstElementChild).after(nav);
     }
 });
 (() => { const base = SuperAnki.prototype.renderSettings; SuperAnki.prototype.renderSettings = function (...a) { const r = base.apply(this, a); try { this.settingsNav(); } catch { /* ignore */ } return r; }; })();

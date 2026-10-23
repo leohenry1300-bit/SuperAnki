@@ -1662,3 +1662,17 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .fc-top .fc-badges:empty { display: none; }
 @media (max-width: 767px) { .hero-actions .btn { font-size: .86rem; } }
 .set-row .txt span b, .set-row .txt span code { display: inline; font-size: inherit; color: inherit; }
+
+/* ---- settings: groups, folded panels, danger zone ---- */
+.set-group { display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 112px; }
+.set-group-title { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 800; margin: 18px 4px 0; }
+.set-group-sub { margin: -8px 4px 2px; color: var(--text-muted); font-size: .88rem; }
+.set-collapse > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 10px; }
+.set-collapse > summary::-webkit-details-marker { display: none; }
+.set-collapse > summary h3 { margin: 0; flex: 1; }
+.set-collapse > summary small { color: var(--text-faint); font-weight: 700; font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; }
+.set-collapse > summary::after { content: '▸'; color: var(--text-faint); font-size: 1rem; }
+.set-collapse[open] > summary::after { content: '▾'; }
+.set-collapse[open] > summary { margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line, var(--border)); }
+.set-danger { border-color: color-mix(in srgb, var(--again, #e11d48) 40%, transparent); }
+.set-danger h3 { color: var(--again, #e11d48); }
