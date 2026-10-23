@@ -1242,11 +1242,10 @@ class SuperAnki {
             <div>
                 <div class="section-head">
                     <h3 class="section-title">Tes paquets</h3>
-                    <span style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
-                        <button class="btn btn-soft btn-sm" data-action="deck-view" title="Changer l'affichage des paquets">${ic(this.deckCompact() ? 'layers' : 'list')}${this.deckCompact() ? 'Vue détaillée' : 'Vue compacte'}</button>
-                        <label class="sort-pick"><span class="sort-lbl">Trier :</span><select class="select select-sm" data-input="deck-sort">${[['recent', 'Plus récents'], ['due', 'À revoir d\'abord'], ['studied', 'Révisés récemment'], ['alpha', 'A → Z'], ['size', 'Plus de cartes']].map(([v, l]) => `<option value="${v}" ${(d.settings.deckSort || 'recent') === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label><button class="link" data-action="open-library">${ic('layers')}Bibliothèque</button><button class="link" data-nav="decks">Gérer ${ic('chevronRight')}</button></span>
+                    <span class="deck-head-links"><button class="link" data-action="open-library">${ic('layers')}Bibliothèque</button><button class="link" data-nav="decks">Gérer ${ic('chevronRight')}</button></span>
                 </div>
-                ${d.decks.length ? `<label class="input-icon dash-find">${ic('search')}<span class="sr-only">Rechercher un paquet</span><input class="input" type="search" placeholder="Rechercher un paquet..." data-input="dash-find" autocomplete="off" spellcheck="false"></label>
+                ${d.decks.length ? `<div class="dash-tools"><label class="input-icon dash-find">${ic('search')}<span class="sr-only">Rechercher un paquet</span><input class="input" type="search" placeholder="Rechercher un paquet..." data-input="dash-find" autocomplete="off" spellcheck="false"></label>
+                <label class="sort-pick"><span class="sr-only">Trier</span><select class="select select-sm" aria-label="Trier les paquets" data-input="deck-sort">${[['recent', 'Plus récents'], ['due', 'À revoir d\'abord'], ['studied', 'Révisés récemment'], ['alpha', 'A → Z'], ['size', 'Plus de cartes']].map(([v, l]) => `<option value="${v}" ${(d.settings.deckSort || 'recent') === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label></div>
                 <div id="dash-find-res" class="panel dl-results hidden"></div>
                 <div id="dash-decks" class="deck-grid ${this.deckCompact() ? 'compact' : ''}">${this.dashboardDeckCards()}</div>`
                     : `<div class="panel empty">${ic('layers')}<p>Aucun paquet pour l'instant.</p><button class="btn btn-primary" style="margin-top:14px" data-action="new-deck">${ic('folderPlus')}Créer un paquet</button></div>`}
@@ -3361,7 +3360,6 @@ class SuperAnki {
                 this.toast(i >= 0 ? 'Paquet désépinglé' : 'Paquet épinglé en haut', 'success', ic('pin'));
                 break;
             }
-            case 'deck-view': this.setSetting('deckView', this.deckCompact() ? 'full' : 'compact'); this.renderDashboard(); break;
             case 'reset-deck': {
                 const d = this.deck(ds.deck); if (!d) break;
                 const ids = this.poolFor([ds.deck]).map(c => c.id);

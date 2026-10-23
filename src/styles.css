@@ -1865,3 +1865,10 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .fc-top .fc-size-btn { min-width: 30px; height: 26px; padding: 0 6px; font-size: .8rem; opacity: .75; }
 .fc-top .fc-size-btn:disabled { opacity: .3; }
 .fc-top > .tag { max-width: calc(100% - 100px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.deck-head-links { display: flex; gap: 16px; align-items: center; }
+.dash-tools { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
+.dash-tools .dash-find { flex: 1; min-width: 0; margin: 0; }
+.dash-tools .sort-pick { flex: none; margin: 0; }
+.dash-tools .sort-pick .select { width: auto; max-width: 150px; }
+@media (max-width: 420px) { .dash-tools { flex-wrap: wrap; } .dash-tools .sort-pick, .dash-tools .sort-pick .select { width: 100%; max-width: none; } }
