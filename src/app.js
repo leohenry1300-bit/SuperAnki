@@ -807,6 +807,7 @@ class SuperAnki {
         this.go('dashboard');
         if (source === 'legacy') this.toast('Tes cartes et ta progression ont été récupérées', 'success');
         this.initRipple();
+        this.initScrollShadow();
         this.initPull();
         this.focusInit();
         this.extrasInit();
@@ -1246,6 +1247,13 @@ class SuperAnki {
     }
     /* zen mode: only the card and the answers stay on screen */
     toggleZen() { document.body.classList.toggle('zen'); this.toast(document.body.classList.contains('zen') ? 'Mode zen activé' : 'Mode zen désactivé', 'success'); }
+    /* the top bar gets a soft shadow once the page is scrolled */
+    initScrollShadow() {
+        const bar = $('.topbar'); if (!bar) return;
+        let on = false;
+        const upd = () => { const v = window.scrollY > 4; if (v !== on) { on = v; bar.classList.toggle('scrolled', v); } };
+        window.addEventListener('scroll', upd, { passive: true }); upd();
+    }
     /* touch ripple on the main buttons and tiles */
     initRipple() {
         document.addEventListener('pointerdown', e => {
@@ -2342,6 +2350,7 @@ class SuperAnki {
                     <textarea class="textarea" id="type-answer" rows="2" style="min-height:64px" placeholder="Tape ta réponse puis Entrée..." data-input="type-answer"></textarea>
                </div>`) : '';
         const csIdx = Object.keys(CARD_SIZES).indexOf(this.data.settings.cardSize);
+        const runPop = (s.run || 0) >= 3 && s._runShown !== s.run; s._runShown = s.run;
         $('#view-session').innerHTML = `
         <div class="session">
             <div class="session-top">
@@ -2355,7 +2364,7 @@ class SuperAnki {
                 <button class="icon-btn" title="Plus d'actions" data-action="session-menu" aria-label="Plus d'actions">${ic('more')}</button>
             </div>
             <div class="pbar"><i style="width:${progress}%"></i></div>
-            ${(s.run || 0) >= 3 ? `<div class="run-pill" key="${s.run}">🔥 ${s.run} d'affilée</div>` : ''}
+            ${(s.run || 0) >= 3 ? `<div class="run-pill${runPop ? ' pop' : ''}">🔥 ${s.run} d'affilée</div>` : ''}
             <div class="panel flashcard stack-${Math.min(2, (s.queue || []).length + (s.learning || []).length)}" ${s.revealed || typeMode ? '' : 'data-action="reveal" style="cursor:pointer"'}>
                 <div class="fc-top">
                     <span class="tag" title="${esc(deck ? this.deckPath(deck.id) : '')}">${esc(deck ? deck.emoji + ' ' + this.deckPath(deck.id).split(' › ').slice(-2).join(' › ') : '')}</span>
@@ -2704,7 +2713,7 @@ class SuperAnki {
             ${kind === 'chrono' ? `<div class="summary-emoji">${emoji}</div>` : `<div class="summary-mascot">${this.mascotSvg(acc >= 80 ? 'happy' : acc >= 50 ? 'ready' : 'tough')}</div>`}
             <h2 class="page-title" style="margin-top:12px">${title}</h2>
             ${lead ? `<p class="page-sub">${lead}</p>` : ''}
-            ${kind === 'chrono' ? '' : `<div class="summary-ring" style="--p:${acc}"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="rg-bg" cx="50" cy="50" r="44"/><circle class="rg-fg" cx="50" cy="50" r="44" pathLength="100"/></svg><div class="ring-in"><b>${acc}%</b><small>réussite</small></div></div>`}
+            ${kind === 'chrono' ? '' : `<div class="summary-ring" style="--off:${100 - acc}"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="rg-bg" cx="50" cy="50" r="44"/><circle class="rg-fg" cx="50" cy="50" r="44" pathLength="100"/></svg><div class="ring-in"><b>${acc}%</b><small>réussite</small></div></div>`}
             <div class="summary-stats">
                 <div class="panel"><b>${kind === 'chrono' ? s.score : s.done}</b><span>${kind === 'chrono' ? 'points' : 'cartes'}</span></div>
                 <div class="panel"><b>${kind === 'chrono' ? acc + '%' : (s.bestRun || 0)}</b><span>${kind === 'chrono' ? 'réussite' : 'meilleure série'}</span></div>

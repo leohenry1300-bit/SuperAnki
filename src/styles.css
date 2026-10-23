@@ -1975,23 +1975,24 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .confetti { position: fixed; inset: 0; pointer-events: none; z-index: 120; overflow: hidden; }
 .confetti i { position: absolute; top: -12px; width: 8px; height: 14px; border-radius: 2px; opacity: 0; animation: confFall 2s ease-in forwards; }
 @keyframes confFall { 0% { opacity: 1; transform: translate(0, 0) rotate(0); } 100% { opacity: 0; transform: translate(var(--dx, 0), 105vh) rotate(var(--r, 360deg)); } }
-.streak-chip:not(.cold) .i { animation: flame 2.4s ease-in-out infinite; transform-origin: 50% 90%; }
+.streak-chip:not(.cold) .i { animation: flame 2.4s ease-in-out 3; transform-origin: 50% 90%; }
 @keyframes flame { 0%, 100% { transform: scale(1) rotate(0); } 50% { transform: scale(1.14) rotate(-4deg); } }
 @media (prefers-reduced-motion: reduce) { .flashcard.anim-next, .flashcard.anim-flip, .status-tile .bar i, .progress i, .streak-chip .i { animation: none !important; } }
 
 /* ---- streak pill during a session + summary ring ---- */
-.run-pill { align-self: center; width: fit-content; margin: 8px auto 0; padding: 4px 12px; border-radius: 999px; background: color-mix(in srgb, #f97316 14%, var(--surface)); color: #ea580c; font-weight: 800; font-size: .8rem; animation: runPop .3s ease-out; }
+.run-pill { align-self: center; width: fit-content; margin: 8px auto 0; padding: 4px 12px; border-radius: 999px; background: color-mix(in srgb, #f97316 14%, var(--surface)); color: #ea580c; font-weight: 800; font-size: .8rem; }
+.run-pill.pop { animation: runPop .32s cubic-bezier(.3,1.5,.5,1); }
 @keyframes runPop { from { transform: scale(.7); opacity: 0; } 60% { transform: scale(1.12); } to { transform: none; opacity: 1; } }
 .summary-ring { position: relative; width: 132px; height: 132px; margin: 14px auto 6px; }
 .summary-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
 .summary-ring circle { fill: none; stroke-width: 9; stroke-linecap: round; }
 .summary-ring .rg-bg { stroke: var(--surface-2, #eee); }
 .summary-ring .rg-fg { stroke: var(--mature, #10b981); stroke-dasharray: 100; stroke-dashoffset: 100; animation: ringFill 1s .15s cubic-bezier(.2,.7,.2,1) forwards; }
-@keyframes ringFill { to { stroke-dashoffset: calc(100 - var(--p)); } }
+@keyframes ringFill { to { stroke-dashoffset: var(--off, 0); } }
 .summary-ring .ring-in { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .summary-ring .ring-in b { font-size: 1.9rem; font-family: var(--font-display); line-height: 1; }
 .summary-ring .ring-in small { color: var(--text-faint); font-size: .72rem; }
-@media (prefers-reduced-motion: reduce) { .summary-ring .rg-fg { animation: none; stroke-dashoffset: calc(100 - var(--p)); } .run-pill { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .summary-ring .rg-fg { animation: none; stroke-dashoffset: var(--off, 0); } .run-pill { animation: none; } }
 
 .card-row mark { background: color-mix(in srgb, #facc15 55%, transparent); color: inherit; border-radius: 3px; padding: 0 1px; }
 
@@ -2029,9 +2030,9 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 /* ---- motion pass 3: charts drawing, soft unfolding, breathing button, flame sparks ---- */
 @keyframes unfold { from { opacity: 0; transform: translateY(-8px); clip-path: inset(0 0 100% 0); } to { opacity: 1; transform: none; clip-path: inset(0); } }
 .unfold { animation: unfold .32s cubic-bezier(.2,.7,.2,1); }
-details[open] > :not(summary) { animation: unfold .3s cubic-bezier(.2,.7,.2,1); }
-.btn-hero.breathe { animation: breathe 2.8s ease-in-out infinite; }
-@keyframes breathe { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,.5); } 50% { box-shadow: 0 0 0 9px rgba(255,255,255,0); } }
+.btn-hero.breathe { overflow: visible; }
+.btn-hero.breathe::before { content: ""; position: absolute; inset: 0; border-radius: inherit; border: 2px solid rgba(255,255,255,.7); pointer-events: none; animation: breathe 2.8s ease-out infinite; }
+@keyframes breathe { 0% { transform: scale(1); opacity: .7; } 70%, 100% { transform: scale(1.12, 1.28); opacity: 0; } }
 .streak-chip.flame-pop { animation: flamePop .6s cubic-bezier(.3,1.6,.5,1); }
 @keyframes flamePop { 0% { transform: scale(1); } 40% { transform: scale(1.28); } 100% { transform: scale(1); } }
 .spark { position: fixed; z-index: 130; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: #f97316; box-shadow: 0 0 6px #fbbf24; pointer-events: none; animation: spark .7s ease-out forwards; }
@@ -2043,7 +2044,7 @@ details[open] > :not(summary) { animation: unfold .3s cubic-bezier(.2,.7,.2,1); 
 @keyframes lineDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 .cascade .chart svg circle:not(.slice) { animation: dotIn .5s 1.9s ease-out backwards; transform-box: fill-box; transform-origin: center; }
 @keyframes dotIn { from { transform: scale(0); } }
-@media (prefers-reduced-motion: reduce) { .unfold, details[open] > :not(summary), .btn-hero.breathe, .streak-chip.flame-pop, .spark, .cascade .chart svg * { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .unfold, .btn-hero.breathe::before, .streak-chip.flame-pop, .spark, .cascade .chart svg * { animation: none !important; } }
 
 /* ---- motion pass 4: windows closing, pull to refresh, stacked cards ---- */
 .modal-back.closing { animation: fadeOut .18s ease forwards; }
@@ -2068,7 +2069,6 @@ html { overscroll-behavior-y: contain; }
 .switch span::after { transition: transform .3s cubic-bezier(.3, 1.7, .5, 1), background .2s; }
 .switch input:checked + span::after { transform: translate(20px, -50%) scale(1.06); }
 .switch input:active + span::after { width: 24px; }
-.chip.active { animation: chipPop .28s cubic-bezier(.3, 1.6, .5, 1); }
 @keyframes chipPop { 0% { transform: scale(.88); } 100% { transform: none; } }
 @media (prefers-reduced-motion: reduce) { .chip.active, html.theme-fade, html.theme-fade * { animation: none !important; transition: none !important; } .switch span::after { transition: none; } }
 
@@ -2128,3 +2128,12 @@ html[data-vt="l"]::view-transition-new(root) { animation-name: vtInL; }
 .tool-btn .tb-chev { position: absolute; right: 10px; top: 50%; margin-top: -8px; }
 .tool-btn > .i:first-child { display: none; }
 .mc-wave { transform-origin: 82px 100px; }
+
+/* ---- polish after review ---- */
+.status-num, .btn-hero .cnt, .summary-ring .ring-in b, .run-pill { font-variant-numeric: tabular-nums; }
+.ptr { top: calc(env(safe-area-inset-top, 0px) + 62px); }
+.topbar { transition: box-shadow .25s ease; }
+.topbar.scrolled { box-shadow: 0 6px 18px rgba(0, 0, 0, .10); }
+.btn, .icon-btn, .chip, .tool-btn, .grade-btn, .nav-btn, .bottom-nav button, .mode-tile, .status-tile, .deck-card { touch-action: manipulation; }
+.flashcard, .modal, .mascot { will-change: auto; }
+.btn-hero.breathe .ripple { display: none; }
