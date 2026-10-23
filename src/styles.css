@@ -2071,3 +2071,17 @@ html.theme-fade, html.theme-fade *, html.theme-fade *::before, html.theme-fade *
 .chip.active { animation: chipPop .28s cubic-bezier(.3, 1.6, .5, 1); }
 @keyframes chipPop { 0% { transform: scale(.88); } 100% { transform: none; } }
 @media (prefers-reduced-motion: reduce) { .chip.active, html.theme-fade, html.theme-fade * { animation: none !important; transition: none !important; } .switch span::after { transition: none; } }
+
+/* ---- motion pass 6: deck opens by zooming, mascot, zen mode ---- */
+.view-in-zoom { transform-origin: var(--ox, 50%) var(--oy, 30%); animation: viewZoom .34s cubic-bezier(.2,.8,.2,1) backwards; }
+@keyframes viewZoom { from { opacity: 0; transform: scale(.9); } }
+.hero { position: relative; }
+.mascot { position: absolute; right: 18px; top: 14px; z-index: 2; font-size: 2rem; line-height: 1; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; background: rgba(255,255,255,.14); animation: mascotIdle 3.4s ease-in-out infinite; }
+.mascot.hop { animation: mascotHop .5s cubic-bezier(.3,1.6,.5,1); }
+@keyframes mascotIdle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes mascotHop { 0% { transform: translateY(0) scale(1); } 35% { transform: translateY(-14px) scale(1.15) rotate(-8deg); } 100% { transform: none; } }
+body.zen .topbar, body.zen .session-title, body.zen .session-counts, body.zen .pbar, body.zen .run-pill, body.zen .swipe-hint, body.zen .sess-extra, body.zen .fc-top, body.zen .session-top > .icon-btn[data-action="undo"] { display: none !important; }
+body.zen .session-top { justify-content: space-between; opacity: .55; }
+body.zen::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 5; background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.28) 100%); animation: fadeBg .6s ease; }
+@media (prefers-reduced-motion: reduce) { .mascot, .view-in-zoom { animation: none !important; } }
+body.zen .audio-bar { display: none !important; }

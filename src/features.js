@@ -444,6 +444,7 @@ Object.assign(SuperAnki.prototype, {
         const extra = [
             { icon: 'volume', label: 'Écouter la carte', fn: () => this.speak() },
             { icon: 'timer', label: 'Minuteur de concentration', fn: () => this.handleAction('focus-toggle', {}) },
+            { icon: 'eyeOff', label: document.body.classList.contains('zen') ? 'Quitter le mode zen' : 'Mode zen (masquer le reste)', fn: () => this.toggleZen() },
             { sep: true }
         ];
         this.showMenu(anchor, [...extra, ...this.cardMenuItems(ids, { inSession: true })], { flagCur: c.flag, onFlag: n => this.opFlag(ids, n) });

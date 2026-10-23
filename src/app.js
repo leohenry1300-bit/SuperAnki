@@ -1148,8 +1148,10 @@ class SuperAnki {
         const el = $(`#view-${view}`);
         if (el) {
             const order = ['dashboard', 'decks', 'toeic', 'stats', 'settings'], a = order.indexOf(prevView), b = order.indexOf(view);
-            el.classList.remove('view-in', 'view-in-l', 'view-in-r', 'view-in-n', 'cascade'); void el.offsetWidth;
-            el.classList.add('view-in', 'cascade', a >= 0 && b >= 0 && a !== b ? (b > a ? 'view-in-r' : 'view-in-l') : 'view-in-n');
+            el.classList.remove('view-in', 'view-in-l', 'view-in-r', 'view-in-n', 'view-in-zoom', 'cascade'); void el.offsetWidth;
+            const zoom = opts.from && !this.calm();
+            if (zoom) { el.style.setProperty('--ox', opts.from.x + 'px'); el.style.setProperty('--oy', opts.from.y + 'px'); }
+            el.classList.add('view-in', 'cascade', zoom ? 'view-in-zoom' : a >= 0 && b >= 0 && a !== b ? (b > a ? 'view-in-r' : 'view-in-l') : 'view-in-n');
             clearTimeout(this._viewInT); this._viewInT = setTimeout(() => el.classList.remove('cascade'), 900);   // the cascade only plays on arrival, not on later redraws
         }
         if (view === 'dashboard' && prevView !== 'dashboard') this.countUp('#view-dashboard .status-num, #view-dashboard .btn-hero .cnt');
@@ -1182,6 +1184,14 @@ class SuperAnki {
         };
         document.addEventListener('touchend', end, { passive: true }); document.addEventListener('touchcancel', end, { passive: true });
     }
+    /* centre of the tapped element, in page coordinates: a deck opens by growing from there */
+    originOf(el) {
+        if (!el || !el.getBoundingClientRect) return null;
+        const r = el.getBoundingClientRect(); if (!r.width) return null;
+        return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2 + window.scrollY) };
+    }
+    /* zen mode: only the card and the answers stay on screen */
+    toggleZen() { document.body.classList.toggle('zen'); this.toast(document.body.classList.contains('zen') ? 'Mode zen activé' : 'Mode zen désactivé', 'success'); }
     /* touch ripple on the main buttons and tiles */
     initRipple() {
         document.addEventListener('pointerdown', e => {
@@ -1242,6 +1252,7 @@ class SuperAnki {
         document.body.classList.toggle('in-session', this.view === 'session' || this.view === 'exam');
         document.body.classList.toggle('in-exam', this.view === 'exam');
         if (this.view !== 'decks') document.body.classList.remove('deck-sheet');
+        if (this.view !== 'session') document.body.classList.remove('zen');
         this.renderStreak();
         this.renderSyncIndicator();
         if (this.view === 'dashboard') this.renderDashboard();
@@ -1316,6 +1327,7 @@ class SuperAnki {
         $('#view-dashboard').innerHTML = `
         <div class="stack">
             <div class="hero">
+                <button class="mascot" data-action="mascot" aria-label="Ta mascotte : touche-la pour un encouragement" data-mood="${toStudy === 0 ? 'calm' : (this.data.stats.lastStudyDate === dayKey() ? 'happy' : 'ready')}">${toStudy === 0 ? '😌' : (this.data.stats.lastStudyDate === dayKey() ? '🥳' : '🦉')}</button>
                 <div class="hero-inner">
                     <div>
                         <span class="hero-kicker">${hello} 👋${goal ? ` · <b>${esc(goal.name)} : ${goal.days > 0 ? `J-${goal.days}` : goal.days === 0 ? 'c\'est aujourd\'hui !' : 'terminé'}</b>` : ''}</span>
@@ -1324,7 +1336,7 @@ class SuperAnki {
                     </div>
                     <div class="hero-actions">
                         ${toStudy > 0
-                            ? `<button class="btn btn-lg btn-hero breathe" data-action="study" data-deck="">${ic('play')}Réviser (<span class="cnt">${toStudy}</span>)</button>`
+                            ? `<button class="btn btn-lg btn-hero breathe" data-action="study" data-deck="">${ic('play')}<span>Réviser (<span class="cnt">${toStudy}</span>)</span></button>`
                             : `<button class="btn btn-lg btn-hero" data-action="practice-all">${ic('repeat')}Révision libre</button>`}
                         ${extra || `<button class="btn btn-lg btn-hero-ghost" data-action="new-card">${ic('plus')}Nouvelle carte</button>`}
                     </div>
@@ -3488,7 +3500,7 @@ class SuperAnki {
             case 'import': this.openImportModal(); break;
             case 'import-json': this.importJSON(); break;
             case 'export': this.exportJSON(); break;
-            case 'open-deck': this.ui.deckQ = ''; this.ui.treeOpen = false; this.go('decks', { deck: ds.deck, filter: 'all' }); break;
+            case 'open-deck': this.ui.deckQ = ''; this.ui.treeOpen = false; this.go('decks', { deck: ds.deck, filter: 'all', from: this.originOf(el) }); break;
             case 'select-deck': this.ui.deck = ds.deck; this.ui.limit = 60; this.ui.deckQ = ''; this.ui.treeOpen = false; this.touchDeck(ds.deck); this.renderDecks(); break;
             case 'toggle-tree': this.ui.treeOpen = !this.treeIsOpen(); this.renderDeckSidebar(); if (this.ui.treeOpen && !window.matchMedia('(max-width: 960px)').matches) setTimeout(() => { const f = $('#deck-find'); f && f.focus(); }, 60); break;
             case 'filter': this.ui.filter = ds.filter; this.ui.limit = 60; this.renderDeckPanel(); break;
@@ -3546,7 +3558,7 @@ class SuperAnki {
             }
             case 'dash-open': {   // home: a deck with sub-decks unfolds in place, a deck without opens its cards
                 if (this.childrenOf(ds.deck).length) { this.toggleOpen('dash', ds.deck); this.renderDashboard(); }
-                else { this.ui.deckQ = ''; this.ui.treeOpen = false; this.go('decks', { deck: ds.deck, filter: 'all' }); }
+                else { this.ui.deckQ = ''; this.ui.treeOpen = false; this.go('decks', { deck: ds.deck, filter: 'all', from: this.originOf(el) }); }
                 break;
             }
             case 'deck-more': {
@@ -3711,6 +3723,13 @@ class SuperAnki {
             case 'card-size': {
                 const ks = Object.keys(CARD_SIZES), i = Math.max(0, Math.min(ks.length - 1, ks.indexOf(this.data.settings.cardSize) + Number(ds.d)));
                 this.setSetting('cardSize', ks[i]); if (this.session && this.session.current) this.renderSession(); break;
+            }
+            case 'mascot': {
+                const m = el.dataset ? el.dataset.mood : 'ready';
+                const say = { ready: ['On y va ? Quelques cartes suffisent !', 'Une petite session et c\'est lancé 💪', 'Ta série compte sur toi 🔥'], happy: ['Bien joué, tu as déjà révisé aujourd\'hui !', 'Ta série est sauvée 🔥', 'Continue si tu as encore de l\'énergie !'], calm: ['Tout est à jour, profite 😌', 'Rien à réviser : repose-toi !', 'Une révision libre pour s\'amuser ?'] }[m] || [];
+                this.toast(say[Math.floor(Math.random() * say.length)] || 'Allez !', 'success');
+                el.classList && el.classList.remove('hop'); void (el.offsetWidth); el.classList && el.classList.add('hop');
+                break;
             }
             case 'undo': this.undo(); break;
             case 'speak': this.speak(); break;
