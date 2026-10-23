@@ -125,33 +125,6 @@
   "lic": "Domaine public",
   "src": "https://commons.wikimedia.org/wiki/File:SingingBowl1.ogg"
  },
- "bowl_deep": {
-  "f": "bowl_deep.mp3",
-  "len": 1764000,
-  "pad": 3000,
-  "sr": 44100,
-  "credit": "Bol chantant (grave) : « Singing Bowl 1 » par BambooBeast, rejoué plus grave (Wikimedia Commons)",
-  "lic": "Domaine public",
-  "src": "https://commons.wikimedia.org/wiki/File:SingingBowl1.ogg"
- },
- "bowl_rub": {
-  "f": "bowl_rub.mp3",
-  "len": 238140,
-  "pad": 3000,
-  "sr": 44100,
-  "credit": "Bol chantant (frotté) : « Singing Bowl 2 » par BambooBeast (Wikimedia Commons)",
-  "lic": "Domaine public",
-  "src": "https://commons.wikimedia.org/wiki/File:SingingBowl2.ogg"
- },
- "bowl_crystal": {
-  "f": "bowl_crystal.mp3",
-  "len": 1852200,
-  "pad": 3000,
-  "sr": 44100,
-  "credit": "Bol chantant (cristal) : « Crystal Singing Bowl – Root Note C » par Amy Sikarskie (Internet Archive)",
-  "lic": "CC BY 3.0",
-  "src": "https://archive.org/details/1CrystalSingingBowlRootNoteCAmySikarskieEnergyHealing"
- },
  "cicadas": {
   "f": "cicadas.mp3",
   "len": 2205000,

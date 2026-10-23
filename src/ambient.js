@@ -15,9 +15,9 @@ const AMB_SOUNDS = [
     ['fan', '🌀', 'Ventilateur'], ['leaves', '🍂', 'Feuilles'], ['white', '⚪', 'Bruit blanc'], ['brown', '🟤', 'Bruit brun']
 ];
 const AMB_DEFAULT = { vols: {}, master: 0.7, timer: 0, link: false, presets: [], bowl: 'strike' };
-const AMB_BOWLS = [['strike', 'Frappé doux'], ['deep', 'Frappé grave'], ['rub', 'Frotté (chantant)'], ['crystal', 'Cristal']];
+const AMB_BOWLS = [['strike', 'Frappé doux']];
 /* the sound file used for a mixer slot (the singing bowl has several styles) */
-function ambKey(id) { return id === 'bowl' ? 'bowl_' + (AMB_BOWLS.some(b => b[0] === AMB.bowl) ? AMB.bowl : 'strike') : id; }
+function ambKey(id) { return id === 'bowl' ? 'bowl_strike' : id; }   // the singing bowl is always the soft strike
 const AMB = (() => { let st = { ...AMB_DEFAULT, vols: {}, presets: [] }; try { const x = JSON.parse(localStorage.getItem(AMB_KEY) || 'null'); if (x && typeof x === 'object') st = { ...st, ...x, vols: { ...(x.vols || {}) }, presets: Array.isArray(x.presets) ? x.presets.slice(0, 12) : [] }; } catch { /* ignore */ } st.master = Math.min(1, Math.max(0, Number(st.master) || 0.7)); return st; })();
 function ambSave() { try { localStorage.setItem(AMB_KEY, JSON.stringify(AMB)); } catch { /* ignore */ } }
 
@@ -267,7 +267,6 @@ Object.assign(SuperAnki.prototype, {
                 <button class="btn btn-soft btn-sm" data-amb="random">Mélange au hasard</button><button class="btn btn-soft btn-sm" data-amb="zero">Tout à zéro</button></div>
             <div class="amb-row"><label for="amb-master">Volume général</label><input type="range" id="amb-master" min="0" max="100" value="${Math.round(AMB.master * 100)}"></div>
             <div class="amb-grid">${AMB_SOUNDS.map(([id, em, name]) => `<label class="amb-tile ${(AMB.vols[id] || 0) > 0 ? 'on' : ''}" data-s="${id}"><span class="amb-name"><span aria-hidden="true">${em}</span>${name}</span><input type="range" class="amb-range" data-s="${id}" min="0" max="100" value="${Math.round((AMB.vols[id] || 0) * 100)}" aria-label="${name}"></label>`).join('')}</div>
-            <div class="amb-row"><label for="amb-bowl">🔔 Style du bol chantant</label><select class="select select-sm" id="amb-bowl">${AMB_BOWLS.map(([v, l]) => `<option value="${v}" ${AMB.bowl === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
             <div class="amb-row"><span class="label">Mélanges</span><span class="amb-presets">${presets.map(p => `<button class="chip" data-amb="preset" data-n="${esc(p.n)}">${esc(p.n)}</button>${p.user ? `<button class="icon-btn icon-btn-sm" data-amb="del" data-n="${esc(p.n)}" aria-label="Supprimer ${esc(p.n)}">${ic('x')}</button>` : ''}`).join('')}<button class="chip" data-amb="save">${ic('plus')}Enregistrer le mien</button></span></div>
             <details class="amb-credits"><summary>Crédits des enregistrements</summary><div id="amb-credits-body">${this.ambCreditsHtml()}</div></details>
             <div class="amb-row"><label for="amb-timer">Arrêt automatique</label><select class="select select-sm" id="amb-timer">${[[0, 'Jamais'], [15, '15 min'], [30, '30 min'], [45, '45 min'], [60, '1 h'], [90, '1 h 30'], [120, '2 h']].map(([v, l]) => `<option value="${v}" ${AMB.timer === v ? 'selected' : ''}>${l}</option>`).join('')}</select><span class="small faint" id="amb-left">${on && left ? `encore ~${left} min` : ''}</span></div>
@@ -306,7 +305,6 @@ Object.assign(SuperAnki.prototype, {
             const t = e.target;
             if (t.id === 'amb-timer') { AMB.timer = Number(t.value); ambSave(); if (AMB_ENG.playing) ambTimerArm(); this.ambRefresh(); }
             else if (t.id === 'amb-link') { AMB.link = t.checked; ambSave(); this.ambSyncFocus(); }
-            else if (t.id === 'amb-bowl') { AMB.bowl = t.value; ambSave(); if (AMB_ENG.ac && (AMB.vols.bowl || 0) > 0.001) ambApply(); else if (!AMB_ENG.playing) { AMB.vols.bowl = Math.max(AMB.vols.bowl || 0, 0.55); ambSave(); const r = $('.amb-range[data-s="bowl"]'); if (r) r.value = 55; const tl = $('.amb-tile[data-s="bowl"]'); if (tl) tl.classList.add('on'); } }
         });
         document.addEventListener('click', async e => {
             const b = e.target.closest('[data-amb]'); if (!b) return;
