@@ -1208,7 +1208,6 @@ class SuperAnki {
             </div>
 
             ${this.goalsHtml()}
-            ${this.recentsHtml()}
             <div class="status-grid">
                 ${['new', 'learn', 'due', 'mature'].map(k => `
                 <button class="panel status-tile" style="--c:${STATUS[k].color}" data-action="goto-filter" data-filter="${k}">
@@ -1218,6 +1217,7 @@ class SuperAnki {
                 </button>`).join('')}
             </div>
 
+            ${this.recentsHtml()}
             <div>
                 <div class="section-head"><h3 class="section-title">Modes d'entraînement</h3><span style="display:flex;gap:6px 14px;flex-wrap:wrap;justify-content:flex-end"><button class="link" data-action="filter-edit" data-id="">${ic('filter')}Paquet filtré</button><button class="link" data-action="custom-study">${ic('sliders')}Révisions personnalisées</button></span></div>
                 <div class="mode-grid">
