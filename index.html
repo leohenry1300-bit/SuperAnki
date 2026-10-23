@@ -3432,8 +3432,7 @@ class SuperAnki {
         }
         const selCount = ui.selMode ? [...ui.sel].filter(id => this.card(id)).length : 0;
         const bulk = ui.selMode ? `<div class="bulk-bar"><span><b>${selCount}</b> sélectionnée${selCount > 1 ? 's' : ''}</span>
-                <button class="btn btn-soft btn-sm" data-action="sel-all">Tout (${rows.length})</button>
-                <button class="btn btn-soft btn-sm" data-action="sel-none">Aucune</button>
+                <button class="btn btn-soft btn-sm" data-action="sel-all">${rows.length && rows.every(r => ui.sel.has(r.c.id)) ? `Tout désélectionner` : `Tout sélectionner (${rows.length})`}</button>
                 <button class="btn btn-primary btn-sm" data-action="bulk-menu" ${selCount ? '' : 'disabled'}>${ic('more')}Actions</button>
                 <button class="icon-btn" title="Quitter la sélection" data-action="sel-exit">${ic('x')}</button></div>` : '';
         panel.innerHTML = `
@@ -5073,7 +5072,11 @@ class SuperAnki {
             case 'session-menu': this.sessionMenu(el); break;
             case 'sel-toggle': this.ui.selMode = !this.ui.selMode; if (!this.ui.selMode) this.ui.sel = new Set(); this.renderDeckPanel(); break;
             case 'sel-exit': this.ui.selMode = false; this.ui.sel = new Set(); this.renderDeckPanel(); break;
-            case 'sel-all': (this.visibleIds || []).forEach(id => this.ui.sel.add(id)); this.renderDeckPanel(); break;
+            case 'sel-all': {   // one button: first tap selects every visible card, second tap clears them
+                const ids = this.visibleIds || [], all = ids.length && ids.every(id => this.ui.sel.has(id));
+                ids.forEach(id => (all ? this.ui.sel.delete(id) : this.ui.sel.add(id)));
+                this.renderDeckPanel(); break;
+            }
             case 'sel-none': this.ui.sel = new Set(); this.renderDeckPanel(); break;
             case 'row-click': {
                 const id = ds.card;
