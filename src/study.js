@@ -146,6 +146,35 @@ Object.assign(SuperAnki.prototype, {
         if (!s.focusSeen) { s.focusSeen = true; if (this.focus && this.focus.open && !this.focus.collapsed) this.focusSet({ collapsed: true }); }
         this.audioBarSync(usable);
         if (usable && this.voice && this.voice.on && !this.voice.rec && !this.voice.starting) this.voiceRun();
+        this.bindSwipe();
+    },
+    /* free revision, answer shown: drag the card right (I knew it) or left (missed) */
+    bindSwipe() {
+        const s = this.session, card = $('#view-session .flashcard');
+        if (!s || s.kind !== 'practice' || !s.revealed || s.answer === 'type' || !card) return;
+        card.style.touchAction = 'pan-y';
+        if (!$('#swipe-hint')) card.insertAdjacentHTML('afterend', '<p class="swipe-hint" id="swipe-hint"><span>← Raté</span><span>Je savais →</span></p>');
+        let x0 = 0, y0 = 0, dx = 0, on = false, id = s.current;
+        const reset = () => { card.style.transition = 'transform .18s'; card.style.transform = ''; card.classList.remove('swipe-ok', 'swipe-ko'); };
+        card.addEventListener('touchstart', e => { if (e.touches.length !== 1) return; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; on = false; card.style.transition = 'none'; }, { passive: true });
+        card.addEventListener('touchmove', e => {
+            const t = e.touches[0], mx = t.clientX - x0, my = t.clientY - y0;
+            if (!on && Math.abs(mx) > 12 && Math.abs(mx) > Math.abs(my) * 1.4) on = true;
+            if (!on) return;
+            dx = mx; card.style.transform = `translateX(${dx}px) rotate(${dx / 28}deg)`;
+            card.classList.toggle('swipe-ok', dx > 50); card.classList.toggle('swipe-ko', dx < -50);
+        }, { passive: true });
+        const end = () => {
+            if (!on) return;
+            on = false;
+            if (Math.abs(dx) > 90 && this.session === s && s.current === id && s.revealed) {
+                const ok = dx > 0;
+                card.style.transition = 'transform .16s, opacity .16s'; card.style.transform = `translateX(${ok ? 520 : -520}px) rotate(${ok ? 16 : -16}deg)`; card.style.opacity = '0';
+                setTimeout(() => { if (this.session === s && s.current === id) this.practiceAnswer(ok); }, 130);
+            } else reset();
+        };
+        card.addEventListener('touchend', end, { passive: true });
+        card.addEventListener('touchcancel', reset, { passive: true });
     },
     /* two separate switches under the progress bar: reading aloud (speaker) and voice commands (microphone) */
     audioBarSync(usable) {

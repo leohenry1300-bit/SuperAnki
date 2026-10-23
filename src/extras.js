@@ -152,6 +152,7 @@ function sfxUi(name) {
 }
 function sfx(name) {
     if (!SND.on || !SFX[name]) return;
+    try { if (navigator.vibrate) { if (name === 'right' || name === 'g3' || name === 'g4') navigator.vibrate(12); else if (name === 'wrong' || name === 'g1') navigator.vibrate([18, 40, 18]); } } catch { /* ignore */ }
     const ac = sndCtx(); if (!ac) return;
     SND_LAST = performance.now(); SND_LAST_NAME = name;
     try { SFX[name](ac, sndChain(ac).bus, ac.currentTime + 0.02, SND.vol); } catch { /* ignore */ }

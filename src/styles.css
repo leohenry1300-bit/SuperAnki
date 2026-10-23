@@ -1733,3 +1733,36 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 
 .sort-pick { display: inline-flex; align-items: center; gap: 8px; }
 .sort-lbl { font-size: .84rem; font-weight: 700; color: var(--text-muted); white-space: nowrap; }
+
+/* ---- deck page header, session top bar ---- */
+.crumb-back { display: flex; align-items: center; gap: 4px; color: var(--primary); font-weight: 700; font-size: .85rem; padding: 4px 0; }
+.crumb-back .i { width: 16px; height: 16px; }
+.deck-title { display: inline; font-size: 1.25rem; font-weight: 800; line-height: 1.2; }
+.crumb-path { display: block; font-size: .75rem; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; margin-top: 2px; }
+.weak-btn { color: var(--due); }
+@media (max-width: 767px) { .sess-extra { display: none; } }
+
+.deck-panel-head h3 { display: block; min-width: 0; }
+.deck-panel-head h3 .tag { vertical-align: middle; margin-left: 6px; }
+
+/* ---- feel: transitions, press feedback, swipe, tips ---- */
+@keyframes viewIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.view-in { animation: viewIn .22s ease-out both; }
+.btn, .icon-btn, .chip, .recent-chip, .mode-tile, .status-tile, .deck-card { transition: transform .12s, box-shadow .15s, background .15s; }
+.btn:active, .icon-btn:active, .chip:active, .recent-chip:active { transform: scale(.96); }
+.mode-tile:active, .status-tile:active { transform: scale(.98); }
+@media (prefers-reduced-motion: reduce) { .view-in { animation: none; } .btn:active, .icon-btn:active, .chip:active { transform: none; } }
+.flashcard.swipe-ok { box-shadow: 0 0 0 3px var(--mature), var(--shadow-lg); }
+.flashcard.swipe-ko { box-shadow: 0 0 0 3px var(--again, #e11d48), var(--shadow-lg); }
+.swipe-hint { display: none; justify-content: space-between; margin: 8px 6px 0; font-size: .78rem; font-weight: 700; color: var(--text-faint); }
+@media (hover: none) { .swipe-hint { display: flex; } }
+.tips-card { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; border-color: color-mix(in srgb, var(--primary) 30%, transparent); }
+.tips-head { display: flex; align-items: center; justify-content: space-between; }
+.tips-card ul { margin: 0; padding-left: 18px; font-size: .88rem; line-height: 1.45; display: flex; flex-direction: column; gap: 6px; }
+.tips-card .btn { align-self: flex-start; }
+.lib-banner .icon-btn { align-self: flex-start; }
+@media (max-width: 420px) {
+  .days-grid { width: 100%; grid-template-columns: minmax(0, 1fr) repeat(3, 52px); }
+  .set-row:has(.days-grid) { flex-direction: column; align-items: stretch; }
+  .set-row:has(.days-grid) .opt-ctl { width: 100%; }
+}

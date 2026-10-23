@@ -441,7 +441,12 @@ Object.assign(SuperAnki.prototype, {
         const s = this.session;
         if (!s || !s.current) return;
         const ids = [s.current], c = this.card(s.current);
-        this.showMenu(anchor, this.cardMenuItems(ids, { inSession: true }), { flagCur: c.flag, onFlag: n => this.opFlag(ids, n) });
+        const extra = [
+            { icon: 'volume', label: 'Écouter la carte', fn: () => this.speak() },
+            { icon: 'timer', label: 'Minuteur de concentration', fn: () => this.handleAction('focus-toggle', {}) },
+            { sep: true }
+        ];
+        this.showMenu(anchor, [...extra, ...this.cardMenuItems(ids, { inSession: true })], { flagCur: c.flag, onFlag: n => this.opFlag(ids, n) });
     },
 
     /* ============================================================

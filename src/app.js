@@ -35,6 +35,7 @@ const ICONS = {
     pin: '<path d="M12 17v5"/><path d="M9 3h6l-1 6 3.5 3.5H6.5L10 9z"/>',
     listOrdered: '<path d="M10 6h11M10 12h11M10 18h11M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>',
     eraser: '<path d="M4 7V4h16v3"/><path d="M5 20h6"/><path d="M13 4 8 20"/><path d="m15 15 5 5M20 15l-5 5"/>',
+    chevronLeft: '<path d="m15 18-6-6 6-6"/>',
     chevronRight: '<path d="m9 18 6-6-6-6"/>',
     chevronDown: '<path d="m6 9 6 6 6-6"/>',
     arrowLeft: '<path d="m12 19-7-7 7-7M19 12H5"/>',
@@ -272,7 +273,7 @@ const DEFAULT_SETTINGS = {
     theme: 'auto', cardSize: 'm', showIntervals: true,
     autoSpeak: false, autoAudio: false, loadBalance: true, filters: [], sessionSize: 0, fsrsW: null, fsrsMeta: null, answerMode: 'flip', learnAhead: 20, cloudSync: true,
     quizCount: 20, writeCount: 20, chronoDuration: 60,
-    rolloverHour: 4, syncKey: '', settingsMod: 0, autoBackup: true, libSeen: false, goalName: '', goalDate: '', goals: [], deckSort: 'recent',
+    rolloverHour: 4, syncKey: '', settingsMod: 0, autoBackup: true, libSeen: false, tipsSeen: false, goalName: '', goalDate: '', goals: [], deckSort: 'recent',
     ...OPT_DEFAULTS
 };
 function parseSteps(str, def) {
@@ -1121,11 +1122,16 @@ class SuperAnki {
         if (this.session && view !== 'session') this.endSession(false);
         if (this.ex && view !== 'exam') this.exLeave();
         if (view === 'session' && this.view !== 'session' && this.view !== 'exam') this.back = { view: this.view, deck: this.ui.deck, filter: this.ui.filter, y: window.scrollY };   // where to return when the session is closed
+        const prevView = this.view;
+        if (prevView && prevView !== 'session' && prevView !== 'exam') (this.scrollMem = this.scrollMem || {})[prevView] = window.scrollY;
         this.view = view;
         if (opts.deck !== undefined) { this.ui.deck = opts.deck; this.ui.limit = 60; this.touchDeck(opts.deck); }
         if (opts.filter !== undefined) this.ui.filter = opts.filter;
         this.render();
-        window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+        const mem = (this.scrollMem || {})[view];
+        const restore = mem && prevView !== view && opts.deck === undefined && ['dashboard', 'decks', 'stats', 'settings', 'toeic'].includes(view) && ['dashboard', 'decks', 'stats', 'settings', 'toeic'].includes(prevView);   // coming back to a tab: same place as before
+        window.scrollTo({ top: restore ? mem : 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+        const el = $(`#view-${view}`); if (el) { el.classList.remove('view-in'); void el.offsetWidth; el.classList.add('view-in'); }
     }
     render() {
         ['dashboard', 'decks', 'stats', 'settings', 'session', 'toeic', 'exam'].forEach(v => $(`#view-${v}`).classList.toggle('hidden', v !== this.view));
@@ -1186,11 +1192,10 @@ class SuperAnki {
         const chronoBest = d.stats.chronoBest[d.settings.chronoDuration] || 0;
         const goal = this.goalInfo();
         const libTotal = PACKS.reduce((n, p) => n + this.packCardIds(p).length, 0);
-        const libBanner = !d.settings.libSeen && !d.cards.some(c => c.id.startsWith('pk_')) ? `<div class="panel lib-banner"><span class="lib-ico">${ic('sparkles')}</span><div style="flex:1;min-width:200px"><b>Nouveau : la bibliothèque de paquets</b><p class="small muted">${libTotal.toLocaleString('fr-FR')} cartes prêtes à apprendre : anglais et TOEIC, banque, assurance, finance, BUT TC.</p></div><button class="btn btn-primary btn-sm" data-action="open-library">Découvrir</button></div>` : '';
+        const libBanner = !d.settings.libSeen && !d.cards.some(c => c.id.startsWith('pk_')) ? `<div class="panel lib-banner"><span class="lib-ico">${ic('sparkles')}</span><div style="flex:1;min-width:200px"><b>Nouveau : la bibliothèque de paquets</b><p class="small muted">${libTotal.toLocaleString('fr-FR')} cartes prêtes à apprendre : anglais et TOEIC, banque, assurance, finance, BUT TC.</p></div><button class="btn btn-primary btn-sm" data-action="open-library">Découvrir</button><button class="icon-btn icon-btn-sm" data-action="lib-dismiss" aria-label="Fermer" title="Fermer">${ic('x')}</button></div>` : '';
 
         $('#view-dashboard').innerHTML = `
         <div class="stack">
-            ${libBanner}
             <div class="hero">
                 <div class="hero-inner">
                     <div>
@@ -1201,13 +1206,15 @@ class SuperAnki {
                     <div class="hero-actions">
                         ${toStudy > 0
                             ? `<button class="btn btn-lg btn-hero" data-action="study" data-deck="">${ic('play')}Réviser (${toStudy})</button>`
-                            : `<button class="btn btn-lg btn-hero" data-action="practice-all">${ic('repeat')}S'entraîner</button>`}
+                            : `<button class="btn btn-lg btn-hero" data-action="practice-all">${ic('repeat')}Révision libre</button>`}
                         ${extra || `<button class="btn btn-lg btn-hero-ghost" data-action="new-card">${ic('plus')}Nouvelle carte</button>`}
                     </div>
                 </div>
             </div>
 
             ${this.goalsHtml()}
+            ${libBanner}
+            ${this.tipsHtml()}
             <div class="status-grid">
                 ${['new', 'learn', 'due', 'mature'].map(k => `
                 <button class="panel status-tile" style="--c:${STATUS[k].color}" data-action="goto-filter" data-filter="${k}">
@@ -1252,10 +1259,23 @@ class SuperAnki {
             </div>
         </div>`;
     }
+    tipsHtml() {
+        if (this.data.settings.tipsSeen || !this.data.cards.length) return '';
+        return `<div class="panel tips-card"><div class="tips-head"><b>${ic('bulb')} 3 astuces</b><button class="icon-btn icon-btn-sm" data-action="tips-dismiss" aria-label="Fermer" title="Fermer">${ic('x')}</button></div>
+            <ul><li><b>📌 Épingler</b> : la punaise garde tes paquets importants tout en haut.</li>
+            <li><b>↻ Libre · ☰ Ordre</b> : toutes les cartes dans le désordre, ou dans l'ordre du cours (avec reprise). Ni l'un ni l'autre ne touche au planning.</li>
+            <li><b>👆 Glisser</b> : en révision libre, glisse la carte vers la droite si tu savais, vers la gauche si tu as raté.</li></ul>
+            <button class="btn btn-primary btn-sm" data-action="tips-dismiss">Compris</button></div>`;
+    }
     recentsHtml() {
         const ids = (this.data.settings.recentDecks || []).filter(id => this.deck(id)).slice(0, 6);
         if (!ids.length) return '';
         return `<div><div class="section-head"><h3 class="section-title">Récemment</h3><button class="link" data-action="recent-clear" title="Vider la liste des paquets récents">${ic('trash')}Effacer</button></div><div class="recents">${ids.map(id => { const d = this.deck(id), path = this.deckPath(id).split(' › '); return `<div class="recent-item"><button class="recent-chip" data-action="open-deck" data-deck="${esc(id)}" title="${esc(this.deckPath(id))}"><span>${esc(d.emoji)}</span><span class="nm">${esc(d.name)}</span>${path.length > 1 ? `<small>${esc(path[path.length - 2])}</small>` : ''}</button><button class="recent-x" data-action="recent-del" data-deck="${esc(id)}" aria-label="Retirer ${esc(d.name)} des récents" title="Retirer">${ic('x')}</button></div>`; }).join('')}</div></div>`;
+    }
+    /* cards of a deck (and its sub-decks) that were missed in free revision and not yet answered right */
+    weakIds(deckId) {
+        const set = new Set(this.descendantIds(deckId));
+        return this.data.cards.filter(c => !c.suspended && set.has(c.deckId) && (c.right || 0) + (c.wrong || 0) > 0 && !(c.ps > 0)).map(c => c.id);
     }
     deckCompact() {
         const v = this.data.settings.deckView;
@@ -1322,6 +1342,7 @@ class SuperAnki {
                     <div class="modes">
                         <button class="btn btn-soft btn-sm" title="Révision libre : toutes les cartes, sans toucher au planning" data-action="free-deck" data-deck="${esc(deck.id)}">${ic('repeat')}Libre</button>
                         <button class="btn btn-soft btn-sm" title="Étudier dans l'ordre, sans toucher au planning" data-action="ordered-deck" data-deck="${esc(deck.id)}">${ic('list')}Ordre</button>
+                        ${st.weak ? `<button class="btn btn-soft btn-sm weak-btn" title="Seulement les cartes ratées en révision libre" data-action="weak-deck" data-deck="${esc(deck.id)}">${ic('target')}↺ ${st.weak}</button>` : ''}
                         <button class="icon-btn icon-btn-sm" title="Écrire, Quiz, Chrono…" aria-label="Autres modes" data-action="deck-more" data-deck="${esc(deck.id)}">${ic('more')}</button>
                     </div>
                 </div>
@@ -1603,17 +1624,14 @@ class SuperAnki {
             title = `${ic('target')} Mes erreurs`;
             actions = statusCounts.all ? `<button class="btn btn-primary btn-sm" data-action="practice-errors">${ic('play')}Retravailler</button>` : '';
         } else {
-            title = `<span class="crumbs">${this.deckChain(deck.id).map((d, i, a) => i === a.length - 1 ? `<span>${esc(d.emoji)} ${esc(d.name)}</span>` : `<button class="crumb" data-action="select-deck" data-deck="${esc(d.id)}">${esc(d.name)}</button><span class="crumb-sep">›</span>`).join('')}</span>`;
+            const chain = this.deckChain(deck.id), parent = chain.length > 1 ? chain[chain.length - 2] : null, dst = this.deckStats().get(deck.id);
+            title = `${parent ? `<button class="crumb-back" data-action="select-deck" data-deck="${esc(parent.id)}">${ic('chevronLeft')}${esc(parent.name)}</button>` : `<button class="crumb-back" data-action="select-deck" data-deck="all">${ic('chevronLeft')}Tous les paquets</button>`}${chain.length > 2 ? `<span class="crumb-path">${esc(chain.slice(0, -1).map(d => d.name).join(' › '))}</span>` : ''}<span class="deck-title">${esc(deck.emoji)} ${esc(deck.name)}</span>`;
             actions = `
                 <button class="btn btn-primary btn-sm" data-action="study" data-deck="${esc(deck.id)}">${ic('play')}Réviser</button>
-                <button class="btn btn-soft btn-sm" data-action="free-deck" data-deck="${esc(deck.id)}" title="Toutes les cartes du paquet et des sous-paquets, sans toucher au planning">${ic('repeat')}Révision libre</button>
-                <button class="btn btn-soft btn-sm" data-action="ordered-deck" data-deck="${esc(deck.id)}" title="Les cartes du paquet et des sous-paquets, dans l'ordre du cours, sans toucher au planning">${ic('list')}Dans l'ordre</button>
-                <button class="btn btn-soft btn-sm" data-action="new-card" data-deck="${esc(deck.id)}">${ic('plus')}Carte</button>
-                <button class="icon-btn" title="Options d'étude du paquet" data-action="deck-options" data-deck="${esc(deck.id)}">${ic('sliders')}</button>
-                <button class="icon-btn" title="Remettre à zéro tout le paquet et ses sous-paquets" data-action="reset-deck" data-deck="${esc(deck.id)}">${ic('reset')}</button>
-                <button class="icon-btn" title="Sous-paquet" data-action="new-subdeck" data-deck="${esc(deck.id)}">${ic('folderPlus')}</button>
-                <button class="icon-btn" title="Modifier le paquet" data-action="edit-deck" data-deck="${esc(deck.id)}">${ic('pencil')}</button>
-                <button class="icon-btn danger" title="Supprimer le paquet" data-action="delete-deck" data-deck="${esc(deck.id)}">${ic('trash')}</button>`;
+                <button class="btn btn-soft btn-sm" data-action="free-deck" data-deck="${esc(deck.id)}" title="Toutes les cartes du paquet et des sous-paquets, sans toucher au planning">${ic('repeat')}Libre</button>
+                <button class="btn btn-soft btn-sm" data-action="ordered-deck" data-deck="${esc(deck.id)}" title="Les cartes du paquet et des sous-paquets, dans l'ordre du cours, sans toucher au planning">${ic('list')}Ordre</button>
+                ${dst && dst.weak ? `<button class="btn btn-soft btn-sm weak-btn" data-action="weak-deck" data-deck="${esc(deck.id)}" title="Seulement les cartes que tu as ratées en révision libre">${ic('target')}Retravailler (${dst.weak})</button>` : ''}
+                <button class="icon-btn" title="Plus d'actions sur ce paquet" aria-label="Plus d'actions sur ce paquet" data-action="deck-admin" data-deck="${esc(deck.id)}">${ic('more')}</button>`;
         }
         const chipDefs = [['all', 'Toutes'], ['new', 'Nouvelles'], ['learn', 'En cours'], ['due', 'À revoir'], ['mature', 'Maîtrisées']];
         if (statusCounts.susp || ui.filter === 'susp') chipDefs.push(['susp', 'Suspendues']);
@@ -1877,7 +1895,7 @@ class SuperAnki {
                     ok: 'Apprendre 10 de plus'
                 }).then(y => { if (y) this.startStudy(deckId, 10); });
             } else {
-                this.confirm({ title: 'Tout est à jour 🎉', message: 'Rien à réviser ici pour l\'instant. Veux-tu t\'entraîner quand même (sans impact sur le planning) ?', ok: 'S\'entraîner' })
+                this.confirm({ title: 'Tout est à jour 🎉', message: 'Rien à réviser ici pour l\'instant. Veux-tu t\'entraîner quand même (sans impact sur le planning) ?', ok: 'Révision libre' })
                     .then(y => { if (y) { if (deckId) this.startFree(deckId); else this.startPractice(null, 'flip', 20); } });
             }
             return;
@@ -2056,12 +2074,12 @@ class SuperAnki {
         <div class="session">
             <div class="session-top">
                 <button class="icon-btn" title="Quitter (Échap)" data-action="quit-session">${ic('x')}</button>
-                <div class="session-title"><h3>${esc(s.title)}</h3><p>${s.kind === 'srs' ? 'Révision' : s.answer === 'type' ? 'Écrire · sans impact sur le planning' : 'Entraînement · sans impact sur le planning'}</p></div>
+                <div class="session-title"><h3>${esc(s.title)}</h3><p>${s.kind === 'srs' ? 'Révision' : s.answer === 'type' ? 'Écrire · sans impact sur le planning' : 'Révision libre · sans impact sur le planning'}</p></div>
                 ${counter}
-                <button class="icon-btn" title="Écouter" data-action="speak">${ic('volume')}</button>
+                <button class="icon-btn sess-extra" title="Écouter" data-action="speak">${ic('volume')}</button>
                 <button class="icon-btn" title="Annuler la dernière réponse (Z)" data-action="undo" ${s.history.length ? '' : 'disabled style="opacity:.35"'}>${ic('undo')}</button>
-                <button class="icon-btn" title="Modifier la carte (E)" data-action="edit-current">${ic('pencil')}</button>
-                <button class="icon-btn" title="Minuteur de concentration" aria-label="Minuteur" data-action="focus-toggle">${ic('timer')}</button>
+                <button class="icon-btn sess-extra" title="Modifier la carte (E)" data-action="edit-current">${ic('pencil')}</button>
+                <button class="icon-btn sess-extra" title="Minuteur de concentration" aria-label="Minuteur" data-action="focus-toggle">${ic('timer')}</button>
                 <button class="icon-btn" title="Plus d'actions" data-action="session-menu" aria-label="Plus d'actions">${ic('more')}</button>
             </div>
             <div class="pbar"><i style="width:${progress}%"></i></div>
@@ -3252,6 +3270,30 @@ class SuperAnki {
             case 'sync-now': Cloud.sync(true); break;
             case 'recent-del': this.data.settings.recentDecks = (this.data.settings.recentDecks || []).filter(x => x !== ds.deck); this.save(false); this.renderDashboard(); break;
             case 'recent-clear': this.data.settings.recentDecks = []; this.save(false); this.renderDashboard(); this.toast('Liste « Récemment » vidée', 'success'); break;
+            case 'weak-deck': {
+                const ids = this.weakIds(ds.deck), d = this.deck(ds.deck);
+                if (!ids.length) { this.toast('Rien à retravailler ici 🎉', 'success'); break; }
+                this.touchDeck(ds.deck);
+                this.startPractice(null, this.data.settings.answerMode, 9999, `À retravailler · ${d ? d.name : ''}`, ids);
+                break;
+            }
+            case 'deck-admin': {
+                const id = el.dataset.deck;
+                this.showMenu(el, [
+                    { icon: 'plus', label: 'Nouvelle carte', fn: () => this.handleAction('new-card', { dataset: { deck: id } }) },
+                    { icon: 'folderPlus', label: 'Nouveau sous-paquet', fn: () => this.handleAction('new-subdeck', { dataset: { deck: id } }) },
+                    { sep: true },
+                    { icon: 'keyboard', label: 'Écrire la réponse', fn: () => this.openModeLauncher('write', id) },
+                    { icon: 'quiz', label: 'Quiz (QCM)', fn: () => this.openModeLauncher('quiz', id) },
+                    { icon: 'timer', label: 'Chrono', fn: () => this.openModeLauncher('chrono', id) },
+                    { sep: true },
+                    { icon: 'sliders', label: 'Options d\'étude du paquet', fn: () => this.handleAction('deck-options', { dataset: { deck: id } }) },
+                    { icon: 'pencil', label: 'Modifier le paquet', fn: () => this.handleAction('edit-deck', { dataset: { deck: id } }) },
+                    { icon: 'reset', label: 'Remettre à zéro…', fn: () => this.handleAction('reset-deck', { dataset: { deck: id } }) },
+                    { icon: 'trash', label: 'Supprimer le paquet…', fn: () => this.handleAction('delete-deck', { dataset: { deck: id } }) }
+                ]);
+                break;
+            }
             case 'dash-open': {   // home: a deck with sub-decks unfolds in place, a deck without opens its cards
                 if (this.childrenOf(ds.deck).length) { this.toggleOpen('dash', ds.deck); this.renderDashboard(); }
                 else { this.ui.deckQ = ''; this.ui.treeOpen = false; this.go('decks', { deck: ds.deck, filter: 'all' }); }
@@ -3352,6 +3394,8 @@ class SuperAnki {
             }
             case 'export-txt': this.exportTXT(); break;
             case 'open-library': this.openLibrary(); break;
+            case 'lib-dismiss': this.setSetting('libSeen', true); this.renderDashboard(); break;
+            case 'tips-dismiss': this.setSetting('tipsSeen', true); this.renderDashboard(); break;
             case 'toggle-deck': this.toggleOpen('side', ds.deck); this.renderDeckSidebar(); break;
             case 'dash-toggle': this.toggleOpen('dash', ds.deck); this.renderDashboard(); break;
             case 'tree-all': this.setAllOpen(ds.key, ds.open === '1'); this.renderDeckSidebar(); break;
