@@ -806,6 +806,7 @@ class SuperAnki {
         if (bootEl) { bootEl.classList.add('boot-out'); await new Promise(r => setTimeout(r, 260)); bootEl.remove(); }
         this.go('dashboard');
         if (source === 'legacy') this.toast('Tes cartes et ta progression ont été récupérées', 'success');
+        this.initRipple();
         this.focusInit();
         this.extrasInit();
         this.ambInit();
@@ -1138,8 +1139,26 @@ class SuperAnki {
         const mem = (this.scrollMem || {})[view];
         const restore = mem && prevView !== view && opts.deck === undefined && ['dashboard', 'decks', 'stats', 'settings', 'toeic'].includes(view) && ['dashboard', 'decks', 'stats', 'settings', 'toeic'].includes(prevView);   // coming back to a tab: same place as before
         window.scrollTo({ top: restore ? mem : 0, behavior: 'instant' in window ? 'instant' : 'auto' });
-        const el = $(`#view-${view}`); if (el) { el.classList.remove('view-in'); void el.offsetWidth; el.classList.add('view-in'); }
+        const el = $(`#view-${view}`);
+        if (el) {
+            const order = ['dashboard', 'decks', 'toeic', 'stats', 'settings'], a = order.indexOf(prevView), b = order.indexOf(view);
+            el.classList.remove('view-in', 'view-in-l', 'view-in-r', 'view-in-n', 'cascade'); void el.offsetWidth;
+            el.classList.add('view-in', 'cascade', a >= 0 && b >= 0 && a !== b ? (b > a ? 'view-in-r' : 'view-in-l') : 'view-in-n');
+            clearTimeout(this._viewInT); this._viewInT = setTimeout(() => el.classList.remove('cascade'), 900);   // the cascade only plays on arrival, not on later redraws
+        }
         if (view === 'dashboard' && prevView !== 'dashboard') this.countUp('#view-dashboard .status-num');
+    }
+    /* touch ripple on the main buttons and tiles */
+    initRipple() {
+        document.addEventListener('pointerdown', e => {
+            if (this.calm() || e.button > 0) return;
+            const t = e.target.closest && e.target.closest('.btn, .mode-tile, .status-tile');
+            if (!t || t.disabled) return;
+            const r = t.getBoundingClientRect(), size = Math.max(r.width, r.height) * 1.6;
+            const w = document.createElement('span'); w.className = 'ripple';
+            w.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - r.left - size / 2}px;top:${e.clientY - r.top - size / 2}px`;
+            t.appendChild(w); setTimeout(() => w.remove(), 600);
+        }, { passive: true });
     }
     /* small motion helpers (skipped when the device asks for reduced motion) */
     calm() { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
@@ -1156,6 +1175,15 @@ class SuperAnki {
             };
             requestAnimationFrame(tick);
         });
+    }
+    /* the answered card slides away (right = known, left = missed) before the next one arrives */
+    flyThen(right, next) {
+        const s = this.session, card = $('#view-session .flashcard');
+        if (this.calm() || !card || card.style.opacity === '0') { next(); return; }
+        this._flying = true;
+        card.classList.remove('anim-flip', 'anim-next');
+        card.classList.add(right ? 'fly-right' : 'fly-left');
+        setTimeout(() => { this._flying = false; if (this.session === s) next(); }, 170);
     }
     animCard(kind) {
         if (this.calm()) return;
@@ -2280,7 +2308,7 @@ class SuperAnki {
     }
     grade(g) {
         const s = this.session;
-        if (!s || s.kind !== 'srs' || !s.revealed) return;
+        if (this._flying || !s || s.kind !== 'srs' || !s.revealed) return;
         const card = this.card(s.current), now = Date.now(), cfg = this.cfgFor(card);
         this.snapshot();
         const prev = card.state, prevIvl = card.interval, secs = this.elapsedSec();
@@ -2322,11 +2350,11 @@ class SuperAnki {
         s.lastId = card.id;
         this.save();
         if (leech) this.toast(cfg.leechAction === 'suspend' ? 'Carte « sangsue » : suspendue (ratée trop souvent). Reformule-la !' : 'Carte « sangsue » : ratée trop souvent', 'warning', ic('alert'));
-        this.nextCard();
+        this.flyThen(g >= 2, () => this.nextCard());
     }
     practiceAnswer(ok) {
         const s = this.session;
-        if (!s || s.kind !== 'practice' || !s.revealed) return;
+        if (this._flying || !s || s.kind !== 'practice' || !s.revealed) return;
         const card = this.card(s.current);
         this.snapshot();
         s.run = ok ? (s.run || 0) + 1 : 0; s.bestRun = Math.max(s.bestRun || 0, s.run);
@@ -2345,9 +2373,10 @@ class SuperAnki {
         }
         s.done++;   // only the error counters are updated: no scheduling, stats, streak or history
         this.save();
-        this.nextCard();
+        this.flyThen(ok, () => this.nextCard());
     }
     undo() {
+        if (this._flying) return;
         const s = this.session;
         if (!s || !s.history.length) return;
         const h = s.history.pop();
