@@ -2,10 +2,13 @@
    a warm glow, floating golden stars, blinking (a wink), talking (mouth opens while he types his words), breathing and a little parallax towards the pointer.
    Moods: ready (waits, holds the card), happy (cheers, arms up), calm (eyes closed), tough (alert, encouraging). */
 function leoSvg(mood = 'ready', opts = {}) {
-    const poses = { ready: 'ready', happy: 'happy', calm: 'calm', tough: 'tough' };
-    const key = poses[mood] || 'ready', img = LEO_IMG[key];
-    const rel = key === 'happy' ? 104 : 100;
-    const im = (k, cls, extra = '') => `<img class="leo-img ${cls}" src="${LEO_IMG[k][0]}" alt="" decoding="async" draggable="false" ${extra}>`;
+    const key = ['ready', 'happy', 'calm', 'tough'].includes(mood) ? mood : 'ready';
+    const motion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const still = `<img class="leo-img leo-still" src="${LEO_IMG[key][0]}" alt="" decoding="async" draggable="false">`;
+    const live = (cls, file, lazy) => (motion ? `<img class="leo-img ${cls}" ${lazy ? `data-src="${file}"` : `src="${file}"`} alt="" decoding="async" draggable="false" onload="this.closest('.leo-pose').classList.add('${cls === 'leo-talk' ? 'talk-ok' : 'loaded'}')">` : '');
+    // ready: the idle loop from the video (blinks, winks, smiles) + a talking loop; happy: the cheering loop; calm / tough: stills
+    const anim = key === 'ready' ? live('leo-ani', 'mascot/idle.webp') + live('leo-talk', 'mascot/talk.webp', true) : key === 'happy' ? live('leo-ani', 'mascot/cheer.webp') : '';
+    const rel = key === 'happy' ? 112 : 100;
     let stars = '';
     const n = mood === 'happy' ? 14 : 8;
     for (let i = 0; i < n; i++) {
@@ -14,7 +17,7 @@ function leoSvg(mood = 'ready', opts = {}) {
     }
     const extra = mood === 'calm' ? '<span class="leo-z z1">z</span><span class="leo-z z2">Z</span>' : '';
     return `<div class="leo3d leo-${mood}" aria-hidden="true"><span class="leo-glow"></span>${stars}
-        <span class="leo-pose" style="height:${rel}%"><span class="leo-anim">${im(key, 'leo-main')}${key === 'ready' ? im('blink', 'leo-b') + im('talk', 'leo-t') : ''}</span></span>${extra}</div>`;
+        <span class="leo-pose" style="height:${rel}%"><span class="leo-anim">${still}${anim}</span></span>${extra}</div>`;
 }
 
 /* ---------- What Léo says: a big bank of short lines (encouraging, a bit teasing, student-to-student), picked without repeats ---------- */

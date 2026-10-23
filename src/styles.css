@@ -2284,3 +2284,14 @@ html[data-vt="l"]::view-transition-new(root) { animation-name: vtInL; }
 @media (prefers-reduced-motion: reduce) { .leo-glow, .leo-star, .leo-anim, .leo-z, .leo-trail, .leo-trail * { animation: none !important; } .leo-star { opacity: .6; } .leo-trail { display: none; } }
 .hero { overflow-x: clip; overflow-y: visible; } body { overflow-x: clip; }
 @media (max-width: 767px) { .hero .leo-happy .leo-pose { left: 40%; } }
+
+/* ---- Léo animated (video loops) ---- */
+.leo-ani, .leo-talk { position: absolute; left: 0; top: 0; opacity: 0; transition: opacity .12s; }
+.leo-pose.loaded .leo-still { opacity: 0; } .leo-pose.loaded .leo-ani { opacity: 1; }
+.leo-pose.talk.talk-ok .leo-talk { opacity: 1; } .leo-pose.talk.talk-ok .leo-ani { opacity: 0; }
+.leo-b, .leo-t { display: none; }
+.leo-anim { animation: none; }
+.leo-calm .leo-anim, .leo-tough .leo-anim { animation: leoBreath 4.2s ease-in-out infinite; }
+/* he follows the theme: his glow and rim light take the app's colour */
+.leo-glow { background: radial-gradient(closest-side, color-mix(in srgb, #ffc860 62%, var(--primary, #6366f1)) 0, color-mix(in srgb, #ffa530 24%, var(--primary, #6366f1)) 52%, transparent 74%); }
+.leo-img { filter: drop-shadow(0 10px 12px rgba(20, 8, 50, .42)) drop-shadow(0 0 10px color-mix(in srgb, var(--primary, #6366f1) 35%, transparent)); }

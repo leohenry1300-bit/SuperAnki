@@ -1257,9 +1257,9 @@ class SuperAnki {
             box.classList.remove('out');
         } else { if (!sub.dataset.orig) sub.dataset.orig = sub.innerHTML; sub.classList.add('speaking'); }
         box.textContent = '';
-        const pose = $('.leo-ready .leo-pose'); clearInterval(this._mouthT);
-        if (pose && !this.calm()) { let o = false; this._mouthT = setInterval(() => { o = !o; pose.classList.toggle('talk', o); }, 170); }
-        const stopTalk = () => { clearInterval(this._mouthT); const q = $('.leo-ready .leo-pose'); if (q) q.classList.remove('talk'); };
+        const pose = $('.leo-ready .leo-pose');
+        if (pose && !this.calm()) { pose.classList.add('talk'); const t = pose.querySelector('.leo-talk'); if (t && !t.getAttribute('src') && t.dataset.src) t.src = t.dataset.src; }
+        const stopTalk = () => { const q = $('.leo-ready .leo-pose'); if (q) q.classList.remove('talk'); };
         let i = 0; const full = [...text];
         const end = () => { stopTalk(); this._bubbleT = setTimeout(() => {
             if (wide) { box.classList.add('out'); setTimeout(() => box.remove(), 260); }
@@ -1299,8 +1299,6 @@ class SuperAnki {
                 });
             });
         };
-        clearInterval(this._winkT);
-        this._winkT = setInterval(() => { const b = $('.leo-ready .leo-pose'); if (b && !this.calm() && !b.classList.contains('talk')) { b.classList.add('wink'); setTimeout(() => b.classList.remove('wink'), 260); } }, 6200);
         document.addEventListener('pointermove', e => move(e.clientX, e.clientY), { passive: true });
         document.addEventListener('touchmove', e => { const t = e.touches[0]; if (t) move(t.clientX, t.clientY); }, { passive: true });
     }
