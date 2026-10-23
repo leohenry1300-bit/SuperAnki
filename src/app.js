@@ -1130,6 +1130,7 @@ class SuperAnki {
         $$('[data-nav]').forEach(b => b.classList.toggle('active', b.dataset.nav === this.view && !b.classList.contains('brand') && !b.classList.contains('streak-chip') && !b.classList.contains('sync-dot')));
         document.body.classList.toggle('in-session', this.view === 'session' || this.view === 'exam');
         document.body.classList.toggle('in-exam', this.view === 'exam');
+        document.body.classList.toggle('can-fab', this.view === 'dashboard' || this.view === 'decks');
         this.renderStreak();
         this.renderSyncIndicator();
         if (this.view === 'dashboard') this.renderDashboard();
@@ -2634,6 +2635,15 @@ class SuperAnki {
         const front = $('#cf-front', m), back = $('#cf-back', m), detail = $('#cf-detail', m), typeSel = $('#cf-type', m);
         if (card) { front.innerHTML = nf.front; back.innerHTML = nf.back; detail.innerHTML = card.detail; }
         else if (prefillFront) front.textContent = prefillFront;
+        const dupMsg = document.createElement('p'); dupMsg.className = 'help dup-warn hidden'; front.closest('.field').appendChild(dupMsg);
+        const dupCheck = () => {
+            if (card) return;
+            const key = fold(stripHtml(front.innerHTML)), dk = $('#cf-deck', m).value;
+            const hit = key.length > 2 && this.data.cards.find(c => c.deckId === dk && c.ord === 0 && fold(stripHtml(noteFieldsOf(c).front)) === key);
+            dupMsg.classList.toggle('hidden', !hit);
+            if (hit) dupMsg.textContent = '⚠ Une carte avec ce recto existe déjà dans ce paquet.';
+        };
+        front.addEventListener('input', dupCheck); $('#cf-deck', m).addEventListener('change', dupCheck);
         const relabel = () => {
             const cloze = type === 'cloze';
             $('#cf-front-label', m).textContent = cloze ? 'Texte à trous' : 'Recto · question';
@@ -2684,7 +2694,7 @@ class SuperAnki {
                 this.toast(made.length > 1 ? `${made.length} cartes créées` : 'Carte créée', 'success');
             }
             if (keepOpen) {
-                front.innerHTML = ''; back.innerHTML = ''; detail.innerHTML = ''; $('#cf-hint', m).value = '';
+                front.innerHTML = ''; back.innerHTML = ''; detail.innerHTML = ''; $('#cf-hint', m).value = ''; dupMsg.classList.add('hidden');
                 front.focus();
             } else this.closeModal(m);
             if (inSession && this.session) { if (this.session.quizCard) this.renderQuiz(); else if (this.session.current) this.renderSession(); }
