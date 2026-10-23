@@ -34,7 +34,7 @@ Object.assign(SuperAnki.prototype, {
         const open = this.homeOpen('filters');
         if (!fl.length) return `<div><div class="section-head"><h3 class="section-title">Paquets filtrés</h3><button class="link" data-action="filter-edit" data-id="">${ic('plus')}Nouveau</button></div><p class="small muted" style="margin-top:-6px">Un paquet filtré rassemble les cartes qui correspondent à une recherche (un tag, un mot…), même si elles sont dans plusieurs paquets.</p></div>`;
         const eod = endOfDay(), now = Date.now();
-        return `<div>${this.secToggle('filters', `Paquets filtrés <span class="sec-count">${fl.length}</span>`, `<button class="link" data-action="filter-edit" data-id="">${ic('plus')}Nouveau</button>`)}
+        return `<div>${this.secToggle('filters', `Paquets filtrés`, `<button class="link" data-action="filter-edit" data-id="">${ic('plus')}Nouveau</button>`)}
             <div class="mode-grid filter-grid ${open ? '' : 'hidden'}">${fl.map(f => {
                 const cards = this.queryCards(f.query).filter(c => !c.suspended), due = cards.filter(c => cardStatus(c, now, eod) === 'due').length;
                 return `<div class="panel mode-tile filter-tile" style="--c:#0ea5e9;cursor:default"><span class="mode-ico">${ic('filter')}</span><span class="grow"><h4>${esc(f.name)}</h4><p>${plural(cards.length, 'carte')} · ${due} à réviser</p></span>
