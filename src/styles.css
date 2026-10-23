@@ -1767,3 +1767,13 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
   .set-row:has(.days-grid) .opt-ctl { width: 100%; }
 }
 .set-nav { background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-radius: 14px; padding-left: 4px; padding-right: 4px; }
+
+/* deck card footer: never squeeze the main button, wrap instead */
+.deck-foot { flex-wrap: wrap; }
+.deck-foot > .btn-primary, .deck-foot > .btn-soft { flex: 1 1 130px; min-width: 120px; }
+.deck-foot .modes { flex: 0 1 auto; margin-left: auto; flex-wrap: nowrap; }
+.deck-foot .modes .btn { flex: 0 0 auto; }
+@media (max-width: 767px) { .deck-foot > .btn-primary { flex: 1 1 100%; } .deck-foot .modes { flex: 1 1 100%; margin-left: 0; } .deck-foot .modes .btn { flex: 1; } }
+.deck-foot > .btn-primary { flex: 1 1 100%; }
+.deck-foot .modes { flex: 1 1 100%; margin-left: 0; }
+.deck-foot .modes .btn { flex: 1; }

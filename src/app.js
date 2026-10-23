@@ -1332,8 +1332,7 @@ class SuperAnki {
                     <span style="color:var(--due)" title="À revoir">${ic('repeat')}${c.due}</span>
                     <span style="color:var(--mature)" title="Maîtrisées">${ic('award')}${c.mature}</span>
                 </div>
-                ${this.progressHtml(st)}
-                ${this.trainHtml(st)}
+                ${st.tried ? this.trainHtml(st) : this.progressHtml(st)}
                 ${kids.length ? `<button class="sub-toggle ${isOpen ? 'open' : ''}" data-action="dash-toggle" data-deck="${esc(deck.id)}" aria-expanded="${isOpen}">${ic('chevronRight')}<span>${plural(nSub, 'sous-paquet')}${isOpen ? '' : ' : voir l\'avancée'}</span></button>` : ''}
                 ${kids.length && isOpen ? `<div class="sub-tree"><div class="sub-open-link" style="--d:0"><button class="link" data-action="open-deck" data-deck="${esc(deck.id)}">${ic('layers')}Voir les cartes de « ${esc(deck.name)} »</button></div>${subRows(deck.id, 0)}</div>` : ''}
                 <div class="deck-foot">
@@ -1342,7 +1341,6 @@ class SuperAnki {
                     <div class="modes">
                         <button class="btn btn-soft btn-sm" title="Révision libre : toutes les cartes, sans toucher au planning" data-action="free-deck" data-deck="${esc(deck.id)}">${ic('repeat')}Libre</button>
                         <button class="btn btn-soft btn-sm" title="Étudier dans l'ordre, sans toucher au planning" data-action="ordered-deck" data-deck="${esc(deck.id)}">${ic('list')}Ordre</button>
-                        ${st.weak ? `<button class="btn btn-soft btn-sm weak-btn" title="Seulement les cartes ratées en révision libre" data-action="weak-deck" data-deck="${esc(deck.id)}">${ic('target')}↺ ${st.weak}</button>` : ''}
                         <button class="icon-btn icon-btn-sm" title="Écrire, Quiz, Chrono…" aria-label="Autres modes" data-action="deck-more" data-deck="${esc(deck.id)}">${ic('more')}</button>
                     </div>
                 </div>
@@ -1630,7 +1628,6 @@ class SuperAnki {
                 <button class="btn btn-primary btn-sm" data-action="study" data-deck="${esc(deck.id)}">${ic('play')}Réviser</button>
                 <button class="btn btn-soft btn-sm" data-action="free-deck" data-deck="${esc(deck.id)}" title="Toutes les cartes du paquet et des sous-paquets, sans toucher au planning">${ic('repeat')}Libre</button>
                 <button class="btn btn-soft btn-sm" data-action="ordered-deck" data-deck="${esc(deck.id)}" title="Les cartes du paquet et des sous-paquets, dans l'ordre du cours, sans toucher au planning">${ic('list')}Ordre</button>
-                ${dst && dst.weak ? `<button class="btn btn-soft btn-sm weak-btn" data-action="weak-deck" data-deck="${esc(deck.id)}" title="Seulement les cartes que tu as ratées en révision libre">${ic('target')}Retravailler (${dst.weak})</button>` : ''}
                 <button class="icon-btn" title="Plus d'actions sur ce paquet" aria-label="Plus d'actions sur ce paquet" data-action="deck-admin" data-deck="${esc(deck.id)}">${ic('more')}</button>`;
         }
         const chipDefs = [['all', 'Toutes'], ['new', 'Nouvelles'], ['learn', 'En cours'], ['due', 'À revoir'], ['mature', 'Maîtrisées']];
@@ -3279,7 +3276,9 @@ class SuperAnki {
             }
             case 'deck-admin': {
                 const id = el.dataset.deck;
+                const wk = this.weakIds(id).length;
                 this.showMenu(el, [
+                    ...(wk ? [{ icon: 'target', label: `Retravailler les cartes ratées (${wk})`, fn: () => this.handleAction('weak-deck', { dataset: { deck: id } }) }, { sep: true }] : []),
                     { icon: 'plus', label: 'Nouvelle carte', fn: () => this.handleAction('new-card', { dataset: { deck: id } }) },
                     { icon: 'folderPlus', label: 'Nouveau sous-paquet', fn: () => this.handleAction('new-subdeck', { dataset: { deck: id } }) },
                     { sep: true },
@@ -3301,7 +3300,9 @@ class SuperAnki {
             }
             case 'deck-more': {
                 const id = el.dataset.deck;
+                const wk = this.weakIds(id).length;
                 this.showMenu(el, [
+                    ...(wk ? [{ icon: 'target', label: `Retravailler les cartes ratées (${wk})`, fn: () => this.handleAction('weak-deck', { dataset: { deck: id } }) }, { sep: true }] : []),
                     { icon: 'layers', label: 'Voir les cartes du paquet', fn: () => this.handleAction('open-deck', { dataset: { deck: id } }) },
                     { sep: true },
                     { icon: 'keyboard', label: 'Écrire la réponse', fn: () => this.openModeLauncher('write', id) },
