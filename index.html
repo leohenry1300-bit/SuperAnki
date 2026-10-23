@@ -9096,12 +9096,7 @@ Object.assign(SuperAnki.prototype, {
         setTimeout(() => location.reload(), 500);
     },
     extrasSettingsHtml() {
-        return `<div class="panel panel-pad set-section" id="ex-update">
-            <h3>${ic('reset')} Mise à jour</h3>
-            <div class="set-row"><div class="txt"><b>Version de l'application</b><span id="upd-status">Version <code id="upd-ver">${APP_VER0 ? APP_VER0.slice(0, 8) : '—'}</code></span></div>
-                <button class="btn btn-primary btn-sm" data-ex="upd">${ic('reset')}Mettre à jour maintenant</button></div>
-        </div>
-        <div class="panel panel-pad set-section" id="ex-settings">
+        return `<div class="panel panel-pad set-section" id="ex-settings">
             <h3>${ic('volume')} Sons</h3>
             <div class="set-row"><div class="txt"><b>Sons de l'application</b><span>Petits sons doux quand tu retournes une carte, réponds ou termines une session. Réglage propre à cet appareil.</span></div>
                 <span style="display:flex;gap:10px;align-items:center"><label class="switch"><input type="checkbox" ${SND.on ? 'checked' : ''} data-ex="snd-toggle" aria-label="Sons de l'application"><span></span></label><button class="btn btn-soft btn-sm" data-ex="snd-test">Tester</button></span></div>
