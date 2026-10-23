@@ -892,6 +892,7 @@ class SuperAnki {
         fsrsApplyParams(s.fsrsW);
         const resolved = s.theme === 'auto' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'nuit' : 'clair') : s.theme;
         document.documentElement.dataset.theme = resolved;
+        try { localStorage.setItem('superanki_theme', s.theme); } catch { /* private mode */ }
         document.documentElement.style.setProperty('--card-size', CARD_SIZES[s.cardSize] || CARD_SIZES.m);
         requestAnimationFrame(() => {
             const meta = $('meta[name="theme-color"]');
