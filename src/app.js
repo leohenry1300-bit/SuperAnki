@@ -1157,6 +1157,7 @@ class SuperAnki {
             el.classList.add('view-in', ...(this._vtOn ? [] : ['cascade']), zoom ? 'view-in-zoom' : this._vtOn ? 'view-in-n' : a >= 0 && b >= 0 && a !== b ? (b > a ? 'view-in-r' : 'view-in-l') : 'view-in-n');
             clearTimeout(el._cascT); el._cascT = setTimeout(() => el.classList.remove('cascade'), 900);   // the cascade only plays on arrival, not on later redraws
         }
+        if (view === 'dashboard') { clearTimeout(this._leoT); this._leoT = setTimeout(() => this.mascotAuto(), 1700); }
         if (view === 'dashboard' && prevView !== 'dashboard' && !this._vtOn) this.countUp('#view-dashboard .status-num, #view-dashboard .btn-hero .cnt');
     }
     /* pull the page down (at the top of an overview tab) to refresh the numbers and sync: finger on a phone,
@@ -1220,6 +1221,28 @@ class SuperAnki {
         if (toStudy === 0) return 'calm';
         if ((h >= 23 || h < 5) && !done) return 'calm';
         return done ? 'happy' : 'ready';
+    }
+    /* Léo speaks first when something is worth it (at most once a day per event): a streak milestone, an exam coming up, a missed day */
+    mascotAuto() {
+        try {
+            if (this.view !== 'dashboard' || document.hidden || !$('.hero-sub') || !this.data) return;
+            let st = {}; try { st = JSON.parse(localStorage.getItem('lh_leo_auto') || '{}'); } catch { st = {}; }
+            const today = dayKey(), stats = this.data.stats, streak = stats.streak || 0;
+            let line = '', party = false, mark = null;
+            const MS = [365, 200, 100, 50, 30, 14, 7, 3];
+            const ms = MS.find(n => streak === n);
+            if (ms && stats.lastStudyDate === today && st.milestone !== ms) { line = leoPick(LEO_SAYS.milestone[ms]); party = true; mark = { milestone: ms }; }
+            if (!line) {
+                const g = this.goalsAll().find(x => x.days >= 0 && [0, 1, 2, 3, 5, 7, 14].includes(x.days));
+                if (g && st.examDay !== today + ':' + g.days) { line = leoPick(LEO_SAYS.exam[g.days], { exam: g.name }); mark = { examDay: today + ':' + g.days }; }
+            }
+            if (!line && stats.lastStudyDate && st.missedDay !== today && daysBetweenKeys(stats.lastStudyDate, today) >= 2) { line = leoPick('missed'); mark = { missedDay: today }; }
+            if (!line) return;
+            localStorage.setItem('lh_leo_auto', JSON.stringify({ ...st, ...mark }));
+            this.mascotSay(line);
+            const m = $('.hero .mascot'); if (m) { m.classList.remove('hop'); void m.offsetWidth; m.classList.add('hop'); }
+            if (party) this.confetti();
+        } catch { /* ignore */ }
     }
     /* Léo talks: his words replace the sub-title of the home card for a few seconds (typed letter by letter), so he never covers anything */
     mascotSay(text) {
@@ -3801,16 +3824,11 @@ class SuperAnki {
                 this.setSetting('cardSize', ks[i]); if (this.session && this.session.current) this.renderSession(); break;
             }
             case 'mascot': {
-                const m = el.dataset ? el.dataset.mood : 'ready', now = Date.now();
+                const m = el.dataset ? el.dataset.mood : 'ready', now = Date.now(), h = new Date().getHours();
                 this._mTaps = (this._mTaps || []).filter(t => now - t < 2500); this._mTaps.push(now);
-                const h = new Date().getHours();
-                const say = {
-                    ready: ['On y va ? Quelques cartes suffisent !', 'Une petite session et c\'est lancé 💪', 'Ta série compte sur toi 🔥', 'Je t\'ai gardé tes cartes au chaud 📚'],
-                    happy: ['Bien joué, tu as déjà révisé aujourd\'hui !', 'Ta série est sauvée 🔥', 'Continue si tu as encore de l\'énergie !', 'Fier de toi, Léo ! 🦁'],
-                    calm: h >= 23 || h < 5 ? ['Il est tard… une petite révision et au lit 🌙', 'Zzz… tu devrais dormir, la mémoire adore ça 😴'] : ['Tout est à jour, profite 😌', 'Rien à réviser : repose-toi !', 'Une révision libre pour s\'amuser ?']
-                }[m] || [];
-                if (this._mTaps.length >= 5) { this._mTaps = []; this.mascotSay('GRRRR ! 🦁 Je rugis de fierté !'); el.classList.add('roar'); setTimeout(() => el.classList.remove('roar'), 900); }
-                else this.mascotSay(say[Math.floor(Math.random() * say.length)] || 'Allez !');
+                if (this._mTaps.length >= 5) { this._mTaps = []; this.mascotSay(leoPick('roar')); el.classList.add('roar'); setTimeout(() => el.classList.remove('roar'), 900); }
+                else if (this._mTaps.length >= 3) this.mascotSay(leoPick('tap'));
+                else this.mascotSay(leoPick(m === 'calm' && (h >= 23 || h < 5) ? 'night' : m));
                 el.classList && el.classList.remove('hop'); void (el.offsetWidth); el.classList && el.classList.add('hop');
                 break;
             }
