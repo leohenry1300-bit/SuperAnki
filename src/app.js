@@ -237,22 +237,22 @@ const isBlank = html => !stripHtml(html).trim() && !hasImage(html) && !/<audio\s
 const THEMES = [
     { id: 'auto', group: 'clair', name: 'Automatique', desc: 'Suit ton appareil', font: 'Inter', p: { bg: 'linear-gradient(90deg,#f5f6fb 50%,#0b1020 50%)', surface: '#ffffff', primary: '#4f46e5', text: '#151a2d', line: '#c7cbe0', hero: 'linear-gradient(135deg,#4f46e5,#7c3aed)' } },
     { id: 'clair', group: 'clair', name: 'Clair', desc: 'Net et lumineux', font: 'Inter', p: { bg: '#f5f6fb', surface: '#ffffff', primary: '#4f46e5', text: '#151a2d', line: '#d7dbe8', hero: 'linear-gradient(135deg,#4f46e5,#7c3aed)' } },
-    { id: 'aurore', group: 'clair', name: 'Aurore', desc: 'Verre dépoli, dégradés', font: 'Inter', p: { bg: 'radial-gradient(circle at 20% 20%,#f9a8d4,transparent 50%),radial-gradient(circle at 80% 30%,#a5b4fc,transparent 50%),radial-gradient(circle at 50% 90%,#67e8f9,transparent 55%),#f5f3ff', surface: 'rgba(255,255,255,.6)', primary: '#7c3aed', text: '#1e1b4b', line: 'rgba(255,255,255,.9)', hero: 'linear-gradient(120deg,#7c3aed,#ec4899,#f59e0b)' } },
-    { id: 'ocean', group: 'clair', name: 'Océan', desc: 'Bleu frais', font: 'Inter', p: { bg: '#e9f4fb', surface: '#ffffff', primary: '#0284c7', text: '#0b2a3f', line: '#cfe3f1', hero: 'linear-gradient(135deg,#0369a1,#14b8a6)' } },
+    { id: 'aurore', group: 'clair', name: 'Aurore', desc: 'Verre dépoli, dégradés', font: 'Inter', p: { bg: 'radial-gradient(circle at 20% 20%,#f9a8d4,transparent 50%),radial-gradient(circle at 80% 30%,#a5b4fc,transparent 50%),radial-gradient(circle at 50% 90%,#67e8f9,transparent 55%),#f5f3ff', surface: 'rgba(255,255,255,.6)', primary: '#7c3aed', text: '#1e1b4b', line: 'rgba(255,255,255,.9)', hero: 'linear-gradient(120deg,#7c3aed,#cb3e83,#c2410c)' } },
+    { id: 'ocean', group: 'clair', name: 'Océan', desc: 'Bleu frais', font: 'Inter', p: { bg: '#e9f4fb', surface: '#ffffff', primary: '#027cbb', text: '#0b2a3f', line: '#cfe3f1', hero: 'linear-gradient(135deg,#0369a1,#0c8378)' } },
     { id: 'sakura', group: 'clair', name: 'Sakura', desc: 'Rose tout doux', font: 'Nunito', p: { bg: '#fff4f6', surface: '#ffffff', primary: '#db2777', text: '#4a1d2c', line: '#fbd5de', hero: 'linear-gradient(135deg,#f472b6,#fda4af)' } },
-    { id: 'lavande', group: 'clair', name: 'Lavande', desc: 'Violet pastel', font: 'Nunito', p: { bg: '#f4f1fd', surface: '#ffffff', primary: '#7c3aed', text: '#251a45', line: '#e3dbfa', hero: 'linear-gradient(135deg,#7c3aed,#a78bfa)' } },
-    { id: 'solaire', group: 'clair', name: 'Solarisé', desc: 'Doux pour les yeux', font: 'Inter', p: { bg: '#fdf6e3', surface: '#fffbef', primary: '#268bd2', text: '#073642', line: '#e6dfc6', hero: 'linear-gradient(135deg,#268bd2,#2aa198)' } },
+    { id: 'lavande', group: 'clair', name: 'Lavande', desc: 'Violet pastel', font: 'Nunito', p: { bg: '#f4f1fd', surface: '#ffffff', primary: '#7c3aed', text: '#251a45', line: '#e3dbfa', hero: 'linear-gradient(135deg,#6d28d9,#7c5cc9)' } },
+    { id: 'solaire', group: 'clair', name: 'Solarisé', desc: 'Doux pour les yeux', font: 'Inter', p: { bg: '#fdf6e3', surface: '#fffbef', primary: '#227bba', text: '#073642', line: '#e6dfc6', hero: 'linear-gradient(135deg,#227bba,#22827b)' } },
     { id: 'papier', group: 'clair', name: 'Papier', desc: 'Sépia, typo livre', font: 'Lora', p: { bg: '#efe6d2', surface: '#fbf6ea', primary: '#9a3412', text: '#33271b', line: '#dccdab', hero: '#3b2c1c' } },
     { id: 'cahier', group: 'clair', name: 'Cahier', desc: 'Lignes et écriture', font: 'Patrick Hand', p: { bg: 'repeating-linear-gradient(#fdfdf8 0 9px,#c9dcf3 9px 10px)', surface: '#fffef9', primary: '#2f5bd3', text: '#1f2a44', line: '#d8e3f0', hero: '#fff3a8' } },
     { id: 'nuit', group: 'sombre', name: 'Nuit', desc: 'Sombre et doux', font: 'Inter', p: { bg: '#0b1020', surface: '#131a2e', primary: '#818cf8', text: '#e8ebf5', line: '#2b3553', hero: 'linear-gradient(135deg,#4f46e5,#7c3aed)' } },
     { id: 'oled', group: 'sombre', name: 'Noir OLED', desc: 'Noir pur, économe', font: 'Inter', p: { bg: '#000', surface: '#0b0b0c', primary: '#f4f4f5', text: '#f4f4f5', line: '#27272a', hero: '#0b0b0c' } },
-    { id: 'nord', group: 'sombre', name: 'Nordique', desc: 'Bleu glacier apaisant', font: 'Inter', p: { bg: '#2e3440', surface: '#3b4252', primary: '#88c0d0', text: '#eceff4', line: '#4c566a', hero: 'linear-gradient(135deg,#5e81ac,#88c0d0)' } },
-    { id: 'dracula', group: 'sombre', name: 'Dracula', desc: 'Le classique des devs', font: 'Inter', p: { bg: '#282a36', surface: '#303241', primary: '#bd93f9', text: '#f8f8f2', line: '#44475a', hero: 'linear-gradient(135deg,#6272a4,#bd93f9,#ff79c6)' } },
+    { id: 'nord', group: 'sombre', name: 'Nordique', desc: 'Bleu glacier apaisant', font: 'Inter', p: { bg: '#2e3440', surface: '#3b4252', primary: '#88c0d0', text: '#eceff4', line: '#4c566a', hero: 'linear-gradient(135deg,#516f94,#4f6f78)' } },
+    { id: 'dracula', group: 'sombre', name: 'Dracula', desc: 'Le classique des devs', font: 'Inter', p: { bg: '#282a36', surface: '#303241', primary: '#bd93f9', text: '#f8f8f2', line: '#44475a', hero: 'linear-gradient(135deg,#5f6f9f,#7f63a8,#ac5185)' } },
     { id: 'foret', group: 'sombre', name: 'Forêt', desc: 'Vert profond', font: 'Nunito', p: { bg: '#0d1712', surface: '#14231b', primary: '#4ade80', text: '#e3f1e8', line: '#2a4636', hero: 'linear-gradient(135deg,#166534,#3f6212)' } },
-    { id: 'cafe', group: 'sombre', name: 'Café', desc: 'Brun chaleureux', font: 'Lora', p: { bg: '#1c1512', surface: '#261d18', primary: '#d4a373', text: '#f3e7dc', line: '#3b2e26', hero: 'linear-gradient(135deg,#7f5539,#b08968)' } },
+    { id: 'cafe', group: 'sombre', name: 'Café', desc: 'Brun chaleureux', font: 'Lora', p: { bg: '#1c1512', surface: '#261d18', primary: '#d4a373', text: '#f3e7dc', line: '#3b2e26', hero: 'linear-gradient(135deg,#7f5539,#8a6b52)' } },
     { id: 'luxe', group: 'sombre', name: 'Luxe', desc: 'Noir et or', font: 'Playfair Display', p: { bg: '#0c0b09', surface: '#15130f', primary: '#d4af37', text: '#f4ecd8', line: '#4a3f2a', hero: 'linear-gradient(135deg,#1d1a15,#2c2416)' } },
-    { id: 'neon', group: 'fun', name: 'Néon', desc: 'Cyberpunk lumineux', font: 'Space Grotesk', p: { bg: '#07000f', surface: '#120823', primary: '#ff2bd6', text: '#f5e9ff', line: '#3a1a5c', hero: 'linear-gradient(120deg,#ff2bd6,#7b2bff,#00e5ff)' } },
-    { id: 'synthwave', group: 'fun', name: 'Synthwave', desc: 'Coucher de soleil rétro', font: 'Space Grotesk', p: { bg: 'linear-gradient(180deg,#1a0b2e,#53196b)', surface: '#2a1147', primary: '#ff3cac', text: '#fdf0ff', line: '#4b2380', hero: 'linear-gradient(180deg,#ffb800,#ff3cac 55%,#784ba0)' } },
+    { id: 'neon', group: 'fun', name: 'Néon', desc: 'Cyberpunk lumineux', font: 'Space Grotesk', p: { bg: '#07000f', surface: '#120823', primary: '#ff2bd6', text: '#f5e9ff', line: '#3a1a5c', hero: 'linear-gradient(120deg,#ce23ad,#7b2bff,#00808f)' } },
+    { id: 'synthwave', group: 'fun', name: 'Synthwave', desc: 'Coucher de soleil rétro', font: 'Space Grotesk', p: { bg: 'linear-gradient(180deg,#1a0b2e,#53196b)', surface: '#2a1147', primary: '#ff3cac', text: '#fdf0ff', line: '#4b2380', hero: 'linear-gradient(180deg,#ffb800,#ff3cac 55%,#9572b5)' } },
     { id: 'terminal', group: 'fun', name: 'Terminal', desc: 'Rétro, vert sur noir', font: 'JetBrains Mono', p: { bg: '#020a03', surface: '#031205', primary: '#4dff7a', text: '#4dff7a', line: '#0f4a18', hero: '#031205' } },
     { id: 'gameboy', group: 'fun', name: 'Game Boy', desc: '8 bits, 4 couleurs', font: 'VT323', p: { bg: '#9bbc0f', surface: '#8bac0f', primary: '#0f380f', text: '#0f380f', line: '#306230', hero: '#306230' } },
     { id: 'craie', group: 'fun', name: 'Tableau noir', desc: 'Craie sur ardoise', font: 'Patrick Hand', p: { bg: '#1f3a2e', surface: '#25453a', primary: '#f7f3d6', text: '#f1f5ef', line: '#5d8576', hero: '#2b4f42' } },
@@ -910,7 +910,7 @@ class SuperAnki {
         fsrsApplyParams(s.fsrsW);
         const resolved = s.theme === 'auto' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'nuit' : 'clair') : s.theme;
         const root = document.documentElement;
-        const swap = () => { root.dataset.theme = resolved; };
+        const swap = () => { root.dataset.theme = resolved; this.applyLogo(); };
         if (this._themeSeen && root.dataset.theme !== resolved && !this.calm()) {
             if (document.startViewTransition) document.startViewTransition(swap);   // the browser cross-fades two snapshots of the screen: smooth, no per-element transitions
             else { this.themeVeil(swap); }
@@ -922,6 +922,40 @@ class SuperAnki {
             const meta = $('meta[name="theme-color"]');
             if (meta) meta.content = getComputedStyle(document.body).getPropertyValue('--surface').trim() || '#ffffff';
         });
+    }
+    /* the logo takes the theme's colours: background = the home banner's gradient, check mark = the most colourful theme colour that stays readable on the cards */
+    applyLogo() {
+        const root = document.documentElement, cs = getComputedStyle(root), V = n => cs.getPropertyValue(n).trim();
+        const probe = this._logoProbe || (this._logoProbe = Object.assign(document.createElement('i'), { style: 'position:absolute;visibility:hidden' }));
+        if (!probe.isConnected) document.body.appendChild(probe);
+        const rgb = v => { probe.style.color = ''; probe.style.color = v; const m = getComputedStyle(probe).color.match(/[\d.]+/g); return m ? m.slice(0, 3).map(Number) : null; };
+        const hex = c => '#' + c.map(x => Math.round(Math.max(0, Math.min(255, x))).toString(16).padStart(2, '0')).join('');
+        const lum = c => { const f = x => { x /= 255; return x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4; }; return .2126 * f(c[0]) + .7152 * f(c[1]) + .0722 * f(c[2]); };
+        const ratio = (a, b) => { const A = lum(a), B = lum(b); return (Math.max(A, B) + .05) / (Math.min(A, B) + .05); };
+        const sat = c => { const mx = Math.max(...c), mn = Math.min(...c); return mx ? (mx - mn) / mx : 0; };
+        const mix = (a, b, t) => a.map((x, i) => x + (b[i] - x) * t);
+        const stops = (V('--hero').match(/#[0-9a-fA-F]{3,8}\b|rgba?\([^)]*\)/g) || []).map(rgb).filter(Boolean);
+        const prim = rgb(V('--primary')), prim2 = rgb(V('--primary-2')), onHero = rgb(V('--on-hero'));
+        const fallback = prim || [79, 70, 229];
+        const bg = stops.length ? stops : [fallback];
+        const A = bg[0], C = bg[bg.length - 1], B = bg.length === 3 ? bg[1] : mix(A, C, .5);
+        const mono = ['terminal', 'gameboy', 'oled', 'contraste', 'craie'].includes(root.dataset.theme);
+        const card = { gameboy: [196, 216, 114], craie: [247, 243, 214], terminal: [3, 18, 5], oled: [244, 244, 245] }[root.dataset.theme] || [255, 255, 255];
+        const cands = [...bg, prim, prim2, onHero].filter(Boolean);
+        let ok = cands.filter(c => ratio(c, card) >= 3).sort((p, q) => sat(q) - sat(p) || ratio(q, card) - ratio(p, card));
+        if (mono) { const byL = cands.slice().sort((p, q) => lum(p) - lum(q)); ok = [lum(card) > .4 ? byL[0] : byL[byL.length - 1]]; }
+        let ck1 = ok[0];
+        if (!ck1) { ck1 = cands.slice().sort((p, q) => ratio(q, card) - ratio(p, card))[0] || fallback; const dark = lum(card) > .4 ? [0, 0, 0] : [255, 255, 255]; for (let i = 0; i < 40 && ratio(ck1, card) < 3; i++) ck1 = mix(ck1, dark, .08); }
+        const ck2 = ok[1] ? mix(ck1, ok[1], .6) : mix(ck1, lum(card) > .4 ? [0, 0, 0] : [255, 255, 255], .25);
+        const set = (k, c) => root.style.setProperty(k, hex(c));
+        set('--logo-a', A); set('--logo-b', B); set('--logo-c', C); set('--logo-ck1', ck1); set('--logo-ck2', ck2); set('--logo-card', card);
+        if (mono && onHero) { set('--logo-s1', onHero); set('--logo-s2', onHero); } else { set('--logo-s1', [253, 230, 138]); set('--logo-s2', [245, 158, 11]); }
+        /* the browser tab shows the same logo (desktop; a phone's home-screen icon is fixed by the system) */
+        const g = (c, o) => `<stop offset="${o}" stop-color="${hex(c)}"/>`;
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1">${g(A, 0)}${g(B, .55)}${g(C, 1)}</linearGradient><linearGradient id="k" x1="0" y1="0" x2="1" y2="1">${g(ck1, 0)}${g(ck2, 1)}</linearGradient></defs><rect width="64" height="64" rx="14" fill="url(#a)"/><rect x="14" y="14" width="30" height="38" rx="5.5" fill="${hex(card)}" fill-opacity=".4" transform="rotate(-16 29 33)"/><rect x="20" y="12" width="30" height="40" rx="5.5" fill="${hex(card)}"/><path d="M28.2 32.6 33.4 38.2 43.2 25.8" fill="none" stroke="url(#k)" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M47 8.5 48.6 13.4 53.5 15 48.6 16.6 47 21.5 45.4 16.6 40.5 15 45.4 13.4Z" fill="${hex(mono && onHero ? onHero : [245, 190, 60])}"/></svg>`;
+        let ln = document.getElementById('dyn-icon');
+        if (!ln) { ln = Object.assign(document.createElement('link'), { id: 'dyn-icon', rel: 'icon', type: 'image/svg+xml' }); document.head.appendChild(ln); }
+        ln.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
     }
     setSetting(key, value) {
         this.data.settings[key] = value;
