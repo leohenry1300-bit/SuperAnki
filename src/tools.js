@@ -130,7 +130,7 @@ Object.assign(SuperAnki.prototype, {
         const empty = this.findEmptyCards();
         const m = this.openModal({
             title: 'Cartes vides', size: 'narrow',
-            body: empty.length ? `<p class="muted">${plural(empty.length, 'carte vide trouvée', 'cartes vides trouvées')} : un trou de texte qui n'existe plus, un cadre supprimé, ou un recto vide.</p><div class="small muted">${empty.slice(0, 8).map(c => `• ${esc(truncate(stripHtml(c.front) || stripHtml(c.nf ? c.nf.text : '') || '(vide)', 60))}`).join('<br>')}</div>` : '<p class="muted">Aucune carte vide.</p>',
+            body: empty.length ? `<p class="muted">${plural(empty.length, 'carte vide trouvée', 'cartes vides trouvées')} : un trou de texte qui n'existe plus, un cadre supprimé, ou un recto vide.</p><div class="small muted">${empty.slice(0, 8).map(c => `• ${esc(truncate(stripHtml(c.front) || stripHtml(c.nf ? c.nf.text : '') || '(vide)', 60))}`).join('<br>')}</div>` : `<div class="clean-hello"><div class="empty-mascot sm">${leoSvg('ready', { intro: 'tablet' })}</div><p class="muted">Aucune carte vide : tout est propre ✓</p></div>`,
             foot: `<button class="btn btn-soft" data-close>Fermer</button>${empty.length ? `<button class="btn btn-primary" id="ec-del">${ic('trash')}Supprimer</button>` : ''}`
         });
         const b = $('#ec-del', m);

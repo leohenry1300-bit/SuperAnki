@@ -2288,3 +2288,13 @@ html[data-vt="l"]::view-transition-new(root) { animation-name: vtInL; }
 .empty-mascot { width: 160px; height: 160px; }
 .hero { overflow-x: clip; overflow-y: visible; } body { overflow-x: clip; }
 @media (prefers-reduced-motion: reduce) { .lf-clip { transition: none; } .leo-glow, .leo-star, .leo-z, .leo-trail, .leo-trail * { animation: none !important; } .leo-star { opacity: .6; } .leo-trail { display: none; } }
+
+/* Léo in the smaller places: the library, empty lists, clean-up results */
+.empty-mascot.sm { width: 120px; height: 120px; margin: 0 auto 8px; }
+.empty .empty-mascot { position: relative; }
+.lib-hello { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 14px; }
+.lib-mascot { position: relative; flex: 0 0 96px; width: 96px; height: 96px; }
+.lib-hello p { flex: 1; }
+.clean-hello { text-align: center; }
+.lib-mascot .leo-glow, .lib-mascot .leo-star, .empty-mascot.sm .leo-glow, .empty-mascot.sm .leo-star { display: none; }
+.lib-hello { align-items: center; }

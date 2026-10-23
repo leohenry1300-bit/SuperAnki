@@ -800,9 +800,9 @@ Object.assign(SuperAnki.prototype, {
                     </div>`; }).join('')}
                 </div>`;
             }).join('');
-            return `<p class="small muted" style="margin-bottom:14px">Ajoute les paquets qui t'intéressent : tes cartes et ta progression ne sont jamais modifiées. Tu peux retirer un paquet en le supprimant. <b>Les chiffres réglementaires (taux, plafonds, seuils) sont indicatifs</b> : vérifie les valeurs à jour avant de t'en servir.</p>${groupsHtml}`;
+            return groupsHtml;
         };
-        const m = this.openModal({ title: `${ic('layers')} Bibliothèque de paquets`, size: 'wide', body: '<div id="lib-body"></div>', foot: '<button class="btn btn-soft" data-close>Fermer</button>' });
+        const m = this.openModal({ title: `${ic('layers')} Bibliothèque de paquets`, size: 'wide', body: `<div class="lib-hello"><div class="lib-mascot">${leoSvg('ready', { state: 's0', intro: 'read0' })}</div><p class="small muted">Ajoute les paquets qui t'intéressent : tes cartes et ta progression ne sont jamais modifiées. Tu peux retirer un paquet en le supprimant. <b>Les chiffres réglementaires (taux, plafonds, seuils) sont indicatifs</b> : vérifie les valeurs à jour avant de t'en servir.</p></div><div id="lib-body"></div>`, foot: '<button class="btn btn-soft" data-close>Fermer</button>' });
         const body = $('#lib-body', m);
         const refresh = () => { body.innerHTML = render(); };
         refresh();

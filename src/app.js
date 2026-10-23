@@ -1218,7 +1218,7 @@ class SuperAnki {
     mascotSummary(acc) {
         const pick = l => l[Math.floor(Math.random() * l.length)];
         if (acc >= 90) return leoSvg('happy', { intro: 'toss' });
-        if (acc >= 80) return leoSvg('happy', { intro: pick(['hop', 'joy']) });
+        if (acc >= 80) return leoSvg('happy', { intro: pick(['roar', 'wave']) });
         if (acc >= 50) return leoSvg('ready', { intro: 'think' });
         return leoSvg('tough', { state: 's0', intro: 'shrug0' });
     }
@@ -1229,7 +1229,7 @@ class SuperAnki {
         window._leoIntro = true;
         if (mood === 'calm' && night) return leoSvg(mood, { state: 'sleep', amb: 'yawn' });
         if (mood === 'calm') return leoSvg(mood, { intro: first ? 'tablet' : '', amb: 'nap,yawn,tablet' });
-        if (mood === 'happy') return leoSvg(mood, { intro: first ? 'joy' : '', amb: 'joy,hop,wave,tablet' });
+        if (mood === 'happy') return leoSvg(mood, { intro: first ? 'wave' : '', amb: 'wave,roar,tablet' });
         return first ? leoSvg(mood, { state: 's0', intro: 'reveal', amb: 'foot,pointwave,tablet,wave' }) : leoSvg(mood, { amb: 'foot,pointwave,tablet,wave' });
     }
     /* Léo's mood follows the day: asleep late at night or when everything is done, cheering once today's review is done */
@@ -2018,7 +2018,7 @@ class SuperAnki {
             ${progBlock}
             <div class="filter-row"><div class="chip-row">${chips}</div></div>
             ${resultLine}
-            <div id="card-list">${list || `<div class="empty">${ic('search')}<p>${emptyMsg}</p></div>`}</div>
+            <div id="card-list">${list || `<div class="empty"><div class="empty-mascot sm">${searching ? leoSvg('ready', { state: 's0', intro: 'shrug0' }) : ui.deck === 'errors' ? leoSvg('happy', { intro: 'tablet' }) : leoSvg('ready', { state: 's0', intro: 'aha0' })}</div><p>${emptyMsg}</p></div>`}</div>
             ${rows.length > ui.limit ? `<div class="load-more"><button class="btn btn-soft" data-action="more">Afficher plus (${rows.length - ui.limit} restantes)</button></div>` : ''}
             ${bulk}`;
         this.visibleIds = rows.map(r => r.c.id);

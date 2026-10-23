@@ -77,11 +77,11 @@ function leoClipFor(root, cat = 'ready', text = '') {
     if (/plaque|✔|✓/.test(text)) return 'tablet';
     if (cat === 'night' || /bonne nuit|dormir|sommeil|dodo/i.test(text)) return 'yawn';
     if (/zzz|sieste|ronronne/i.test(text)) return 'nap';
-    if (cat === 'milestone') return pick(['toss', 'hop', 'joy']);
+    if (cat === 'milestone') return pick(['toss', 'roar']);
     if (cat === 'missed') return /manqu|attend|gard/i.test(text) ? 'foot' : 'wave';
     if (cat === 'exam') return pick(['think', 'talk']);
-    if (/bravo|fier|félicit|🎉|🏆|👏|gagné|victoire/i.test(text)) return pick(['joy', 'hop']);
-    const T = { ready: ['talk', 'talk', 'talk', 'pointwave', 'tablet'], happy: ['talk', 'talk', 'joy', 'hop'], calm: ['talk', 'talk', 'tablet'], tap: ['wave', 'talk', 'sitwave'] };
+    if (/bravo|fier|félicit|🎉|🏆|👏|gagné|victoire/i.test(text)) return pick(['roar', 'wave']);
+    const T = { ready: ['talk', 'talk', 'talk', 'pointwave', 'tablet'], happy: ['talk', 'talk', 'wave'], calm: ['talk', 'talk', 'tablet'], tap: ['wave', 'talk', 'sitwave'] };
     return pick(T[cat] || T[mood] || T.ready);
 }
 /* his voice follows what he does: a curious "rrr?" when he talks, a happy "rawrr" when he waves or hops, a soft "grrr, allez" to encourage, a purr when he thinks, a sleepy "rrooh" when he yawns, a ROAAR to celebrate */
@@ -114,7 +114,7 @@ let LEO_PRE = false;
 function leoPrefetch() {
     if (LEO_PRE || (navigator.connection && navigator.connection.saveData)) return;
     LEO_PRE = true;
-    const go = () => ['idle', 'talk', 'tablet', 'wave', 'joy'].reduce((p, k) => p.then(() => leoLoad(k)).catch(() => {}), Promise.resolve());
+    const go = () => ['idle', 'talk', 'tablet', 'wave', 'roar'].reduce((p, k) => p.then(() => leoLoad(k)).catch(() => {}), Promise.resolve());
     (window.requestIdleCallback || (f => setTimeout(f, 2500)))(go);
 }
 function leoInit() {
