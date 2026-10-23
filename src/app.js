@@ -2181,6 +2181,7 @@ class SuperAnki {
                 <button class="icon-btn" title="Plus d'actions" data-action="session-menu" aria-label="Plus d'actions">${ic('more')}</button>
             </div>
             <div class="pbar"><i style="width:${progress}%"></i></div>
+            ${(s.run || 0) >= 3 ? `<div class="run-pill" key="${s.run}">🔥 ${s.run} d'affilée</div>` : ''}
             <div class="panel flashcard" ${s.revealed || typeMode ? '' : 'data-action="reveal" style="cursor:pointer"'}>
                 <div class="fc-top">
                     <span class="tag" title="${esc(deck ? this.deckPath(deck.id) : '')}">${esc(deck ? deck.emoji + ' ' + this.deckPath(deck.id).split(' › ').slice(-2).join(' › ') : '')}</span>
@@ -2283,6 +2284,7 @@ class SuperAnki {
         if ((card.state === 'learning' || card.state === 'relearning') && !card.suspended) s.learning.push({ id: card.id, due: card.due });
         s.done++;
         if (g >= 2) s.correct++;
+        s.run = g >= 2 ? (s.run || 0) + 1 : 0; s.bestRun = Math.max(s.bestRun || 0, s.run);
         if (g === 1 && !s.missed.includes(card.id)) s.missed.push(card.id);
         this.recordReview(g, secs);
         this.logReview(card, g, prev === 'review' ? 1 : prev === 'relearning' ? 2 : 0, prevIvl, secs * 1000);
@@ -2296,6 +2298,7 @@ class SuperAnki {
         if (!s || s.kind !== 'practice' || !s.revealed) return;
         const card = this.card(s.current);
         this.snapshot();
+        s.run = ok ? (s.run || 0) + 1 : 0; s.bestRun = Math.max(s.bestRun || 0, s.run);
         if (ok) { card.right++; card.errors = Math.max(0, card.errors - 1); s.correct++; }
         else {
             card.wrong++; card.errors++;
@@ -2526,9 +2529,10 @@ class SuperAnki {
             <div class="summary-emoji">${emoji}</div>
             <h2 class="page-title" style="margin-top:12px">${title}</h2>
             ${lead ? `<p class="page-sub">${lead}</p>` : ''}
+            ${kind === 'chrono' ? '' : `<div class="summary-ring" style="--p:${acc}"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="rg-bg" cx="50" cy="50" r="44"/><circle class="rg-fg" cx="50" cy="50" r="44" pathLength="100"/></svg><div class="ring-in"><b>${acc}%</b><small>réussite</small></div></div>`}
             <div class="summary-stats">
                 <div class="panel"><b>${kind === 'chrono' ? s.score : s.done}</b><span>${kind === 'chrono' ? 'points' : 'cartes'}</span></div>
-                <div class="panel"><b>${acc}%</b><span>réussite</span></div>
+                <div class="panel"><b>${kind === 'chrono' ? acc + '%' : (s.bestRun || 0)}</b><span>${kind === 'chrono' ? 'réussite' : 'meilleure série'}</span></div>
                 <div class="panel"><b>${fmtDuration(secs)}</b><span>durée</span></div>
             </div>
             ${missed.length ? `
