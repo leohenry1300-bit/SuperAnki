@@ -1,4 +1,4 @@
-# SuperAnki Pro
+# LH Cards
 
 Application de cartes mémoire (répétition espacée façon Anki) en **un seul fichier** : `index.html`.
 

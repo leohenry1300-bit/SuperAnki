@@ -1869,7 +1869,7 @@ class SuperAnki {
                 </div>
             </div>
 
-            <p class="tiny faint" style="text-align:center">SuperAnki Pro · ${s.scheduler === 'fsrs' ? 'FSRS' : 'SM-2'} · ${plural(this.data.cards.length, 'carte')} · Stockage ${Storage.db ? 'IndexedDB' : 'local'}</p>
+            <p class="tiny faint" style="text-align:center">LH Cards · ${s.scheduler === 'fsrs' ? 'FSRS' : 'SM-2'} · ${plural(this.data.cards.length, 'carte')} · Stockage ${Storage.db ? 'IndexedDB' : 'local'}</p>
         </div>`;
         this.bindOptionsForm($('#study-options'));
         this.renderSyncIndicator();

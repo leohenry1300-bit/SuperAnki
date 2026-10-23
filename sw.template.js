@@ -1,4 +1,4 @@
-/* SuperAnki Pro service worker: makes the app work offline. Version: __VERSION__ */
+/* LH Cards service worker: makes the app work offline. Version: __VERSION__ */
 const CACHE = 'superanki-__VERSION__';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 

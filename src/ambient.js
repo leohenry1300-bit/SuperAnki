@@ -236,7 +236,7 @@ function ambPause(fast) {
 function ambMedia() {
     try {
         if (!('mediaSession' in navigator)) return;
-        navigator.mediaSession.metadata = new MediaMetadata({ title: 'Ambiance sonore', artist: 'SuperAnki Pro', album: 'Concentration', artwork: [{ src: 'icon-192.png', sizes: '192x192', type: 'image/png' }, { src: 'icon-512.png', sizes: '512x512', type: 'image/png' }] });
+        navigator.mediaSession.metadata = new MediaMetadata({ title: 'Ambiance sonore', artist: 'LH Cards', album: 'Concentration', artwork: [{ src: 'icon-192.png', sizes: '192x192', type: 'image/png' }, { src: 'icon-512.png', sizes: '512x512', type: 'image/png' }] });
         navigator.mediaSession.playbackState = 'playing';
         navigator.mediaSession.setActionHandler('play', () => { ambPlay(); window.app && app.ambRefresh(); });
         navigator.mediaSession.setActionHandler('pause', () => { ambPause(); window.app && app.ambRefresh(); });

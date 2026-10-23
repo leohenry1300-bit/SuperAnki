@@ -258,12 +258,12 @@ html = f"""<!DOCTYPE html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="SuperAnki">
+<meta name="apple-mobile-web-app-title" content="LH Cards">
 <meta name="theme-color" content="#4f46e5">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="description" content="SuperAnki Pro : cartes mémoire avec répétition espacée, quiz, écriture et chrono.">
+<meta name="description" content="LH Cards : cartes mémoire avec répétition espacée, quiz, écriture et chrono.">
 {read("head-icons.html").strip()}
-<title>SuperAnki Pro</title>
+<title>LH Cards</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Lora:wght@400;600;700&family=Nunito:wght@400;600;700;800&family=Space+Grotesk:wght@400;500;700&family=Playfair+Display:wght@600;700;800&family=Patrick+Hand&family=Press+Start+2P&family=VT323&display=swap">

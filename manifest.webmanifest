@@ -1,6 +1,6 @@
 {
-  "name": "SuperAnki Pro",
-  "short_name": "SuperAnki",
+  "name": "LH Cards",
+  "short_name": "LH Cards",
   "description": "Cartes mémoire avec répétition espacée, quiz, TOEIC.",
   "start_url": "./index.html",
   "scope": "./",

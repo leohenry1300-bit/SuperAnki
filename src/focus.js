@@ -80,7 +80,7 @@ Object.assign(SuperAnki.prototype, {
         const t = $('#fw-time'), left = this.focusLeft();
         if (t) t.textContent = this.focusFmt(left);
         const nav = $('#focus-chip'); if (nav) nav.textContent = f.running ? this.focusFmt(left) : '';
-        document.title = f.running ? `${f.phase === 'study' ? '📚' : '☕'} ${this.focusFmt(left)} · SuperAnki Pro` : 'SuperAnki Pro';
+        document.title = f.running ? `${f.phase === 'study' ? '📚' : '☕'} ${this.focusFmt(left)} · LH Cards` : 'LH Cards';
     },
     /* natural = the time ran out (rings, laps count). Otherwise it was skipped. */
     focusPhaseEnd(natural) {
