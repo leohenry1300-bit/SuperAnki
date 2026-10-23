@@ -1723,3 +1723,10 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
   .sub-row .icon-btn-sm { min-width: 36px; min-height: 36px; width: 36px; height: 36px; }
   .sub-row .due-badge.ph { display: none; }
 }
+
+.recent-item { position: relative; flex: none; display: flex; align-items: center; }
+.recent-item .recent-chip { padding-right: 38px; }
+.recent-x { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; color: var(--text-faint); }
+.recent-x:hover { background: var(--surface-2); color: var(--text); }
+.recent-x .i { width: 14px; height: 14px; }
+@media (max-width: 767px) { .recent-x { width: 32px; height: 32px; right: 3px; } }

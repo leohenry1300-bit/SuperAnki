@@ -1255,7 +1255,7 @@ class SuperAnki {
     recentsHtml() {
         const ids = (this.data.settings.recentDecks || []).filter(id => this.deck(id)).slice(0, 6);
         if (!ids.length) return '';
-        return `<div><div class="section-head"><h3 class="section-title">Récemment</h3></div><div class="recents">${ids.map(id => { const d = this.deck(id), path = this.deckPath(id).split(' › '); return `<button class="recent-chip" data-action="open-deck" data-deck="${esc(id)}" title="${esc(this.deckPath(id))}"><span>${esc(d.emoji)}</span><span class="nm">${esc(d.name)}</span>${path.length > 1 ? `<small>${esc(path[path.length - 2])}</small>` : ''}</button>`; }).join('')}</div></div>`;
+        return `<div><div class="section-head"><h3 class="section-title">Récemment</h3><button class="link" data-action="recent-clear" title="Vider la liste des paquets récents">${ic('trash')}Effacer</button></div><div class="recents">${ids.map(id => { const d = this.deck(id), path = this.deckPath(id).split(' › '); return `<div class="recent-item"><button class="recent-chip" data-action="open-deck" data-deck="${esc(id)}" title="${esc(this.deckPath(id))}"><span>${esc(d.emoji)}</span><span class="nm">${esc(d.name)}</span>${path.length > 1 ? `<small>${esc(path[path.length - 2])}</small>` : ''}</button><button class="recent-x" data-action="recent-del" data-deck="${esc(id)}" aria-label="Retirer ${esc(d.name)} des récents" title="Retirer">${ic('x')}</button></div>`; }).join('')}</div></div>`;
     }
     deckCompact() {
         const v = this.data.settings.deckView;
@@ -3250,6 +3250,8 @@ class SuperAnki {
                 break;
             }
             case 'sync-now': Cloud.sync(true); break;
+            case 'recent-del': this.data.settings.recentDecks = (this.data.settings.recentDecks || []).filter(x => x !== ds.deck); this.save(false); this.renderDashboard(); break;
+            case 'recent-clear': this.data.settings.recentDecks = []; this.save(false); this.renderDashboard(); this.toast('Liste « Récemment » vidée', 'success'); break;
             case 'dash-open': {   // home: a deck with sub-decks unfolds in place, a deck without opens its cards
                 if (this.childrenOf(ds.deck).length) { this.toggleOpen('dash', ds.deck); this.renderDashboard(); }
                 else { this.ui.deckQ = ''; this.ui.treeOpen = false; this.go('decks', { deck: ds.deck, filter: 'all' }); }
