@@ -3287,8 +3287,8 @@ class SuperAnki {
             </div>
 
             <div>
-                <div class="section-head"><h3 class="section-title">Modes d'entraînement</h3><button class="link" data-action="custom-study">${ic('sliders')}Révisions personnalisées</button></div>
-                <div class="mode-grid">
+                ${this.secToggle('modes', "Modes d'entraînement", `<button class="link" data-action="custom-study">${ic('sliders')}Révisions personnalisées</button>`)}
+                ${this.homeOpen('modes') ? '<div class="mode-grid">' : '<div class="mode-grid hidden">'}
                     <button class="panel mode-tile" style="--c:#0ea5e9" data-action="mode" data-mode="write">
                         <span class="mode-ico">${ic('keyboard')}</span>
                         <span><h4>Écrire</h4><p>Tape la réponse, correction automatique</p></span>${ic('chevronRight', 'chev')}
