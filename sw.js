@@ -1,5 +1,5 @@
-/* LH Cards service worker: makes the app work offline. Version: 33bc357b37 */
-const CACHE = 'superanki-33bc357b37';
+/* LH Cards service worker: makes the app work offline. Version: 85f051d48a */
+const CACHE = 'superanki-85f051d48a';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
