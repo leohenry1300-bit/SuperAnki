@@ -1612,3 +1612,26 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .deck-foot .modes .btn { flex: none; padding-left: 10px; padding-right: 10px; }
 .deck-foot .modes .icon-btn { width: 36px; height: 36px; }
 @media (max-width: 767px) { .deck-foot .btn-primary { flex: 1 1 100%; } .deck-foot .modes { flex: 1 1 100%; } .deck-foot .modes .btn { flex: 1; } }
+
+/* ---- finding a deck ---- */
+.dl-find { padding: 4px 4px 8px; position: sticky; top: 0; background: var(--surface); z-index: 2; }
+.dl-find .input { width: 100%; }
+.deck-pick { display: none; width: 100%; justify-content: space-between; min-height: 48px; font-size: 1rem; }
+.deck-pick b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; }
+.dash-find { display: block; margin: 0 0 12px; }
+.dash-find .input { width: 100%; }
+.dl-results { padding: 6px; display: flex; flex-direction: column; margin-bottom: 12px; }
+.recents { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.recents::-webkit-scrollbar { display: none; }
+.recent-chip { flex: none; display: flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-sm, none); max-width: 78vw; text-align: left; font-weight: 700; font-size: .88rem; }
+.recent-chip .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recent-chip small { color: var(--text-faint); font-weight: 600; font-size: .7rem; white-space: nowrap; }
+@media (max-width: 960px) {
+  .deck-pick { display: flex; align-items: center; margin-bottom: 10px; }
+  .deck-list { display: block !important; max-height: 60vh; overflow-y: auto !important; padding: 8px; }
+  .deck-list.collapsed { display: none !important; }
+  .deck-list .dl-title { display: flex; }
+  .dl-item .mini { display: none; }
+}
+
+#deck-find-res .dl-item, #dash-find-res .dl-item { width: 100%; }

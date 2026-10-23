@@ -1632,6 +1632,29 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .deck-foot .modes .icon-btn { width: 36px; height: 36px; }
 @media (max-width: 767px) { .deck-foot .btn-primary { flex: 1 1 100%; } .deck-foot .modes { flex: 1 1 100%; } .deck-foot .modes .btn { flex: 1; } }
 
+/* ---- finding a deck ---- */
+.dl-find { padding: 4px 4px 8px; position: sticky; top: 0; background: var(--surface); z-index: 2; }
+.dl-find .input { width: 100%; }
+.deck-pick { display: none; width: 100%; justify-content: space-between; min-height: 48px; font-size: 1rem; }
+.deck-pick b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; }
+.dash-find { display: block; margin: 0 0 12px; }
+.dash-find .input { width: 100%; }
+.dl-results { padding: 6px; display: flex; flex-direction: column; margin-bottom: 12px; }
+.recents { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.recents::-webkit-scrollbar { display: none; }
+.recent-chip { flex: none; display: flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-sm, none); max-width: 78vw; text-align: left; font-weight: 700; font-size: .88rem; }
+.recent-chip .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recent-chip small { color: var(--text-faint); font-weight: 600; font-size: .7rem; white-space: nowrap; }
+@media (max-width: 960px) {
+  .deck-pick { display: flex; align-items: center; margin-bottom: 10px; }
+  .deck-list { display: block !important; max-height: 60vh; overflow-y: auto !important; padding: 8px; }
+  .deck-list.collapsed { display: none !important; }
+  .deck-list .dl-title { display: flex; }
+  .dl-item .mini { display: none; }
+}
+
+#deck-find-res .dl-item, #dash-find-res .dl-item { width: 100%; }
+
 </style>
 </head>
 <body>
@@ -2852,7 +2875,7 @@ class SuperAnki {
         if (this.ex && view !== 'exam') this.exLeave();
         if (view === 'session' && this.view !== 'session' && this.view !== 'exam') this.back = { view: this.view, deck: this.ui.deck, filter: this.ui.filter, y: window.scrollY };   // where to return when the session is closed
         this.view = view;
-        if (opts.deck !== undefined) { this.ui.deck = opts.deck; this.ui.limit = 60; }
+        if (opts.deck !== undefined) { this.ui.deck = opts.deck; this.ui.limit = 60; this.touchDeck(opts.deck); }
         if (opts.filter !== undefined) this.ui.filter = opts.filter;
         this.render();
         window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
@@ -2937,6 +2960,7 @@ class SuperAnki {
                 </div>
             </div>
 
+            ${this.recentsHtml()}
             <div class="status-grid">
                 ${['new', 'learn', 'due', 'mature'].map(k => `
                 <button class="panel status-tile" style="--c:${STATUS[k].color}" data-action="goto-filter" data-filter="${k}">
@@ -2976,10 +3000,17 @@ class SuperAnki {
                         <button class="icon-btn icon-btn-sm" data-action="deck-view" title="${this.deckCompact() ? 'Vue détaillée' : 'Vue compacte'}" aria-label="Changer l'affichage des paquets">${ic(this.deckCompact() ? 'layers' : 'list')}</button>
                         <label class="sort-pick"><span class="sr-only">Trier les paquets</span>${ic('sliders')}<select class="select select-sm" data-input="deck-sort">${[['recent', 'Plus récents'], ['due', 'À revoir d\'abord'], ['studied', 'Révisés récemment'], ['alpha', 'A → Z'], ['size', 'Plus de cartes']].map(([v, l]) => `<option value="${v}" ${(d.settings.deckSort || 'recent') === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label><button class="link" data-action="open-library">${ic('layers')}Bibliothèque</button><button class="link" data-nav="decks">Gérer ${ic('chevronRight')}</button></span>
                 </div>
-                ${d.decks.length ? `<div class="deck-grid ${this.deckCompact() ? 'compact' : ''}">${this.dashboardDeckCards()}</div>`
+                ${d.decks.length ? `<label class="input-icon dash-find">${ic('search')}<span class="sr-only">Aller à un paquet</span><input class="input" type="search" placeholder="Aller à un paquet ou un cours… (ex. incoterms, R5.11)" data-input="dash-find" autocomplete="off" spellcheck="false"></label>
+                <div id="dash-find-res" class="panel dl-results hidden"></div>
+                <div id="dash-decks" class="deck-grid ${this.deckCompact() ? 'compact' : ''}">${this.dashboardDeckCards()}</div>`
                     : `<div class="panel empty">${ic('layers')}<p>Aucun paquet pour l'instant.</p><button class="btn btn-primary" style="margin-top:14px" data-action="new-deck">${ic('folderPlus')}Créer un paquet</button></div>`}
             </div>
         </div>`;
+    }
+    recentsHtml() {
+        const ids = (this.data.settings.recentDecks || []).filter(id => this.deck(id)).slice(0, 6);
+        if (!ids.length) return '';
+        return `<div><div class="section-head"><h3 class="section-title">Récemment</h3></div><div class="recents">${ids.map(id => { const d = this.deck(id), path = this.deckPath(id).split(' › '); return `<button class="recent-chip" data-action="open-deck" data-deck="${esc(id)}" title="${esc(this.deckPath(id))}"><span>${esc(d.emoji)}</span><span class="nm">${esc(d.name)}</span>${path.length > 1 ? `<small>${esc(path[path.length - 2])}</small>` : ''}</button>`; }).join('')}</div></div>`;
     }
     deckCompact() {
         const v = this.data.settings.deckView;
@@ -3091,12 +3122,38 @@ class SuperAnki {
                 </details>
             </div>
             <div class="manager">
+                <button class="btn btn-soft deck-pick" id="deck-pick" data-action="toggle-tree" aria-label="Choisir un paquet"><b></b><span>${ic('chevronDown')}</span></button>
                 <aside class="panel deck-list" id="deck-sidebar" aria-label="Paquets"></aside>
                 <div class="panel" id="deck-panel" style="overflow:hidden"></div>
             </div>
         </div>`;
         this.renderDeckSidebar();
         this.renderDeckPanel();
+    }
+    /* Recently used decks (shown on the dashboard) */
+    touchDeck(id) {
+        if (!id || id === 'all' || id === 'errors' || !this.deck(id)) return;
+        const st = this.data.settings, cur = st.recentDecks || [];
+        if (cur[0] === id) return;
+        st.recentDecks = [id, ...cur.filter(x => x !== id)].slice(0, 8);
+        this.save(false);
+    }
+    /* "Find a deck" results: every deck at any depth whose path contains all the typed words */
+    deckFinderHtml(q, action = 'select-deck') {
+        const words = fold(q).split(/\s+/).filter(Boolean);
+        if (!words.length) return '';
+        const stats = this.deckStats();
+        const hits = this.data.decks.filter(d => { const path = fold(this.deckPath(d.id)); return words.every(w => path.includes(w)); }).slice(0, 40);
+        if (!hits.length) return '<p class="small muted" style="padding:10px">Aucun paquet ne correspond.</p>';
+        return hits.map(d => {
+            const st = stats.get(d.id), path = this.deckPath(d.id).split(' › ').slice(0, -1).join(' › ');
+            return `<button class="dl-item" data-action="${action}" data-deck="${esc(d.id)}"><span class="em">${esc(d.emoji)}</span><span class="nm">${esc(d.name)}${path ? `<small class="muted" style="display:block;font-weight:500;font-size:.72rem;white-space:normal">${esc(path)}</small>` : ''}</span><span class="ct">${st ? st.total : ''}</span></button>`;
+        }).join('');
+    }
+    deckLabel(id) {
+        if (id === 'all') return '📂 Toutes les cartes';
+        if (id === 'errors') return '🎯 Mes erreurs';
+        const d = this.deck(id); return d ? `${d.emoji} ${d.name}` : '📂 Paquets';
     }
     renderDeckSidebar() {
         const ui = this.ui, box = $('#deck-sidebar');
@@ -3117,12 +3174,17 @@ class SuperAnki {
             return html + (isOpen ? kids.map(k => node(k, depth + 1)).join('') : '');
         };
         const anyTree = this.data.decks.some(d => d.parent);
+        box.classList.toggle('collapsed', this.ui.treeOpen === false || (this.ui.treeOpen === undefined && ui.deck !== 'all'));
+        const pick = $('#deck-pick'); if (pick) pick.querySelector('b').textContent = this.deckLabel(ui.deck);
         box.innerHTML = `
+            <div class="dl-find"><label class="input-icon">${ic('search')}<span class="sr-only">Chercher un paquet</span><input class="input" id="deck-find" type="search" placeholder="Chercher un paquet ou un cours…" data-input="deck-find" autocomplete="off" spellcheck="false" value="${esc(ui.deckQ || '')}"></label></div>
+            <div id="deck-find-res" class="${ui.deckQ ? '' : 'hidden'}">${this.deckFinderHtml(ui.deckQ || '')}</div>
+            <div id="deck-tree" class="${ui.deckQ ? 'hidden' : ''}">
             <div class="dl-title"><span>${q ? 'Résultats par paquet' : 'Paquets'}</span>${anyTree ? `<span class="dl-tools"><button data-action="tree-all" data-key="side" data-open="1" title="Tout déplier">${ic('chevronDown')}</button><button data-action="tree-all" data-key="side" data-open="0" title="Tout replier" style="transform:rotate(180deg)">${ic('chevronDown')}</button></span>` : ''}</div>
             ${item('all', '📂', 'Toutes les cartes', count(this.data.cards))}
             ${item('errors', ic('target'), 'Mes erreurs', count(this.errorCards()), 'errors')}
             <div class="dl-sep"></div>
-            ${this.childrenOf(null).map(d => node(d, 0)).join('')}`;
+            ${this.childrenOf(null).map(d => node(d, 0)).join('')}</div>`;
     }
     /* Search: accent-insensitive, AND between words, "exact phrase", -exclude, typo tolerant,
        plus Anki-style filters (deck:, tag:, is:, flag:, prop:, added:, rated:, front:, back:, type:) */
@@ -3549,6 +3611,7 @@ class SuperAnki {
        Sessions: srs (Anki review), practice, quiz, chrono
        ============================================================ */
     startStudy(deckId, extraNew = 0) {
+        if (deckId) this.touchDeck(deckId);
         const deckIds = deckId ? [deckId] : null;
         const plan = this.studyPlan(deckIds, extraNew);
         const cfg0 = deckId ? this.deckCfg(deckId) : this.defaultCfg();
@@ -3606,6 +3669,7 @@ class SuperAnki {
     /* Free revision: every card of the deck and its sub-decks, in random order, no impact on the schedule.
        Missed cards are put back at the end of the queue (see practiceAnswer). */
     async startFree(deckId, ordered = false) {
+        this.touchDeck(deckId);
         const d = this.deck(deckId), name = d ? this.deckPath(d.id) : '';
         if (!ordered) { this.startPractice([deckId], this.data.settings.answerMode, 9999, `Révision libre · ${name}`); return; }
         /* in order: sub-decks as listed (depth first), cards in the order they were written, then cloze number */
@@ -4752,6 +4816,11 @@ class SuperAnki {
                 clearTimeout(this.searchTimer);
                 this.searchTimer = setTimeout(() => { this.renderDeckSidebar(); this.renderDeckPanel(); this.quickQueryRefresh(); }, 110);
             }
+            else if (k === 'deck-find') {
+                this.ui.deckQ = el.value; const r = $('#deck-find-res'), t = $('#deck-tree');
+                if (r && t) { r.innerHTML = this.deckFinderHtml(el.value); r.classList.toggle('hidden', !el.value.trim()); t.classList.toggle('hidden', !!el.value.trim()); }
+            }
+            else if (k === 'dash-find') { const r = $('#dash-find-res'); if (r) { r.innerHTML = this.deckFinderHtml(el.value, 'open-deck'); r.classList.toggle('hidden', !el.value.trim()); const g = $('#dash-decks'); if (g) g.classList.toggle('hidden', !!el.value.trim()); } }
         });
         document.addEventListener('change', e => {
             const el = e.target, k = el.dataset && el.dataset.input;
@@ -4919,8 +4988,9 @@ class SuperAnki {
             case 'import': this.openImportModal(); break;
             case 'import-json': this.importJSON(); break;
             case 'export': this.exportJSON(); break;
-            case 'open-deck': this.go('decks', { deck: ds.deck, filter: 'all' }); break;
-            case 'select-deck': this.ui.deck = ds.deck; this.ui.limit = 60; this.renderDecks(); break;
+            case 'open-deck': this.ui.deckQ = ''; this.ui.treeOpen = false; this.go('decks', { deck: ds.deck, filter: 'all' }); break;
+            case 'select-deck': this.ui.deck = ds.deck; this.ui.limit = 60; this.ui.deckQ = ''; this.ui.treeOpen = false; this.touchDeck(ds.deck); this.renderDecks(); break;
+            case 'toggle-tree': this.ui.treeOpen = !(this.ui.treeOpen === undefined ? this.ui.deck === 'all' : this.ui.treeOpen); this.renderDeckSidebar(); if (this.ui.treeOpen) setTimeout(() => { const f = $('#deck-find'); f && f.focus(); }, 60); break;
             case 'filter': this.ui.filter = ds.filter; this.ui.limit = 60; this.renderDeckPanel(); break;
             case 'goto-filter': this.ui.search = ''; this.go('decks', { deck: 'all', filter: ds.filter }); break;
             case 'more': this.ui.limit += 100; this.renderDeckPanel(); break;
