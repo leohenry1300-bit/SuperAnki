@@ -118,16 +118,6 @@ Object.assign(SuperAnki.prototype, {
         const cards = this.cardsOf(d), ids = new Set(cards.map(c => c.id));
         return { cards, revlog: this.data.revlog.filter(r => ids.has(r[1])), all: false };
     },
-    trainPanelHtml(scope) {
-        const cards = scope.cards.filter(c => !c.suspended), n = cards.length;
-        if (!n) return '';
-        const tried = cards.filter(c => (c.right || 0) + (c.wrong || 0) > 0), acq = cards.filter(c => (c.ps || 0) >= 2), prog = tried.filter(c => c.ps === 1), weak = tried.filter(c => !(c.ps > 0));
-        if (!tried.length) return `<div class="panel panel-pad"><b>Révision libre</b><p class="small muted" style="margin-top:4px">Ici apparaîtra ta progression en « Libre » et « Dans l'ordre » (cartes acquises et à retravailler), sans toucher au planning.</p></div>`;
-        const pct = k => Math.round(k / n * 100);
-        return `<div class="panel panel-pad"><b>Révision libre</b> <span class="small muted">· ${plural(tried.length, 'carte')} sur ${n} déjà travaillées</span>
-            <div class="progress" style="margin:10px 0 6px;height:10px"><i style="width:${acq.length / n * 100}%;background:var(--mature)"></i><i style="width:${prog.length / n * 100}%;background:var(--learn)"></i><i style="width:${weak.length / n * 100}%;background:var(--due)"></i></div>
-            <div class="small"><b style="color:var(--mature)">✔ ${acq.length}</b> acquises (${pct(acq.length)} %) · <b style="color:var(--learn)">◐ ${prog.length}</b> en cours · <b style="color:var(--due)">↺ ${weak.length}</b> à retravailler · ${n - tried.length} jamais vues</div></div>`;
-    },
     statSeg(key, options) {
         const cur = this.statsUi[key];
         return `<div class="segmented seg-sm">${options.map(([v, l]) => `<button class="${String(cur) === String(v) ? 'active' : ''}" data-action="stats-opt" data-key="${key}" data-value="${v}">${l}</button>`).join('')}</div>`;
@@ -170,7 +160,6 @@ Object.assign(SuperAnki.prototype, {
                     </select>
                 </label>
             </div>
-            ${this.trainPanelHtml(scope)}
             <div class="kpi-grid">
                 <div class="panel kpi"><span>Série actuelle</span><b>🔥 ${st.streak} j</b><em>${ic('snow')} ${plural(st.freezes, 'gel')} de série</em></div>
                 <div class="panel kpi"><span>Record de série</span><b>${st.longestStreak} j</b><em>${plural(Object.keys(st.history).filter(k => st.history[k] > 0).length, 'jour actif', 'jours actifs')}</em></div>

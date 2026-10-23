@@ -363,7 +363,7 @@ function normalizeCard(c) {
         created: num(c.created, 0), state, step: Math.max(0, num(c.step, 0)), interval,
         ease: clamp(num(c.ease ?? c.easeFactor, 2.5), 1.3, 5), due, reps, lapses,
         lastReview: c.lastReview ? num(c.lastReview, null) : null,
-        errors: Math.max(0, num(c.errors, lapses >= 2 ? 1 : 0)), wrong: num(c.wrong, 0), right: num(c.right, 0), ps: Math.max(0, num(c.ps, 0)),
+        errors: Math.max(0, num(c.errors, lapses >= 2 ? 1 : 0)), wrong: num(c.wrong, 0), right: num(c.right, 0),
         suspended: !!c.suspended, flag: clamp(Math.round(num(c.flag, 0)), 0, 7), marked: !!c.marked, buriedUntil: num(c.buriedUntil, 0),
         nid: c.nid ? String(c.nid) : '', kind: ['rev', 'cloze', 'occl', 'custom'].includes(c.kind) ? c.kind : 'basic', ord: Math.max(0, num(c.ord, 0)),
         nf: c.nf && typeof c.nf === 'object' ? { front: sanitizeHtml(c.nf.front || ''), back: sanitizeHtml(c.nf.back || ''), text: sanitizeHtml(c.nf.text || ''), extra: sanitizeHtml(c.nf.extra || ''), ...(c.nf.t ? { t: String(c.nf.t), f: Object.fromEntries(Object.entries(c.nf.f && typeof c.nf.f === 'object' ? c.nf.f : {}).map(([k, v]) => [String(k).slice(0, 40), sanitizeHtml(v || '')])) } : {}) } : null,
@@ -448,7 +448,7 @@ function normalizeState(raw) {
     return { version: 6, decks, cards, presets, stats: normalizeStats(raw.stats), settings, revlog, deleted, toeic: normalizeToeic(raw.toeic), media: normalizeMedia(raw.media), noteTypes: normalizeNoteTypes(raw.noteTypes), trash: normalizeTrash(raw.trash), updatedAt: num(raw.updatedAt, 0) };
 }
 function cardSig(c) {
-    return [c.deckId, c.state, c.step, c.due, c.interval, c.ease, c.reps, c.lapses, c.suspended ? 1 : 0, c.flag, c.marked ? 1 : 0, c.buriedUntil, c.errors, c.wrong, c.right, c.ps,
+    return [c.deckId, c.state, c.step, c.due, c.interval, c.ease, c.reps, c.lapses, c.suspended ? 1 : 0, c.flag, c.marked ? 1 : 0, c.buriedUntil, c.errors, c.wrong, c.right,
         c.front.length, c.back.length, c.hint.length, c.detail.length, c.tags.join(','), c.fs ? c.fs.s.toFixed(3) : '', c.lastReview, c.nid, c.kind, c.ord, c.kind === 'occl' && c.nf ? mediaHash(c.nf.back + c.nf.front) : c.kind === 'custom' && c.nf ? mediaHash(c.nf.t + JSON.stringify(c.nf.f)) : ''].join('|');
 }
 const deckSig = d => JSON.stringify([d.name, d.emoji, d.description, d.parent, d.preset, d.limits]);
@@ -980,25 +980,17 @@ class SuperAnki {
     /* One pass over all cards: per deck, counts including every sub-deck below it */
     deckStats() {
         const now = Date.now(), eod = endOfDay(now), by = new Map(this.data.decks.map(d => [d.id, d])), out = new Map();
-        by.forEach((d, id) => out.set(id, { total: 0, seen: 0, new: 0, learn: 0, due: 0, mature: 0, susp: 0, tried: 0, acq: 0, weak: 0, prog: 0 }));
+        by.forEach((d, id) => out.set(id, { total: 0, seen: 0, new: 0, learn: 0, due: 0, mature: 0, susp: 0 }));
         this.data.cards.forEach(c => {
             const k = c.state === 'new' ? 'new' : c.state === 'review' ? (c.due <= eod ? 'due' : c.interval >= MATURE_IVL ? 'mature' : 'learn') : (c.due <= now ? 'due' : 'learn');
-            const tried = (c.right || 0) + (c.wrong || 0) > 0, acq = (c.ps || 0) >= 2 || (tried && k === 'mature'), weak = tried && !acq && !(c.ps > 0), prog = tried && !acq && c.ps > 0;   // free revision: "acquired" = right twice in a row
             let d = by.get(c.deckId), n = 0;
             while (d && n++ < 10) {
                 const st = out.get(d.id);
                 st.total++; st[k]++; if (k !== 'new') st.seen++; if (c.suspended) st.susp++;
-                if (tried) st.tried++; if (acq) st.acq++; if (weak) st.weak++; if (prog) st.prog++;
                 d = d.parent ? by.get(d.parent) : null;
             }
         });
         return out;
-    }
-    /* Progress of free revision (does not touch the schedule): acquired = right twice in a row */
-    trainHtml(st, mini = false) {
-        if (!st || !st.tried) return '';
-        const t = st.total || 1, never = st.total - st.acq - st.weak - st.prog;
-        return `<div class="train ${mini ? 'mini' : ''}" title="Acquises : réussies 2 fois de suite · En cours : réussies 1 fois · À retravailler : ratées"><div class="progress"><i style="width:${st.acq / t * 100}%;background:var(--mature)"></i><i style="width:${st.prog / t * 100}%;background:var(--learn)"></i><i style="width:${st.weak / t * 100}%;background:var(--due)"></i></div><small><b style="color:var(--mature)">✔ ${st.acq}</b> acquises${st.prog ? ` · <b style="color:var(--learn)">◐ ${st.prog}</b> en cours` : ''}${st.weak ? ` · <b style="color:var(--due)">↺ ${st.weak}</b> à retravailler` : ''}${never > 0 ? ` · ${never} jamais vues` : ''}</small></div>`;
     }
     progressHtml(st, cls = '') {
         const t = st.total || 1;
@@ -1272,11 +1264,6 @@ class SuperAnki {
         if (!ids.length) return '';
         return `<div><div class="section-head"><h3 class="section-title">Récemment</h3><button class="link" data-action="recent-clear" title="Vider la liste des paquets récents">${ic('trash')}Effacer</button></div><div class="recents">${ids.map(id => { const d = this.deck(id), path = this.deckPath(id).split(' › '); return `<div class="recent-item"><button class="recent-chip" data-action="open-deck" data-deck="${esc(id)}" title="${esc(this.deckPath(id))}"><span>${esc(d.emoji)}</span><span class="nm">${esc(d.name)}</span>${path.length > 1 ? `<small>${esc(path[path.length - 2])}</small>` : ''}</button><button class="recent-x" data-action="recent-del" data-deck="${esc(id)}" aria-label="Retirer ${esc(d.name)} des récents" title="Retirer">${ic('x')}</button></div>`; }).join('')}</div></div>`;
     }
-    /* cards of a deck (and its sub-decks) that were missed in free revision and not yet answered right */
-    weakIds(deckId) {
-        const set = new Set(this.descendantIds(deckId));
-        return this.data.cards.filter(c => !c.suspended && set.has(c.deckId) && (c.right || 0) + (c.wrong || 0) > 0 && !(c.ps > 0)).map(c => c.id);
-    }
     deckCompact() {
         const v = this.data.settings.deckView;
         return v ? v === 'compact' : window.matchMedia('(max-width: 767px)').matches;
@@ -1309,7 +1296,7 @@ class SuperAnki {
             return `<div class="sub-row" style="--d:${depth}">
                 ${kids.length ? `<button class="dl-chev ${isOpen ? 'open' : ''}" data-action="dash-toggle" data-deck="${esc(k.id)}" aria-label="${isOpen ? 'Replier' : 'Déplier'}" aria-expanded="${isOpen}">${ic('chevronRight')}</button>` : '<span class="dl-chev ph"></span>'}
                 <button class="sub-name" data-action="dash-open" data-deck="${esc(k.id)}" title="${kids.length ? 'Voir les sous-paquets' : 'Voir les cartes'}"><span>${esc(k.emoji)}</span><b>${esc(k.name)}</b></button>
-                <span class="sub-bar">${this.progressHtml(st)}<small>${st.tried ? `<b style="color:var(--mature)">✔ ${st.acq}</b>/${st.total} acquises${st.weak ? ` · <b style="color:var(--due)">↺ ${st.weak}</b>` : ''}` : `${this.pctSeen(st)} % vu · ${this.pctMature(st)} % maîtrisé · ${st.total}`}</small></span>
+                <span class="sub-bar">${this.progressHtml(st)}<small>${this.pctSeen(st)} % vu · ${this.pctMature(st)} % maîtrisé · ${st.total}</small></span>
                 ${st.due ? `<span class="due-badge" title="À revoir">${st.due}</span>` : '<span class="due-badge ph"></span>'}
                 <button class="icon-btn icon-btn-sm" title="Réviser ce sous-paquet" data-action="study" data-deck="${esc(k.id)}">${ic('play')}</button>
                 <button class="icon-btn icon-btn-sm" title="Révision libre : toutes les cartes, sans toucher au planning" data-action="free-deck" data-deck="${esc(k.id)}">${ic('repeat')}</button>
@@ -1332,7 +1319,7 @@ class SuperAnki {
                     <span style="color:var(--due)" title="À revoir">${ic('repeat')}${c.due}</span>
                     <span style="color:var(--mature)" title="Maîtrisées">${ic('award')}${c.mature}</span>
                 </div>
-                ${st.tried ? this.trainHtml(st) : this.progressHtml(st)}
+                ${this.progressHtml(st)}
                 ${kids.length ? `<button class="sub-toggle ${isOpen ? 'open' : ''}" data-action="dash-toggle" data-deck="${esc(deck.id)}" aria-expanded="${isOpen}">${ic('chevronRight')}<span>${plural(nSub, 'sous-paquet')}${isOpen ? '' : ' : voir l\'avancée'}</span></button>` : ''}
                 ${kids.length && isOpen ? `<div class="sub-tree"><div class="sub-open-link" style="--d:0"><button class="link" data-action="open-deck" data-deck="${esc(deck.id)}">${ic('layers')}Voir les cartes de « ${esc(deck.name)} »</button></div>${subRows(deck.id, 0)}</div>` : ''}
                 <div class="deck-foot">
@@ -1673,7 +1660,7 @@ class SuperAnki {
         if (deck) {
             const stats = this.deckStats(), st = stats.get(deck.id), kids = this.childrenOf(deck.id);
             progBlock = `<div class="deck-prog">
-                <div class="deck-prog-main">${this.trainHtml(st) || this.progressHtml(st, 'lg')}<div class="small muted"><b>${this.pctSeen(st)} %</b> vu · <b>${this.pctMature(st)} %</b> maîtrisé · ${st.due ? `<b style="color:var(--due)">${st.due}</b> à revoir · ` : ''}${st.new} nouvelle${st.new > 1 ? 's' : ''}</div></div>
+                <div class="deck-prog-main">${this.progressHtml(st, 'lg')}<div class="small muted"><b>${this.pctSeen(st)} %</b> vu · <b>${this.pctMature(st)} %</b> maîtrisé · ${st.due ? `<b style="color:var(--due)">${st.due}</b> à revoir · ` : ''}${st.new} nouvelle${st.new > 1 ? 's' : ''}</div></div>
                 ${kids.length ? `<div class="sub-progress"><h5>Sous-paquets</h5>${kids.map(k => { const ks = stats.get(k.id), n = this.childrenOf(k.id).length; return `<button class="sub-card" data-action="select-deck" data-deck="${esc(k.id)}"><span class="sc-top"><span>${esc(k.emoji)}</span><b>${esc(k.name)}</b>${ks.due ? `<span class="due-badge">${ks.due}</span>` : ''}</span>${this.progressHtml(ks)}<small>${this.pctSeen(ks)} % vu · ${this.pctMature(ks)} % maîtrisé · ${plural(ks.total, 'carte')}${n ? ` · ${plural(n, 'sous-paquet')}` : ''}</small></button>`; }).join('')}</div>` : ''}
             </div>`;
         }
@@ -1918,7 +1905,7 @@ class SuperAnki {
     }
     startPractice(deckIds, answer = 'flip', count = 20, title, fromIds, ordered = false) {
         let ids = fromIds || this.poolFor(deckIds).map(c => c.id);
-        if (!ids.length) { this.toast('Aucune carte disponible.', 'warning'); return; }
+        if (!ids.length) { this.toast('Aucune carte disponible.', 'warning'); return false; }
         ids = ordered ? ids : shuffle([...ids]).slice(0, count >= 9999 ? ids.length : count);
         const deck = deckIds && deckIds.length === 1 && this.deck(deckIds[0]);
         this.session = {
@@ -1928,6 +1915,7 @@ class SuperAnki {
         };
         this.go('session');
         this.nextCard();
+        return true;
     }
     /* Free revision: every card of the deck and its sub-decks, in random order, no impact on the schedule.
        Missed cards are put back at the end of the queue (see practiceAnswer). */
@@ -1947,8 +1935,8 @@ class SuperAnki {
             if (pick === null) return;
             if (pick === 'resume') from = pos.i;
         }
-        this.startPractice([deckId], this.data.settings.answerMode, 9999, `Dans l'ordre · ${name}`, all.slice(from), true);
-        if (this.session) { this.session.ordKey = deckId; this.session.ordAll = all; this.session.ordMax = from - 1; }
+        const started = this.startPractice([deckId], this.data.settings.answerMode, 9999, `Dans l'ordre · ${name}`, all.slice(from), true);
+        if (started && this.session) { this.session.ordKey = deckId; this.session.ordAll = all; this.session.ordMax = from - 1; }
     }
     poolFor(deckIds) {
         if (deckIds === 'errors') return this.errorCards();
@@ -2138,7 +2126,7 @@ class SuperAnki {
             card: { ...c, tags: [...c.tags], fs: c.fs ? { ...c.fs } : null }, stats: JSON.stringify(this.data.stats),
             sibs: c.nid ? this.data.cards.filter(x => x.nid === c.nid && x.id !== c.id).map(x => [x.id, x.buriedUntil]) : [],
             queue: [...s.queue], learning: s.learning ? s.learning.map(l => ({ ...l })) : null,
-            done: s.done, correct: s.correct, missed: [...s.missed], retries: s.retries ? { ...s.retries } : null, current: s.current,
+            done: s.done, correct: s.correct, missed: [...s.missed], retries: s.retries ? { ...s.retries } : null, current: s.current, ordMax: s.ordMax,
             revlogLen: this.data.revlog.length
         });
         if (s.history.length > 50) s.history.shift();
@@ -2193,9 +2181,9 @@ class SuperAnki {
         if (!s || s.kind !== 'practice' || !s.revealed) return;
         const card = this.card(s.current);
         this.snapshot();
-        if (ok) { card.right++; card.ps = (card.ps || 0) + 1; card.errors = Math.max(0, card.errors - 1); s.correct++; }
+        if (ok) { card.right++; card.errors = Math.max(0, card.errors - 1); s.correct++; }
         else {
-            card.wrong++; card.errors++; card.ps = 0;
+            card.wrong++; card.errors++;
             if (!s.missed.includes(card.id)) s.missed.push(card.id);
             s.retries[card.id] = (s.retries[card.id] || 0) + 1;
             if (s.retries[card.id] <= 2) s.queue.push(card.id);   // missed cards come back at the very end, not right away
@@ -2221,6 +2209,11 @@ class SuperAnki {
         if (this.data.revlog.length > h.revlogLen) this.data.revlog.length = h.revlogLen;
         s.queue = h.queue; if (h.learning) s.learning = h.learning;
         s.done = h.done; s.correct = h.correct; s.missed = h.missed; if (h.retries) s.retries = h.retries;
+        if (s.ordKey && h.ordMax !== undefined) {   // "in order" session: the saved position goes back too
+            s.ordMax = h.ordMax;
+            const op = { ...(this.data.settings.ordPos || {}) }; op[s.ordKey] = { i: s.ordMax + 1, n: s.ordAll.length, t: Date.now() };
+            this.data.settings.ordPos = op;
+        }
         s.current = h.current; s.revealed = false; s.typed = null; s.cardStart = Date.now();
         this.save();
         this.renderSession();
@@ -2345,9 +2338,9 @@ class SuperAnki {
         s.done++;
         if (opt.ok) {
             s.score++; s.correct++;
-            card.right++; card.ps = (card.ps || 0) + 1; card.errors = Math.max(0, card.errors - 1);
+            card.right++; card.errors = Math.max(0, card.errors - 1);
         } else {
-            card.wrong++; card.errors++; card.ps = 0;
+            card.wrong++; card.errors++;
             if (!s.missed.includes(card.id)) s.missed.push(card.id);
         }
         this.save();   // only the error counters change: no scheduling, stats, streak or history
@@ -3267,18 +3260,9 @@ class SuperAnki {
             case 'sync-now': Cloud.sync(true); break;
             case 'recent-del': this.data.settings.recentDecks = (this.data.settings.recentDecks || []).filter(x => x !== ds.deck); this.save(false); this.renderDashboard(); break;
             case 'recent-clear': this.data.settings.recentDecks = []; this.save(false); this.renderDashboard(); this.toast('Liste « Récemment » vidée', 'success'); break;
-            case 'weak-deck': {
-                const ids = this.weakIds(ds.deck), d = this.deck(ds.deck);
-                if (!ids.length) { this.toast('Rien à retravailler ici 🎉', 'success'); break; }
-                this.touchDeck(ds.deck);
-                this.startPractice(null, this.data.settings.answerMode, 9999, `À retravailler · ${d ? d.name : ''}`, ids);
-                break;
-            }
             case 'deck-admin': {
                 const id = el.dataset.deck;
-                const wk = this.weakIds(id).length;
                 this.showMenu(el, [
-                    ...(wk ? [{ icon: 'target', label: `Retravailler les cartes ratées (${wk})`, fn: () => this.handleAction('weak-deck', { dataset: { deck: id } }) }, { sep: true }] : []),
                     { icon: 'plus', label: 'Nouvelle carte', fn: () => this.handleAction('new-card', { dataset: { deck: id } }) },
                     { icon: 'folderPlus', label: 'Nouveau sous-paquet', fn: () => this.handleAction('new-subdeck', { dataset: { deck: id } }) },
                     { sep: true },
@@ -3300,9 +3284,7 @@ class SuperAnki {
             }
             case 'deck-more': {
                 const id = el.dataset.deck;
-                const wk = this.weakIds(id).length;
                 this.showMenu(el, [
-                    ...(wk ? [{ icon: 'target', label: `Retravailler les cartes ratées (${wk})`, fn: () => this.handleAction('weak-deck', { dataset: { deck: id } }) }, { sep: true }] : []),
                     { icon: 'layers', label: 'Voir les cartes du paquet', fn: () => this.handleAction('open-deck', { dataset: { deck: id } }) },
                     { sep: true },
                     { icon: 'keyboard', label: 'Écrire la réponse', fn: () => this.openModeLauncher('write', id) },

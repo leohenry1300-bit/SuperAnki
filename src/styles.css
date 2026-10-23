@@ -1636,14 +1636,10 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 
 #deck-find-res .dl-item, #dash-find-res .dl-item { width: 100%; }
 
-.train { display: flex; flex-direction: column; gap: 4px; }
-.train .progress { height: 7px; }
-.train small { font-size: .74rem; color: var(--text-muted); font-weight: 600; }
 .sub-bar small { white-space: normal; }
 
 /* ---- centering pass: content of buttons, tiles and chips sits exactly in the middle ---- */
 .btn, .chip { justify-content: center; text-align: center; }
-.btn > *, .chip > * { flex: none; }
 .status-tile, .mode-tile:not(.wide):not(.filter-tile) { justify-content: center; }
 .audio-bar { justify-content: center; }
 .hero-actions .btn { white-space: nowrap; }
@@ -1739,7 +1735,6 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .crumb-back .i { width: 16px; height: 16px; }
 .deck-title { display: inline; font-size: 1.25rem; font-weight: 800; line-height: 1.2; }
 .crumb-path { display: block; font-size: .75rem; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; margin-top: 2px; }
-.weak-btn { color: var(--due); }
 @media (max-width: 767px) { .sess-extra { display: none; } }
 
 .deck-panel-head h3 { display: block; min-width: 0; }
@@ -1777,3 +1772,38 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .deck-foot > .btn-primary { flex: 1 1 100%; }
 .deck-foot .modes { flex: 1 1 100%; margin-left: 0; }
 .deck-foot .modes .btn { flex: 1; }
+
+/* deck card footer, one tidy row: main button grows, Libre / Ordre / ⋯ stay compact on the right (wraps only when really too narrow) */
+.deck-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.deck-foot > .btn-primary, .deck-foot > .btn-soft { flex: 1 1 104px; min-width: 96px; }
+.deck-foot .modes { flex: 0 0 auto; margin-left: auto; display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
+.deck-foot .modes .btn { flex: 0 0 auto; padding-left: 10px; padding-right: 10px; font-size: .82rem; gap: 5px; }
+.deck-foot .modes .btn .i { width: 16px; height: 16px; }
+.deck-foot .modes .icon-btn { width: 36px; height: 36px; }
+@media (max-width: 767px) {
+  .deck-foot > .btn-primary, .deck-foot > .btn-soft { flex: 1 1 104px; }
+  .deck-foot .modes { flex: 0 0 auto; margin-left: auto; }
+  .deck-foot .modes .btn { flex: 0 0 auto; }
+  .deck-foot .modes .icon-btn { width: 40px; height: 40px; }
+}
+
+/* deck card footer v3: Réviser + compact Libre / Ordre / ⋯ on ONE row; spread over two rows only on very narrow cards */
+.deck-card { container-type: inline-size; }
+.deck-foot { gap: 6px; flex-wrap: nowrap; }
+.deck-foot > .btn-primary, .deck-foot > .btn-soft { flex: 1 1 auto; min-width: 0; }
+.deck-foot .modes { flex: 0 0 auto; margin-left: 0; gap: 4px; }
+.deck-foot .modes .btn { padding-left: 8px; padding-right: 8px; font-size: .8rem; gap: 4px; min-height: 36px; }
+.deck-foot .modes .icon-btn { width: 32px; height: 36px; }
+@container (max-width: 285px) {
+  .deck-foot { flex-wrap: wrap; }
+  .deck-foot > .btn-primary, .deck-foot > .btn-soft { flex: 1 1 100%; }
+  .deck-foot .modes { flex: 1 1 100%; }
+  .deck-foot .modes .btn { flex: 1; }
+  .deck-foot .modes .icon-btn { width: 40px; }
+}
+@media (max-width: 767px) {
+  .deck-foot > .btn-primary, .deck-foot > .btn-soft { flex: 1 1 auto; }
+  .deck-foot .modes { flex: 0 0 auto; margin-left: 0; }
+  .deck-foot .modes .btn { flex: 0 0 auto; }
+  .deck-foot .modes .icon-btn { width: 36px; height: 40px; }
+}
