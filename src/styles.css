@@ -1807,3 +1807,12 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
   .deck-foot .modes .btn { flex: 0 0 auto; }
   .deck-foot .modes .icon-btn { width: 36px; height: 40px; }
 }
+
+/* settings shortcuts bar: a tidy segmented control */
+.set-nav { position: sticky; z-index: 8; display: flex; gap: 4px; overflow-x: auto; padding: 5px; margin: 8px 0 2px; background: var(--surface); border: 1px solid var(--line, var(--border)); border-radius: 16px; box-shadow: 0 6px 18px -12px rgba(0,0,0,.25); -webkit-backdrop-filter: none; backdrop-filter: none; scrollbar-width: none; }
+.set-nav::-webkit-scrollbar { display: none; }
+.set-nav .chip { flex: 1 0 auto; gap: 6px; padding: 8px 14px; border: 0; border-radius: 12px; background: transparent; color: var(--text-muted); font-weight: 700; font-size: .86rem; box-shadow: none; }
+.set-nav .chip:hover { background: var(--surface-2); }
+.set-nav .chip.active { background: var(--primary-soft); color: var(--primary); }
+.set-group { scroll-margin-top: 130px; }
+.set-group-title { margin-top: 22px; }

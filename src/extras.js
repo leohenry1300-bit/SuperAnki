@@ -355,9 +355,22 @@ Object.assign(SuperAnki.prototype, {
             panels.forEach(pn => g.appendChild(pn));
             anchor.after(g); anchor = g; chips.push([id, name.replace(' et synchronisation', '').replace('Sons et ambiance', 'Sons')]);
         });
-        nav.innerHTML = chips.map(([id, l]) => `<button class="chip" data-jump="${id}">${l}</button>`).join('');
+        const emo = { 'grp-rev': '📚', 'grp-snd': '🔊', 'grp-look': '🎨', 'grp-data': '☁️', 'grp-adv': '⚙️' };
+        nav.innerHTML = chips.map(([id, l]) => `<button class="chip" data-jump="${id}"><span aria-hidden="true">${emo[id] || ''}</span>${l}</button>`).join('');
         nav.addEventListener('click', e => { const b = e.target.closest('[data-jump]'); const t = b && document.getElementById(b.dataset.jump); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
         const head = root.querySelector('.page-title'); (head ? head.parentElement : stack.firstElementChild).after(nav);
+        /* sticky just under the top bar, and the chip of the section being read is highlighted */
+        const top = document.querySelector('.topbar'); nav.style.top = `${(top ? top.getBoundingClientRect().height : 56) + 6}px`;
+        if (this._setSpy) window.removeEventListener('scroll', this._setSpy);
+        const spy = () => {
+            if (this.view !== 'settings') return;
+            const line = (top ? top.getBoundingClientRect().height : 56) + nav.getBoundingClientRect().height + 30;
+            let cur = chips[0] && chips[0][0];
+            chips.forEach(([id]) => { const g = document.getElementById(id); if (g && g.getBoundingClientRect().top <= line) cur = id; });
+            nav.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.jump === cur));
+            const act = nav.querySelector('.chip.active'); if (act && nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: act.offsetLeft - 16, behavior: 'smooth' });
+        };
+        this._setSpy = spy; window.addEventListener('scroll', spy, { passive: true }); spy();
     }
 });
 (() => { const base = SuperAnki.prototype.renderSettings; SuperAnki.prototype.renderSettings = function (...a) { const r = base.apply(this, a); try { this.settingsNav(); } catch { /* ignore */ } return r; }; })();
