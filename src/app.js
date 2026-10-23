@@ -2066,7 +2066,7 @@ class SuperAnki {
                 </div>
             </div>
 
-            <p class="tiny faint" style="text-align:center">LH Cards · ${s.scheduler === 'fsrs' ? 'FSRS' : 'SM-2'} · ${plural(this.data.cards.length, 'carte')} · Stockage ${Storage.db ? 'IndexedDB' : 'local'}</p>
+            <p class="tiny faint" style="text-align:center;margin:44px 0 28px">LH Cards · ${s.scheduler === 'fsrs' ? 'FSRS' : 'SM-2'} · ${plural(this.data.cards.length, 'carte')} · Stockage ${Storage.db ? 'IndexedDB' : 'local'}</p>
         </div>`;
         this.bindOptionsForm($('#study-options'));
         this.renderSyncIndicator();
@@ -3540,13 +3540,11 @@ class SuperAnki {
             case 'tool-toggle': {
                 const o = { ...(this.data.settings.homeOpen || {}) }; o.tool = o.tool === ds.tool ? '' : ds.tool;
                 this.setSetting('homeOpen', o); this.renderDashboard();
-                if (o.tool && !this.calm()) { const t = $(`[data-tool="${o.tool}"]`), row = t && t.closest('.tool-row'), box = row && row.nextElementSibling; if (box) box.classList.add('unfold'); }
                 break;
             }
             case 'home-toggle': {
                 const o = { ...(this.data.settings.homeOpen || {}) }; o[ds.sec] = !this.homeOpen(ds.sec, ds.sec === 'recents' || ds.sec === 'goals');
                 this.setSetting('homeOpen', o); this.renderDashboard();
-                if (o[ds.sec]) { const t = $(`[data-sec="${ds.sec}"]`), box = t && t.closest('.section-head').nextElementSibling; if (box && !this.calm()) { box.classList.add('unfold'); } }
                 break;
             }
             case 'resume-last': {

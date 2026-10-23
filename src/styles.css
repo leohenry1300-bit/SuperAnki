@@ -1968,8 +1968,9 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .flashcard.anim-flip { animation: cardFlip .32s ease-out; transform-origin: 50% 40%; }
 @keyframes cardNext { from { opacity: 0; transform: translateX(28px) scale(.98); } to { opacity: 1; transform: none; } }
 @keyframes cardFlip { 0% { transform: perspective(900px) rotateX(-62deg); opacity: .35; } 100% { transform: perspective(900px) rotateX(0); opacity: 1; } }
-.status-tile .bar i, .progress i, .pbar i { transform-origin: left center; animation: barGrow .7s cubic-bezier(.2,.7,.2,1) both; }
-.pbar i { animation: none; transition: width .3s ease; }
+.status-tile .bar i, .progress i, .pbar i { transform-origin: left center; }
+.cascade .status-tile .bar i, .cascade .progress i { animation: barGrow .7s cubic-bezier(.2,.7,.2,1) backwards; }   /* bars only grow when the page is entered, not when something is unfolded */
+.pbar i { transition: width .3s ease; }
 @keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .confetti { position: fixed; inset: 0; pointer-events: none; z-index: 120; overflow: hidden; }
 .confetti i { position: absolute; top: -12px; width: 8px; height: 14px; border-radius: 2px; opacity: 0; animation: confFall 2s ease-in forwards; }
