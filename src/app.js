@@ -1217,13 +1217,28 @@ class SuperAnki {
         else if (this.view === 'toeic') this.renderToeic();
         else if (this.view === 'exam') this.renderExam();
     }
+    /* little sparks when the streak grows (first review of the day) */
+    flameBurst(chip) {
+        if (this.calm()) return;
+        chip.classList.remove('flame-pop'); void chip.offsetWidth; chip.classList.add('flame-pop');
+        const r = chip.getBoundingClientRect();
+        for (let i = 0; i < 9; i++) {
+            const sp = document.createElement('i'); sp.className = 'spark';
+            const a = (Math.PI * 2 * i) / 9, d = 26 + Math.random() * 16;
+            sp.style.cssText = `left:${r.left + r.width / 2}px;top:${r.top + r.height / 2}px;--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d}px`;
+            document.body.appendChild(sp); setTimeout(() => sp.remove(), 800);
+        }
+    }
     renderStreak() {
         if (!this.data) return;
         const st = this.data.stats;
         const alive = st.lastStudyDate === dayKey();
         $('#streak-value').textContent = st.streak;
         const chip = $('#streak-chip');
+        const prevAlive = this._flameAlive, prevVal = this._flameVal;
         chip.classList.toggle('cold', !alive);
+        this._flameAlive = alive; this._flameVal = st.streak;
+        if (prevAlive !== undefined && alive && (!prevAlive || st.streak > prevVal)) this.flameBurst(chip);
         chip.title = alive ? `Série : ${st.streak} j (révision du jour faite)` : `Série : ${st.streak} j. Révise aujourd'hui pour la prolonger !`;
     }
     renderSyncIndicator() {
@@ -1275,7 +1290,7 @@ class SuperAnki {
                     </div>
                     <div class="hero-actions">
                         ${toStudy > 0
-                            ? `<button class="btn btn-lg btn-hero" data-action="study" data-deck="">${ic('play')}Réviser (${toStudy})</button>`
+                            ? `<button class="btn btn-lg btn-hero breathe" data-action="study" data-deck="">${ic('play')}Réviser (${toStudy})</button>`
                             : `<button class="btn btn-lg btn-hero" data-action="practice-all">${ic('repeat')}Révision libre</button>`}
                         ${extra || `<button class="btn btn-lg btn-hero-ghost" data-action="new-card">${ic('plus')}Nouvelle carte</button>`}
                     </div>
@@ -3473,11 +3488,15 @@ class SuperAnki {
             }
             case 'tool-toggle': {
                 const o = { ...(this.data.settings.homeOpen || {}) }; o.tool = o.tool === ds.tool ? '' : ds.tool;
-                this.setSetting('homeOpen', o); this.renderDashboard(); break;
+                this.setSetting('homeOpen', o); this.renderDashboard();
+                if (o.tool && !this.calm()) { const t = $(`[data-tool="${o.tool}"]`), row = t && t.closest('.tool-row'), box = row && row.nextElementSibling; if (box) box.classList.add('unfold'); }
+                break;
             }
             case 'home-toggle': {
                 const o = { ...(this.data.settings.homeOpen || {}) }; o[ds.sec] = !this.homeOpen(ds.sec, ds.sec === 'recents' || ds.sec === 'goals');
-                this.setSetting('homeOpen', o); this.renderDashboard(); break;
+                this.setSetting('homeOpen', o); this.renderDashboard();
+                if (o[ds.sec]) { const t = $(`[data-sec="${ds.sec}"]`), box = t && t.closest('.section-head').nextElementSibling; if (box && !this.calm()) { box.classList.add('unfold'); } }
+                break;
             }
             case 'resume-last': {
                 const r = this.data.settings.lastRun; if (!r) break;

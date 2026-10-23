@@ -70,7 +70,7 @@ function barsSVG(W, o) {
             if (L.dots) dots += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.8" style="fill:${L.color}"/>`;
             started = true;
         });
-        g += `<path d="${d}" fill="none" style="stroke:${L.color}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>${dots}`;
+        g += `<path d="${d}" pathLength="1" fill="none" style="stroke:${L.color}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>${dots}`;
         for (let k = 0; k <= 4; k++) {
             const v = lMax * k / 4, y = padT + ph - (v / lMax) * ph;
             g += `<text x="${padL + pw + 7}" y="${(y + 3.5).toFixed(1)}" text-anchor="start" style="fill:${L.color}">${(L.fmt || fmtNum)(v)}</text>`;
