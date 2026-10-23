@@ -2089,6 +2089,7 @@ class SuperAnki {
             : `<div class="type-box">
                     <textarea class="textarea" id="type-answer" rows="2" style="min-height:64px" placeholder="Tape ta réponse puis Entrée..." data-input="type-answer"></textarea>
                </div>`) : '';
+        const csIdx = Object.keys(CARD_SIZES).indexOf(this.data.settings.cardSize);
         $('#view-session').innerHTML = `
         <div class="session">
             <div class="session-top">
@@ -2105,6 +2106,7 @@ class SuperAnki {
             <div class="panel flashcard" ${s.revealed || typeMode ? '' : 'data-action="reveal" style="cursor:pointer"'}>
                 <div class="fc-top">
                     <span class="tag" title="${esc(deck ? this.deckPath(deck.id) : '')}">${esc(deck ? deck.emoji + ' ' + this.deckPath(deck.id).split(' › ').slice(-2).join(' › ') : '')}</span>
+                    <span class="fc-size" role="group" aria-label="Taille du texte"><button class="fc-size-btn" data-action="card-size" data-d="-1" aria-label="Texte plus petit" title="Texte plus petit" ${csIdx === 0 ? 'disabled' : ''}>A<small>−</small></button><button class="fc-size-btn" data-action="card-size" data-d="1" aria-label="Texte plus grand" title="Texte plus grand" ${csIdx === 3 ? 'disabled' : ''}>A<small>+</small></button></span>
                     <span class="tiny faint fc-badges">${card.flag ? `<span style="color:${FLAGS[card.flag].color}" title="${FLAGS[card.flag].name}">${ic('flag', 'i-flag')}</span>` : ''}${card.marked ? `<span style="color:#eab308" title="Marquée">${ic('star', 'i-fill')}</span>` : ''}${card.state === 'new' ? 'Nouvelle' : card.errors ? `${ic('target')} ${plural(card.errors, 'erreur')}` : ''}</span>
                 </div>
                 <div class="fc-content fc-front rich">${card.front}</div>
@@ -3486,6 +3488,10 @@ class SuperAnki {
             case 'submit-typed': this.submitTyped(); break;
             case 'grade': this.grade(Number(ds.grade)); break;
             case 'practice-answer': this.practiceAnswer(ds.ok === '1'); break;
+            case 'card-size': {
+                const ks = Object.keys(CARD_SIZES), i = Math.max(0, Math.min(ks.length - 1, ks.indexOf(this.data.settings.cardSize) + Number(ds.d)));
+                this.setSetting('cardSize', ks[i]); if (this.session && this.session.current) this.renderSession(); break;
+            }
             case 'undo': this.undo(); break;
             case 'speak': this.speak(); break;
             case 'hint': {
