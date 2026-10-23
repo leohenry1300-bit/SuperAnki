@@ -1130,6 +1130,7 @@ class SuperAnki {
         $$('[data-nav]').forEach(b => b.classList.toggle('active', b.dataset.nav === this.view && !b.classList.contains('brand') && !b.classList.contains('streak-chip') && !b.classList.contains('sync-dot')));
         document.body.classList.toggle('in-session', this.view === 'session' || this.view === 'exam');
         document.body.classList.toggle('in-exam', this.view === 'exam');
+        if (this.view !== 'decks') document.body.classList.remove('deck-sheet');
         document.body.classList.toggle('can-fab', this.view === 'dashboard' || this.view === 'decks');
         this.renderStreak();
         this.renderSyncIndicator();
@@ -1433,6 +1434,11 @@ class SuperAnki {
         if (id === 'errors') return '🎯 Mes erreurs';
         const d = this.deck(id); return d ? `${d.emoji} ${d.name}` : '📂 Paquets';
     }
+    /* phone: the deck picker is a sheet that only opens on request; desktop: always shown */
+    treeIsOpen() {
+        if (window.matchMedia('(max-width: 960px)').matches) return this.ui.treeOpen === true;
+        return this.ui.treeOpen === undefined ? this.ui.deck === 'all' : this.ui.treeOpen;
+    }
     renderDeckSidebar() {
         const ui = this.ui, box = $('#deck-sidebar');
         if (!box) return;
@@ -1452,9 +1458,12 @@ class SuperAnki {
             return html + (isOpen ? kids.map(k => node(k, depth + 1)).join('') : '');
         };
         const anyTree = this.data.decks.some(d => d.parent);
-        box.classList.toggle('collapsed', this.ui.treeOpen === false || (this.ui.treeOpen === undefined && ui.deck !== 'all'));
+        box.classList.toggle('collapsed', !this.treeIsOpen());
         const pick = $('#deck-pick'); if (pick) pick.querySelector('b').textContent = this.deckLabel(ui.deck);
+        const sheet = !box.classList.contains('collapsed') && window.matchMedia('(max-width: 960px)').matches;
+        document.body.classList.toggle('deck-sheet', sheet && this.view === 'decks');
         box.innerHTML = `
+            <div class="dl-sheet-head"><b>Choisir un paquet</b><button class="icon-btn" data-action="toggle-tree" aria-label="Fermer">${ic('x')}</button></div>
             <div class="dl-find"><label class="input-icon">${ic('search')}<span class="sr-only">Rechercher un paquet</span><input class="input" id="deck-find" type="search" placeholder="Rechercher un paquet..." data-input="deck-find" autocomplete="off" spellcheck="false" value="${esc(ui.deckQ || '')}"></label></div>
             <div id="deck-find-res" class="${ui.deckQ ? '' : 'hidden'}">${this.deckFinderHtml(ui.deckQ || '')}</div>
             <div id="deck-tree" class="${ui.deckQ ? 'hidden' : ''}">
@@ -3289,7 +3298,7 @@ class SuperAnki {
             case 'export': this.exportJSON(); break;
             case 'open-deck': this.ui.deckQ = ''; this.ui.treeOpen = false; this.go('decks', { deck: ds.deck, filter: 'all' }); break;
             case 'select-deck': this.ui.deck = ds.deck; this.ui.limit = 60; this.ui.deckQ = ''; this.ui.treeOpen = false; this.touchDeck(ds.deck); this.renderDecks(); break;
-            case 'toggle-tree': this.ui.treeOpen = !(this.ui.treeOpen === undefined ? this.ui.deck === 'all' : this.ui.treeOpen); this.renderDeckSidebar(); if (this.ui.treeOpen) setTimeout(() => { const f = $('#deck-find'); f && f.focus(); }, 60); break;
+            case 'toggle-tree': this.ui.treeOpen = !this.treeIsOpen(); this.renderDeckSidebar(); if (this.ui.treeOpen && !window.matchMedia('(max-width: 960px)').matches) setTimeout(() => { const f = $('#deck-find'); f && f.focus(); }, 60); break;
             case 'filter': this.ui.filter = ds.filter; this.ui.limit = 60; this.renderDeckPanel(); break;
             case 'goto-filter': this.ui.search = ''; this.go('decks', { deck: 'all', filter: ds.filter }); break;
             case 'more': this.ui.limit += 100; this.renderDeckPanel(); break;

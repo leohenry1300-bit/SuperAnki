@@ -1741,8 +1741,8 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .deck-panel-head h3 .tag { vertical-align: middle; margin-left: 6px; }
 
 /* ---- feel: transitions, press feedback, swipe, tips ---- */
-@keyframes viewIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.view-in { animation: viewIn .22s ease-out both; }
+@keyframes viewIn { from { opacity: 0; } to { opacity: 1; } }
+.view-in { animation: viewIn .22s ease-out backwards; }
 .btn, .icon-btn, .chip, .recent-chip, .mode-tile, .status-tile, .deck-card { transition: transform .12s, box-shadow .15s, background .15s; }
 .btn:active, .icon-btn:active, .chip:active, .recent-chip:active { transform: scale(.96); }
 .mode-tile:active, .status-tile:active { transform: scale(.98); }
@@ -1872,3 +1872,38 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .dash-tools .sort-pick { flex: none; margin: 0; }
 .dash-tools .sort-pick .select { width: auto; max-width: 150px; }
 @media (max-width: 420px) { .dash-tools { flex-wrap: wrap; } .dash-tools .sort-pick, .dash-tools .sort-pick .select { width: 100%; max-width: none; } }
+
+/* ---- phone: the deck picker is a full-screen sheet (fixed header + search, one scrolling list) ---- */
+.dl-sheet-head { display: none; }
+@media (max-width: 960px) {
+  body.deck-sheet { overflow: hidden; }
+  #deck-sidebar:not(.collapsed) {
+    position: fixed !important; inset: 0; z-index: 70; max-height: none !important; border-radius: 0; margin: 0;
+    background: var(--bg, var(--surface)); padding: 0 !important; overflow-y: auto !important; overscroll-behavior: contain;
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+  }
+  #deck-sidebar .dl-sheet-head { display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 3; background: var(--surface); padding: calc(10px + env(safe-area-inset-top, 0px)) 14px 6px 16px; }
+  #deck-sidebar .dl-sheet-head b { font-size: 1.1rem; font-weight: 800; }
+  #deck-sidebar .dl-find { top: calc(54px + env(safe-area-inset-top, 0px)); padding: 4px 14px 10px; z-index: 3; border-bottom: 1px solid var(--line, var(--border)); }
+  #deck-sidebar #deck-tree, #deck-sidebar #deck-find-res { padding: 6px 8px 24px; }
+  #deck-sidebar .dl-title { padding: 6px 8px; }
+  #deck-sidebar .dl-sep { display: block; }
+  #deck-sidebar .dl-row { display: flex; align-items: center; flex: none; padding-left: calc(var(--d, 0) * 18px); }
+  #deck-sidebar .dl-chev { width: 40px; height: 46px; }
+  #deck-sidebar .dl-chev .i { width: 18px; height: 18px; }
+  #deck-sidebar .dl-row .dl-item, #deck-sidebar .dl-item { width: 100%; flex: 1; min-width: 0; min-height: 46px; border: 0; background: transparent; padding: 8px 10px; border-radius: 12px; }
+  #deck-sidebar .dl-row .dl-item .nm { max-width: none; font-size: .98rem; }
+  #deck-sidebar .dl-row .dl-item.active { background: var(--primary-soft); }
+  #deck-sidebar .dl-row[style*="--d:1"] .dl-item .em, #deck-sidebar .dl-row[style*="--d:2"] .dl-item .em, #deck-sidebar .dl-row[style*="--d:3"] .dl-item .em { font-size: .95rem; }
+  #deck-sidebar .dl-row[style*="--d:1"], #deck-sidebar .dl-row[style*="--d:2"], #deck-sidebar .dl-row[style*="--d:3"] { border-left: 2px solid var(--border); margin-left: 18px; padding-left: calc((var(--d, 0) - 1) * 18px); }
+  #deck-sidebar .dl-row[style*="--d:1"] { margin-left: 20px; }
+  #deck-sidebar .dl-row[style*="--d:2"] { margin-left: 20px; }
+  #deck-sidebar .dl-row[style*="--d:3"] { margin-left: 20px; }
+  #deck-find-res .dl-item { border-bottom: 1px solid var(--border); border-radius: 0; }
+}
+#deck-find-res .dl-item, #dash-find-res .dl-item { padding: 10px 12px; align-items: center; }
+#deck-find-res .dl-item .nm, #dash-find-res .dl-item .nm { white-space: normal; overflow: visible; line-height: 1.25; }
+#deck-find-res .dl-item .ct, #dash-find-res .dl-item .ct { margin-left: auto; padding-left: 8px; flex: none; }
+@media (max-width: 960px) { #deck-sidebar .dl-row .dl-item .nm { white-space: normal; -webkit-line-clamp: 2; } }
+#deck-find-res .dl-item .nm, #dash-find-res .dl-item .nm { max-width: none; flex: 1; min-width: 0; }
+#deck-find-res .dl-item, #dash-find-res .dl-item { flex: none; }
