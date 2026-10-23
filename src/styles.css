@@ -1661,3 +1661,4 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .fc-top { flex-direction: column; justify-content: center; gap: 4px; text-align: center; }
 .fc-top .fc-badges:empty { display: none; }
 @media (max-width: 767px) { .hero-actions .btn { font-size: .86rem; } }
+.set-row .txt span b, .set-row .txt span code { display: inline; font-size: inherit; color: inherit; }

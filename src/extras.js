@@ -288,8 +288,13 @@ Object.assign(SuperAnki.prototype, {
         setTimeout(() => location.reload(), 500);
     },
     extrasSettingsHtml() {
-        return `<div class="panel panel-pad set-section" id="ex-settings">
-            <h3>${ic('volume')} Sons et mises à jour</h3>
+        return `<div class="panel panel-pad set-section" id="ex-update">
+            <h3>${ic('reset')} Mise à jour</h3>
+            <div class="set-row"><div class="txt"><b>Version de l'application</b><span id="upd-status">Version <code id="upd-ver">${APP_VER0 ? APP_VER0.slice(0, 8) : '—'}</code></span></div>
+                <button class="btn btn-primary btn-sm" data-ex="upd">${ic('reset')}Mettre à jour maintenant</button></div>
+        </div>
+        <div class="panel panel-pad set-section" id="ex-settings">
+            <h3>${ic('volume')} Sons</h3>
             <div class="set-row"><div class="txt"><b>Sons de l'application</b><span>Petits sons doux quand tu retournes une carte, réponds ou termines une session. Réglage propre à cet appareil.</span></div>
                 <span style="display:flex;gap:10px;align-items:center"><label class="switch"><input type="checkbox" ${SND.on ? 'checked' : ''} data-ex="snd-toggle" aria-label="Sons de l'application"><span></span></label><button class="btn btn-soft btn-sm" data-ex="snd-test">Tester</button></span></div>
             <div class="set-row" style="flex-wrap:wrap"><div class="txt"><b>Écouter chaque son</b></div><span style="display:flex;gap:6px;flex-wrap:wrap">${[['reveal', 'Retourner'], ['g1', 'Raté'], ['g2', 'Difficile'], ['g3', 'Bien'], ['g4', 'Facile'], ['wrong', 'Faux'], ['right', 'Juste'], ['done', 'Fin de session']].map(([n, l]) => `<button class="chip" data-ex="snd-play" data-n="${n}">${l}</button>`).join('')}</span></div>
@@ -298,8 +303,6 @@ Object.assign(SuperAnki.prototype, {
             <div class="set-row"><div class="txt"><b>Son du changement d'onglet</b></div>
                 <select class="select select-sm" id="snd-tab" aria-label="Son du changement d'onglet">${[['swipe', 'Souffle doux'], ['bubble', 'Bulle'], ['click', 'Petit clic'], ['none', 'Aucun']].map(([v, l]) => `<option value="${v}" ${SND.tab === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
             <div class="set-row"><div class="txt"><b>Volume</b></div><input type="range" id="snd-vol" min="5" max="100" value="${Math.round(SND.vol * 100)}" style="width:160px" aria-label="Volume"></div>
-            <div class="set-row"><div class="txt"><b>Mise à jour</b><span id="upd-status">Version <code id="upd-ver">${APP_VER0 ? APP_VER0.slice(0, 8) : '—'}</code></span></div>
-                <button class="btn btn-primary btn-sm" data-ex="upd">${ic('reset')}Mettre à jour maintenant</button></div>
         </div>`;
     },
     extrasSoundRefresh() { const cb = $('#ex-settings input[data-ex="snd-toggle"]'); if (cb) cb.checked = SND.on; }
@@ -317,7 +320,7 @@ Object.assign(SuperAnki.prototype, {
         const theme = panels().find(p => /^Thème/.test(title(p)));   // rarely changed: after the sounds
         if (theme && (amb || ex)) (amb || ex).after(theme);
         root.querySelectorAll('.set-nav').forEach(n => n.remove());
-        const short = t => t.replace(/ et mises à jour/, '').replace(/ \/ examen/, '').replace(/^Algorithme.*/, 'Algorithme').replace(/^Synchronisation.*/, 'Cloud').replace(/^Raccourcis.*/, 'Clavier');
+        const short = t => t.replace(/ \/ examen/, '').replace(/^Algorithme.*/, 'Algorithme').replace(/^Synchronisation.*/, 'Cloud').replace(/^Raccourcis.*/, 'Clavier');
         const items = panels().map((p, i) => { p.id = p.id || `set-sec-${i}`; return { id: p.id, label: short(title(p)) }; }).filter(x => x.label);
         const nav = document.createElement('nav'); nav.className = 'set-nav'; nav.setAttribute('aria-label', 'Sections des réglages');
         nav.innerHTML = items.map(x => `<button class="chip" data-jump="${x.id}">${x.label}</button>`).join('');
