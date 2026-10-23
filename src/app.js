@@ -807,6 +807,7 @@ class SuperAnki {
         this.go('dashboard');
         if (source === 'legacy') this.toast('Tes cartes et ta progression ont été récupérées', 'success');
         this.initRipple();
+        this.initPull();
         this.focusInit();
         this.extrasInit();
         this.ambInit();
@@ -1147,6 +1148,34 @@ class SuperAnki {
             clearTimeout(this._viewInT); this._viewInT = setTimeout(() => el.classList.remove('cascade'), 900);   // the cascade only plays on arrival, not on later redraws
         }
         if (view === 'dashboard' && prevView !== 'dashboard') this.countUp('#view-dashboard .status-num');
+    }
+    /* pull the page down (at the top of an overview tab) to refresh the numbers and sync */
+    initPull() {
+        const ind = document.createElement('div'); ind.className = 'ptr'; ind.setAttribute('aria-hidden', 'true');
+        ind.innerHTML = '<svg class="i" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg>'; document.body.appendChild(ind);
+        let y0 = 0, d = 0, on = false, busy = false;
+        const ok = () => !busy && !this.session && !this.ex && !document.body.classList.contains('deck-sheet') && !this.modals.length && ['dashboard', 'decks', 'stats'].includes(this.view) && window.scrollY <= 0;
+        document.addEventListener('touchstart', e => { if (e.touches.length === 1 && ok()) { y0 = e.touches[0].clientY; d = 0; on = true; } else on = false; }, { passive: true });
+        document.addEventListener('touchmove', e => {
+            if (!on) return;
+            const dy = e.touches[0].clientY - y0;
+            if (dy <= 0) { d = 0; ind.style.opacity = 0; return; }
+            if (window.scrollY > 0) { on = false; ind.style.opacity = 0; return; }
+            d = Math.min(dy, 140) * .6; ind.style.opacity = Math.min(1, d / 60);
+            ind.style.transform = `translate(-50%, ${d}px) rotate(${d * 4}deg)`; ind.classList.toggle('ready', d >= 54);
+        }, { passive: true });
+        const end = async () => {
+            if (!on) return; on = false;
+            if (d >= 54 && !busy) {
+                busy = true; ind.classList.add('spin'); ind.style.transform = 'translate(-50%, 54px)';
+                try { if (this.data.settings.cloudSync) await Cloud.sync(true); } catch { /* offline */ }
+                await new Promise(r => setTimeout(r, 500));
+                this.render(); this.toast('À jour', 'success');
+                busy = false;
+            }
+            ind.classList.remove('spin', 'ready'); ind.style.opacity = 0; ind.style.transform = 'translate(-50%, 0)'; d = 0;
+        };
+        document.addEventListener('touchend', end, { passive: true }); document.addEventListener('touchcancel', end, { passive: true });
     }
     /* touch ripple on the main buttons and tiles */
     initRipple() {
@@ -2256,7 +2285,7 @@ class SuperAnki {
             </div>
             <div class="pbar"><i style="width:${progress}%"></i></div>
             ${(s.run || 0) >= 3 ? `<div class="run-pill" key="${s.run}">🔥 ${s.run} d'affilée</div>` : ''}
-            <div class="panel flashcard" ${s.revealed || typeMode ? '' : 'data-action="reveal" style="cursor:pointer"'}>
+            <div class="panel flashcard stack-${Math.min(2, (s.queue || []).length + (s.learning || []).length)}" ${s.revealed || typeMode ? '' : 'data-action="reveal" style="cursor:pointer"'}>
                 <div class="fc-top">
                     <span class="tag" title="${esc(deck ? this.deckPath(deck.id) : '')}">${esc(deck ? deck.emoji + ' ' + this.deckPath(deck.id).split(' › ').slice(-2).join(' › ') : '')}</span>
                     <span class="fc-size" role="group" aria-label="Taille du texte"><button class="fc-size-btn" data-action="card-size" data-d="-1" aria-label="Texte plus petit" title="Texte plus petit" ${csIdx === 0 ? 'disabled' : ''}>A<small>−</small></button><button class="fc-size-btn" data-action="card-size" data-d="1" aria-label="Texte plus grand" title="Texte plus grand" ${csIdx === 3 ? 'disabled' : ''}>A<small>+</small></button></span>
@@ -2653,6 +2682,11 @@ class SuperAnki {
         if (!el) return;
         this.modals = this.modals.filter(m => m !== el);
         if (el._onClose) el._onClose();
+        if (!this.calm() && el.isConnected) {   // a copy without ids plays the closing animation, the real window is removed at once
+            const ghost = el.cloneNode(true); ghost.removeAttribute('id'); ghost.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+            ghost.classList.add('closing'); ghost.style.pointerEvents = 'none'; ghost.removeAttribute('data-card-modal');
+            el.after(ghost); setTimeout(() => ghost.remove(), 200);
+        }
         el.remove();
         if (!this.modals.length) document.body.style.overflow = '';
     }

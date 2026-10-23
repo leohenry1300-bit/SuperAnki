@@ -2043,3 +2043,18 @@ details[open] > :not(summary) { animation: unfold .3s cubic-bezier(.2,.7,.2,1); 
 .cascade .chart svg circle:not(.slice) { animation: dotIn .4s .8s ease-out backwards; transform-box: fill-box; transform-origin: center; }
 @keyframes dotIn { from { transform: scale(0); } }
 @media (prefers-reduced-motion: reduce) { .unfold, details[open] > :not(summary), .btn-hero.breathe, .streak-chip.flame-pop, .spark, .cascade .chart svg * { animation: none !important; } }
+
+/* ---- motion pass 4: windows closing, pull to refresh, stacked cards ---- */
+.modal-back.closing { animation: fadeOut .18s ease forwards; }
+.modal-back.closing .modal { animation: modalOut .18s ease forwards; }
+@keyframes fadeOut { to { opacity: 0; } }
+@keyframes modalOut { to { transform: translateY(24px) scale(.98); opacity: 0; } }
+.ptr { position: fixed; top: 58px; left: 50%; z-index: 90; width: 38px; height: 38px; margin-left: 0; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow); display: grid; place-items: center; color: var(--text-faint); opacity: 0; transform: translate(-50%, 0); pointer-events: none; transition: opacity .15s, color .15s; }
+.ptr .i { width: 20px; height: 20px; }
+.ptr.ready { color: var(--primary); }
+.ptr.spin .i { animation: ptrSpin .7s linear infinite; }
+@keyframes ptrSpin { to { transform: rotate(360deg); } }
+html { overscroll-behavior-y: contain; }
+.flashcard.stack-1 { box-shadow: 0 7px 0 -3px var(--surface), 0 7px 0 -2px var(--border-strong, var(--border)), var(--shadow); margin-bottom: 8px; }
+.flashcard.stack-2 { box-shadow: 0 7px 0 -3px var(--surface), 0 7px 0 -2px var(--border-strong, var(--border)), 0 14px 0 -7px var(--surface), 0 14px 0 -6px var(--border-strong, var(--border)), var(--shadow); margin-bottom: 16px; }
+@media (prefers-reduced-motion: reduce) { .modal-back.closing, .modal-back.closing .modal, .ptr.spin .i { animation: none !important; } }
