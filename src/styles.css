@@ -2009,8 +2009,8 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .btn, .mode-tile, .status-tile { position: relative; overflow: hidden; }
 .ripple { position: absolute; border-radius: 50%; background: currentColor; opacity: .16; pointer-events: none; transform: scale(0); animation: ripple .55s ease-out forwards; }
 @keyframes ripple { to { transform: scale(1); opacity: 0; } }
-@keyframes riseIn { from { opacity: 0; transform: translateY(12px); } }
-.cascade :is(.deck-grid, .exam-list, .mode-grid, .status-grid, .missed-list) > * { animation: riseIn .34s cubic-bezier(.2,.7,.2,1) backwards; animation-delay: calc(var(--i, 0) * 45ms); }
+@keyframes riseIn { from { opacity: 0; transform: translateY(7px); } }
+.cascade :is(.deck-grid, .exam-list, .mode-grid, .status-grid, .missed-list) > * { animation: riseIn .28s cubic-bezier(.2,.7,.2,1) backwards; animation-delay: calc(min(var(--i, 0), 5) * 35ms); }
 .deck-grid > :nth-child(1), .exam-list > :nth-child(1), .mode-grid > :nth-child(1), .status-grid > :nth-child(1) { --i: 0; }
 .deck-grid > :nth-child(2), .exam-list > :nth-child(2), .mode-grid > :nth-child(2), .status-grid > :nth-child(2) { --i: 1; }
 .deck-grid > :nth-child(3), .exam-list > :nth-child(3), .mode-grid > :nth-child(3), .status-grid > :nth-child(3) { --i: 2; }

@@ -1153,28 +1153,24 @@ class SuperAnki {
             el.classList.remove('view-in', 'view-in-l', 'view-in-r', 'view-in-n', 'view-in-zoom', 'cascade'); void el.offsetWidth;
             const zoom = opts.from && !this.calm();
             if (zoom) { el.style.setProperty('--ox', opts.from.x + 'px'); el.style.setProperty('--oy', opts.from.y + 'px'); }
-            el.classList.add('view-in', 'cascade', zoom ? 'view-in-zoom' : this._vtOn ? 'view-in-n' : a >= 0 && b >= 0 && a !== b ? (b > a ? 'view-in-r' : 'view-in-l') : 'view-in-n');
+            el.classList.add('view-in', ...(this._vtOn ? [] : ['cascade']), zoom ? 'view-in-zoom' : this._vtOn ? 'view-in-n' : a >= 0 && b >= 0 && a !== b ? (b > a ? 'view-in-r' : 'view-in-l') : 'view-in-n');
             clearTimeout(this._viewInT); this._viewInT = setTimeout(() => el.classList.remove('cascade'), 900);   // the cascade only plays on arrival, not on later redraws
         }
-        if (view === 'dashboard' && prevView !== 'dashboard') this.countUp('#view-dashboard .status-num, #view-dashboard .btn-hero .cnt');
+        if (view === 'dashboard' && prevView !== 'dashboard' && !this._vtOn) this.countUp('#view-dashboard .status-num, #view-dashboard .btn-hero .cnt');
     }
-    /* pull the page down (at the top of an overview tab) to refresh the numbers and sync */
+    /* pull the page down (at the top of an overview tab) to refresh the numbers and sync: finger on a phone,
+       two-finger scroll up / mouse drag down on a computer */
     initPull() {
         const ind = document.createElement('div'); ind.className = 'ptr'; ind.setAttribute('aria-hidden', 'true');
         ind.innerHTML = '<svg class="i" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg>'; document.body.appendChild(ind);
-        let y0 = 0, d = 0, on = false, busy = false;
+        let busy = false, d = 0;
         const ok = () => !busy && !this.session && !this.ex && !document.body.classList.contains('deck-sheet') && !this.modals.length && ['dashboard', 'decks', 'stats'].includes(this.view) && window.scrollY <= 0;
-        document.addEventListener('touchstart', e => { if (e.touches.length === 1 && ok()) { y0 = e.touches[0].clientY; d = 0; on = true; } else on = false; }, { passive: true });
-        document.addEventListener('touchmove', e => {
-            if (!on) return;
-            const dy = e.touches[0].clientY - y0;
-            if (dy <= 0) { d = 0; ind.style.opacity = 0; return; }
-            if (window.scrollY > 0) { on = false; ind.style.opacity = 0; return; }
-            d = Math.min(dy, 140) * .6; ind.style.opacity = Math.min(1, d / 60);
+        const show = raw => {
+            d = Math.min(Math.max(raw, 0), 140) * .6; ind.style.opacity = Math.min(1, d / 60);
             ind.style.transform = `translate(-50%, ${d}px) rotate(${d * 4}deg)`; ind.classList.toggle('ready', d >= 54);
-        }, { passive: true });
-        const end = async () => {
-            if (!on) return; on = false;
+        };
+        const hide = () => { ind.classList.remove('spin', 'ready'); ind.style.opacity = 0; ind.style.transform = 'translate(-50%, 0)'; d = 0; };
+        const release = async () => {
             if (d >= 54 && !busy) {
                 busy = true; ind.classList.add('spin'); ind.style.transform = 'translate(-50%, 54px)';
                 try { if (this.data.settings.cloudSync) await Cloud.sync(true); } catch { /* offline */ }
@@ -1182,9 +1178,36 @@ class SuperAnki {
                 this.render(); this.toast('À jour', 'success');
                 busy = false;
             }
-            ind.classList.remove('spin', 'ready'); ind.style.opacity = 0; ind.style.transform = 'translate(-50%, 0)'; d = 0;
+            hide();
         };
+        /* touch */
+        let y0 = 0, on = false;
+        document.addEventListener('touchstart', e => { if (e.touches.length === 1 && ok()) { y0 = e.touches[0].clientY; d = 0; on = true; } else on = false; }, { passive: true });
+        document.addEventListener('touchmove', e => {
+            if (!on) return;
+            const dy = e.touches[0].clientY - y0;
+            if (dy <= 0) { show(0); return; }
+            if (window.scrollY > 0) { on = false; hide(); return; }
+            show(dy);
+        }, { passive: true });
+        const end = () => { if (!on) return; on = false; release(); };
         document.addEventListener('touchend', end, { passive: true }); document.addEventListener('touchcancel', end, { passive: true });
+        /* mouse: press on an empty part of the page at the top and drag down */
+        let my0 = 0, mon = false;
+        document.addEventListener('mousedown', e => {
+            if (e.button !== 0 || !ok() || e.target.closest('button, a, input, select, textarea, label, summary, [data-action], [contenteditable], .modal-back')) { mon = false; return; }
+            my0 = e.clientY; mon = true; d = 0;
+        });
+        document.addEventListener('mousemove', e => { if (mon) show(e.clientY - my0); });
+        const mup = () => { if (!mon) return; mon = false; release(); };
+        document.addEventListener('mouseup', mup); window.addEventListener('blur', () => { if (mon) { mon = false; hide(); } });
+        /* trackpad / wheel: keep scrolling up while already at the top */
+        let acc = 0, idle = null;
+        document.addEventListener('wheel', e => {
+            if (!ok() || e.deltaY >= 0 || e.ctrlKey) { if (e.deltaY > 0) { acc = 0; if (!busy) hide(); } return; }
+            acc += -e.deltaY; show(acc);
+            clearTimeout(idle); idle = setTimeout(() => { const go = acc; acc = 0; if (go * .6 >= 54) { d = 54; release(); } else hide(); }, 220);
+        }, { passive: true });
     }
     /* Léo the lion cub: a small animated SVG character with four moods (ready, happy, calm, tough) */
     mascotSvg(mood = 'ready') {
@@ -1222,15 +1245,7 @@ class SuperAnki {
         hero.appendChild(b); clearTimeout(this._bubbleT); this._bubbleT = setTimeout(() => { b.classList.add('out'); setTimeout(() => b.remove(), 250); }, 3200);
     }
     /* switching tabs: the browser cross-fades and slides two snapshots of the page (GPU, no jank); older browsers use the CSS slide */
-    tabGo(view) {
-        const order = ['dashboard', 'decks', 'toeic', 'stats', 'settings'], a = order.indexOf(this.view), b = order.indexOf(view);
-        if (!document.startViewTransition || this.calm() || a < 0 || b < 0 || a === b || this.session || this.modals.length) { this.go(view); return; }
-        const root = document.documentElement;
-        root.dataset.vt = b > a ? 'r' : 'l'; this._vtOn = true;
-        const t = document.startViewTransition(() => { this.go(view); });
-        const done = () => { delete root.dataset.vt; this._vtOn = false; };
-        t.finished.then(done, done);
-    }
+    tabGo(view) { this.go(view); }   // (a browser view transition froze the page while heavy tabs were drawn: a light CSS slide is used instead)
     /* fallback for browsers without view transitions: a veil of the old background fades out over the new theme */
     themeVeil(swap) {
         const v = document.createElement('div'), bg = getComputedStyle(document.body).backgroundColor;
