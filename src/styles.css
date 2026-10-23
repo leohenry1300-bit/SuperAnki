@@ -1960,3 +1960,5 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 @keyframes bootBar { 0% { transform: translateX(-100%); } 100% { transform: translateX(260%); } }
 .boot-txt { font-size: .8rem; color: var(--text-faint, #888); }
 @media (prefers-reduced-motion: reduce) { .boot-cards i, .boot-bar span { animation: none; } .boot-cards i:nth-child(1) { transform: rotate(-12deg); } .boot-cards i:nth-child(2) { transform: rotate(8deg); } }
+
+.boot.boot-out { opacity: 0; transition: opacity .25s ease; }

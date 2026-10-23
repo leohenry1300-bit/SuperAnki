@@ -789,7 +789,12 @@ class SuperAnki {
         this.checkStreak();
         this.writeNow();
         this.autoBackup(source);
-        $('#boot').remove();
+        /* the loading screen stays long enough to be seen (about 1.3 s from launch) and until the fonts are ready, then fades out */
+        const bootEl = $('#boot');
+        await Promise.race([document.fonts ? document.fonts.ready : null, new Promise(r => setTimeout(r, 1500))]);
+        const wait = 1300 - performance.now();
+        if (wait > 0) await new Promise(r => setTimeout(r, wait));
+        if (bootEl) { bootEl.classList.add('boot-out'); await new Promise(r => setTimeout(r, 260)); bootEl.remove(); }
         this.go('dashboard');
         if (source === 'legacy') this.toast('Tes cartes et ta progression ont été récupérées', 'success');
         this.focusInit();
