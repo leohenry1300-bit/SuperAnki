@@ -4,7 +4,7 @@
    - Bell sounds for the focus timer: a list to choose from, one for the end of study and one for the end of the break.
    ============================================================ */
 const SND_KEY = 'superanki_sound';
-const SND = (() => { let st = { on: true, ui: true, tab: 'swipe', vol: 0.5 }; try { const x = JSON.parse(localStorage.getItem(SND_KEY) || 'null'); if (x && typeof x === 'object') st = { on: x.on !== false, ui: x.ui !== false, tab: ['swipe', 'bubble', 'click', 'none'].includes(x.tab) ? x.tab : 'swipe', vol: Math.min(1, Math.max(0, Number(x.vol) || 0.5)) }; } catch { /* ignore */ } return st; })();
+const SND = (() => { let st = { on: true, ui: true, tab: 'swipe', vol: 0.5, mode: 'mix' }; try { const x = JSON.parse(localStorage.getItem(SND_KEY) || 'null'); if (x && typeof x === 'object') st = { on: x.on !== false, ui: x.ui !== false, tab: ['swipe', 'bubble', 'click', 'none'].includes(x.tab) ? x.tab : 'swipe', vol: Math.min(1, Math.max(0, Number(x.vol) || 0.5)), mode: x.mode === 'prio' ? 'prio' : 'mix' }; } catch { /* ignore */ } return st; })();
 function sndSave() { try { localStorage.setItem(SND_KEY, JSON.stringify(SND)); } catch { /* ignore */ } }
 function sndCtx() {
     try {
@@ -184,7 +184,7 @@ function ringPlay(id, repeat = true) {
 
 /* Installed web app on iPhone: the ring/silent switch mutes Web Audio but never a real <audio> clip. So there each sound is rendered once
    (same synth, drawn offline into a WAV) and played through a normal audio element: it is heard exactly like in Safari. */
-function sndClipsOk() { return sndStandalone() && !!navigator.audioSession && !!(window.OfflineAudioContext || window.webkitOfflineAudioContext); }
+function sndClipsOk() { return sndStandalone() && (!!navigator.audioSession || SND.mode === 'prio') && !!(window.OfflineAudioContext || window.webkitOfflineAudioContext); }
 function sndStandalone() { try { return navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches; } catch { return false; } }
 const SND_CLIPS = {};   // key -> { url } once rendered, 'wait' while rendering
 const SND_ELS = [];     // a few audio elements, unlocked by a real touch, reused for every clip (iOS only allows play() on elements a touch has started)
@@ -231,6 +231,11 @@ function sndPlayClip(c) {
         const p = a.play(); return p && p.then ? p.then(() => 'ok', e => (e && e.name) || 'error') : Promise.resolve('ok');
     } catch (e) { return Promise.resolve((e && e.name) || 'error'); }
 }
+function sndDiagText() {
+    const ac = window.app && window.app.audioCtx;
+    return `Volume ${Math.round(SND.vol * 100)} % · app installée : ${sndStandalone() ? 'oui' : 'non'} · lecteur : ${sndClipsOk() ? 'fichiers audio' : 'synthé direct'} · état : ${ac ? ac.state : 'en attente'}`;
+}
+function sndDiag() { const el = document.getElementById('snd-diag'); if (el) el.textContent = sndDiagText(); }
 function sndPrerender() { ['reveal', 'g1', 'g2', 'g3', 'g4', 'right', 'wrong', 'done', 'tap', 'pop'].forEach((n, i) => setTimeout(() => SFX[n] && sndClip(n, SFX[n], n === 'done' ? 3 : 1.6), 300 + i * 120)); }
 
 /* iPhone: Web Audio is muted by the ring/silent switch and needs a real touch to start.
@@ -239,10 +244,10 @@ function sndPrerender() { ['reveal', 'g1', 'g2', 'g3', 'g4', 'right', 'wrong', '
 /* the audio session decides who wins on the iPhone: "ambient" mixes our small sounds with the music you are listening to (it never stops it),
    "playback" (used only while the ambiance mixer runs, so it can go on with the screen locked) takes the audio over */
 function sndSession(t) { try { if (navigator.audioSession && navigator.audioSession.type !== t) navigator.audioSession.type = t; } catch { /* ignore */ } }
-sndSession('ambient');
+sndSession(SND.mode === 'prio' ? 'playback' : 'ambient');
 const SND_UNLOCK = { done: false };
 function sndUnlock() {
-    sndSession(typeof AMB_ENG !== 'undefined' && AMB_ENG.playing ? 'playback' : 'ambient');
+    sndSession((typeof AMB_ENG !== 'undefined' && AMB_ENG.playing) || SND.mode === 'prio' ? 'playback' : 'ambient');
     const ac = sndCtx(); if (!ac) return;
     try { const b = ac.createBuffer(1, 1, 22050), s = ac.createBufferSource(); s.buffer = b; s.connect(ac.destination); s.start(0); } catch { /* ignore */ }
     if (sndClipsOk()) sndWake();
@@ -303,7 +308,7 @@ Object.assign(SuperAnki.prototype, {
             else if (a === 'snd-toggle') { SND.on = !SND.on; sndSave(); this.updRefresh(); this.extrasSoundRefresh(); if (SND.on) sfx('pop'); }
             else if (a === 'ui-toggle') { SND.ui = !SND.ui; sndSave(); if (SND.ui) sfx('on'); }
             else if (a === 'snd-test') {
-                sndUnlock();
+                sndUnlock(); sndDiag(); setTimeout(sndDiag, 900);
                 if (sndClipsOk()) {
                     sndClipP('g3', SFX.g3, 1.6).then(async c => {
                         if (!c) { this.toast('Ce téléphone ne peut pas préparer les sons.', 'warning'); return; }
@@ -332,6 +337,7 @@ Object.assign(SuperAnki.prototype, {
         document.addEventListener('input', e => { if (e.target.id === 'snd-vol') { SND.vol = Number(e.target.value) / 100; sndSave(); } });
         document.addEventListener('change', e => {
             if (e.target.id === 'snd-vol') sfx('pop');
+            else if (e.target.id === 'snd-mode') { SND.mode = e.target.value === 'prio' ? 'prio' : 'mix'; sndSave(); sndSession(SND.mode === 'prio' ? 'playback' : 'ambient'); sndDiag(); sfx('g3'); }
             else if (e.target.id === 'snd-tab') { SND.tab = e.target.value; sndSave(); if (SND.tab !== 'none') setTimeout(() => { if (SND.on) sfx('tab' + SND.tab); }, 160); }
         });
     },
@@ -381,6 +387,8 @@ Object.assign(SuperAnki.prototype, {
                 <label class="switch"><input type="checkbox" ${SND.ui ? 'checked' : ''} data-ex="ui-toggle" aria-label="Petits sons d'interface"><span></span></label></div>
             <div class="set-row"><div class="txt"><b>Son du changement d'onglet</b></div>
                 <select class="select select-sm" id="snd-tab" aria-label="Son du changement d'onglet">${[['swipe', 'Souffle doux'], ['bubble', 'Bulle'], ['click', 'Petit clic'], ['none', 'Aucun']].map(([v, l]) => `<option value="${v}" ${SND.tab === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+            <div class="set-row"><div class="txt"><b>Sons et musique</b><span id="snd-diag" class="small muted">${sndDiagText()}</span></div>
+                <select class="select select-sm" id="snd-mode" aria-label="Sons et musique">${[['mix', 'Mélangés à ma musique'], ['prio', 'Prioritaires (coupent la musique)']].map(([v, l]) => `<option value="${v}" ${SND.mode === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
             <div class="set-row"><div class="txt"><b>Volume</b></div><input type="range" id="snd-vol" min="5" max="100" value="${Math.round(SND.vol * 100)}" style="width:160px" aria-label="Volume"></div>
         </div>`;
     },
