@@ -3393,7 +3393,7 @@ class SuperAnki {
     }
     resumeHtml() {
         const r = this.data.settings.lastRun;
-        if (!r || !['study', 'free', 'ordered'].includes(r.kind)) return '';
+        if (!r || r.kind !== 'ordered') return '';   // only worth showing when a saved position can be resumed
         const d = r.deck ? this.deck(r.deck) : null;
         if (r.deck && !d) return '';
         let sub, title = d ? `${d.emoji} ${d.name}` : 'Révision du jour';
@@ -3401,8 +3401,7 @@ class SuperAnki {
             const pos = (this.data.settings.ordPos || {})[r.deck], n = pos ? pos.n : 0;
             if (!pos || pos.i <= 0 || pos.i >= n) return '';   // nothing left to resume
             sub = `Dans l'ordre · carte ${pos.i + 1} sur ${n}`;
-        } else if (r.kind === 'free') sub = 'Révision libre';
-        else sub = r.deck ? 'Révision du planning' : 'Cartes du jour';
+        }
         return `<button class="panel mode-tile resume-tile wide" style="--c:#4f46e5" data-action="resume-last"><span class="mode-ico">${ic('play')}</span><span class="grow"><h4>Reprendre : ${esc(title)}</h4><p>${esc(sub)}</p></span>${ic('chevronRight', 'chev')}</button>`;
     }
     touchDeck(id) {
