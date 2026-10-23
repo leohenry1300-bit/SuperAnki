@@ -1932,3 +1932,14 @@ body.in-session .focus-w:not(.collapsed) { width: min(300px, calc(100vw - 24px))
 .goal-row .gr-deck { overflow-wrap: anywhere; }
 .ex-decks { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
 .ex-deck { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+
+/* ---- home tools: two buttons that unfold their content below ---- */
+.tool-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tool-btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 8px 12px; border-radius: var(--radius-sm); background: var(--surface); border: var(--border-w) solid var(--border); font-weight: 700; font-size: .88rem; color: var(--text); text-align: center; }
+.tool-btn > .i:first-child { color: var(--primary); flex: none; }
+.tool-btn span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tool-btn .tb-chev { width: 16px; height: 16px; flex: none; color: var(--text-faint); transition: transform .15s; }
+.tool-btn.on { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
+.tool-btn.on .tb-chev { transform: rotate(180deg); color: inherit; }
+@media (max-width: 420px) { .tool-btn { font-size: .8rem; gap: 6px; padding: 8px; } .tool-btn > .i:first-child { display: none; } }
+.tool-head { justify-content: flex-end; margin-bottom: 8px; }
