@@ -155,7 +155,7 @@ function sfx(name) {
     try { if (navigator.vibrate) { if (name === 'right' || name === 'g3' || name === 'g4') navigator.vibrate(12); else if (name === 'wrong' || name === 'g1') navigator.vibrate([18, 40, 18]); } } catch { /* ignore */ }
     const ac = sndCtx(); if (!ac) return;
     SND_LAST = performance.now(); SND_LAST_NAME = name;
-    if (sndClipsOk()) { const c = sndClip(name, SFX[name], name === 'done' ? 3 : 1.6); if (c) { sndPlayClip(c); return; } }   // clip not ready yet: the synth plays this once
+    if (sndClipsOk()) { sndPlayKey(name, SFX[name], name === 'done' ? 3 : 1.6); return; }
     try { SFX[name](ac, sndChain(ac).bus, ac.currentTime + 0.02, SND.vol); } catch { /* ignore */ }
 }
 
@@ -174,8 +174,8 @@ function ringPlay(id, repeat = true) {
     const ac = sndCtx(), r = RINGTONES[id] || RINGTONES.bell;
     if (!ac) return;
     if (sndClipsOk()) {
-        const key = 'ring:' + id + (repeat ? ':2' : ':1'), c = sndClip(key, (a, o, t, v) => { [0, ...(repeat ? [r.len + 0.5] : [])].forEach(d => r.play(a, o, t + d, Math.max(0.4, v) * 1.1)); }, r.len * (repeat ? 2 : 1) + 1.5);
-        if (c) { sndPlayClip(c); return; }
+        const key = 'ring:' + id + (repeat ? ':2' : ':1');
+        sndPlayKey(key, (a, o, t, v) => { [0, ...(repeat ? [r.len + 0.5] : [])].forEach(d => r.play(a, o, t + d, Math.max(0.4, v) * 1.1)); }, r.len * (repeat ? 2 : 1) + 1.5); return;
     }
     const v = Math.max(0.4, SND.vol) * 1.1, t0 = ac.currentTime + 0.05, bus = sndChain(ac).bus;
     try { [0, ...(repeat ? [r.len + 0.5] : [])].forEach(d => r.play(ac, bus, t0 + d, v)); } catch { /* ignore */ }
@@ -186,9 +186,10 @@ function ringPlay(id, repeat = true) {
    (same synth, drawn offline into a WAV) and played through a normal audio element: it is heard exactly like in Safari. */
 function sndClipsOk() { return sndStandalone() && (!!navigator.audioSession || SND.mode === 'prio') && !!(window.OfflineAudioContext || window.webkitOfflineAudioContext); }
 function sndStandalone() { try { return navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches; } catch { return false; } }
-const SND_CLIPS = {};   // key -> { url } once rendered, 'wait' while rendering
-const SND_ELS = [];     // a few audio elements, unlocked by a real touch, reused for every clip (iOS only allows play() on elements a touch has started)
-let SND_ELI = 0;
+const SND_CLIPS = {};   // sound name -> { url, el, vol }: the rendered clip, the audio element that owns it, the volume it was rendered at
+const SND_ELS = [];     // audio elements woken by a real touch (iOS only lets a touch-started element play later); each sound keeps its own, loaded once
+const SND_PROM = {};
+let SND_ELI = 0, SND_USED = 0;
 function sndWav(buf) {
     const ch = Math.min(2, buf.numberOfChannels), n = buf.length, out = new ArrayBuffer(44 + n * ch * 2), v = new DataView(out), w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
     w(0, 'RIFF'); v.setUint32(4, 36 + n * ch * 2, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, ch, true);
@@ -197,20 +198,34 @@ function sndWav(buf) {
     let o = 44; for (let i = 0; i < n; i++) for (let c = 0; c < ch; c++) { const x = Math.max(-1, Math.min(1, d[c][i])); v.setInt16(o, x < 0 ? x * 0x8000 : x * 0x7fff, true); o += 2; }
     return new Blob([out], { type: 'audio/wav' });
 }
-async function sndRender(key, play, secs) {
+async function sndRender(key, play, secs, vol) {
     const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext; if (!OAC) return null;
     const sr = 44100, oac = new OAC(2, Math.ceil(sr * secs), sr);
-    play(oac, sndChain(oac).bus, 0.02, 0.8);
+    play(oac, sndChain(oac).bus, 0.02, vol);   // the volume is baked into the clip: iOS ignores audio.volume
     const buf = await oac.startRendering();
     return URL.createObjectURL(sndWav(buf));
 }
-const SND_PROM = {};
-function sndClipP(key, play, secs) {   // promise of the clip (rendered once)
-    if (!SND_PROM[key]) SND_PROM[key] = sndRender(key, play, secs).then(url => { if (url) SND_CLIPS[key] = { url }; return SND_CLIPS[key] || null; }).catch(() => null);
-    return SND_PROM[key];
+function sndClipP(key, play, secs) {   // promise of the clip at the current volume (rendered once per volume)
+    const k = key + '@' + SND.vol;
+    if (!SND_PROM[k]) SND_PROM[k] = sndRender(key, play, secs, SND.vol).then(url => {
+        if (!url) return null;
+        let c = SND_CLIPS[key];
+        if (!c) c = SND_CLIPS[key] = { el: SND_USED < SND_ELS.length ? SND_ELS[SND_USED++] : null };
+        const old = c.url; c.url = url; c.vol = SND.vol;
+        if (c.el) { c.el.src = url; try { c.el.load(); } catch { /* ignore */ } }
+        if (old) setTimeout(() => URL.revokeObjectURL(old), 4000);
+        return c;
+    }).catch(() => null);
+    return SND_PROM[k];
 }
-function sndClip(key, play, secs) { const c = SND_CLIPS[key]; if (c) return c; sndClipP(key, play, secs); return null; }
-/* called on a real touch: wakes the audio elements with a silent clip so later plays (timers, auto-advance, after rendering) are allowed */
+/* plays a sound through its own audio element; if it is not rendered at this volume yet, renders it first (a few ms) */
+function sndPlayKey(key, play, secs) {
+    const c = SND_CLIPS[key];
+    if (c && c.vol === SND.vol) { sndPlayClip(c); return; }
+    const t = performance.now();
+    sndClipP(key, play, secs).then(cc => { if (cc && performance.now() - t < 800) sndPlayClip(cc); });
+}
+/* called on a real touch: wakes a pool of audio elements with a silent clip so later plays (timers, auto-advance, after rendering) are allowed */
 function sndWake() {
     try {
         if (SND_ELS.length) return;
@@ -218,20 +233,23 @@ function sndWake() {
         w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
         v.setUint32(24, 22050, true); v.setUint32(28, 44100, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
         const url = URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
-        for (let i = 0; i < 6; i++) { const a = new Audio(url); a.setAttribute('playsinline', ''); a.volume = 0.01; SND_ELS.push(a); const p = a.play(); if (p && p.then) p.then(() => a.pause()).catch(() => { SND_ELS.length = 0; }); }
-    } catch { SND_ELS.length = 0; }
+        for (let i = 0; i < 24; i++) { const a = new Audio(url); a.setAttribute('playsinline', ''); a.preload = 'auto'; SND_ELS.push(a); const p = a.play(); if (p && p.then) p.then(() => a.pause()).catch(() => { SND_ELS.length = 0; SND_USED = 0; }); }
+    } catch { SND_ELS.length = 0; SND_USED = 0; }
 }
 /* plays a clip; resolves to 'ok' or to the name of the error (NotAllowedError = blocked by iOS) */
 function sndPlayClip(c) {
     try {
         if (!SND_ELS.length) sndWake();
-        const a = SND_ELS[SND_ELI = (SND_ELI + 1) % Math.max(1, SND_ELS.length)]; if (!a) return Promise.resolve('noelement');
+        const a = c.el || SND_ELS[SND_ELI = (SND_ELI + 1) % Math.max(1, SND_ELS.length)]; if (!a) return Promise.resolve('noelement');
         if (a.src !== c.url) a.src = c.url;
-        a.volume = Math.max(0.05, Math.min(1, SND.vol / 0.8)); a.currentTime = 0;
+        a.currentTime = 0;
         const p = a.play(); return p && p.then ? p.then(() => 'ok', e => (e && e.name) || 'error') : Promise.resolve('ok');
     } catch (e) { return Promise.resolve((e && e.name) || 'error'); }
 }
-function sndPrerender() { ['reveal', 'g1', 'g2', 'g3', 'g4', 'right', 'wrong', 'done', 'tap', 'pop'].forEach((n, i) => setTimeout(() => SFX[n] && sndClip(n, SFX[n], n === 'done' ? 3 : 1.6), 300 + i * 120)); }
+/* the volume changed: sounds are rendered again at the new volume, in the background */
+function sndVolChanged() { Object.keys(SND_PROM).forEach(k => delete SND_PROM[k]); if (sndClipsOk()) sndPrerender(); }
+const SND_PRE = ['reveal', 'g1', 'g2', 'g3', 'g4', 'right', 'wrong', 'done', 'tap', 'pop', 'tabswipe', 'tabbubble', 'tabclick', 'on', 'off', 'select', 'tick', 'open', 'close', 'success', 'error'];
+function sndPrerender() { SND_PRE.forEach((n, i) => setTimeout(() => SFX[n] && sndClipP(n, SFX[n], n === 'done' ? 3 : 1.6), 150 + i * 90)); }
 
 /* iPhone: Web Audio is muted by the ring/silent switch and needs a real touch to start.
    On the first tap we (1) ask for the "playback" audio session, (2) play one silent <audio> clip (what makes iOS treat the page as media),
@@ -251,6 +269,7 @@ function sndUnlock() {
     SND_UNLOCK.done = true;
     if (sndClipsOk()) sndPrerender();
 }
+['touchend', 'pointerup', 'click', 'keydown'].forEach(ev => document.addEventListener(ev, () => { if (!SND_UNLOCK.done || (window.app && window.app.audioCtx && window.app.audioCtx.state !== 'running')) sndUnlock(); }, { passive: true, capture: true }));
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { const a = window.app && window.app.audioCtx; if (a && a.state !== 'running') { try { a.resume(); } catch { /* ignore */ } } } });
 
 /* hook the sounds on the study actions (wrapping the existing methods: nothing duplicated) */
@@ -313,7 +332,7 @@ Object.assign(SuperAnki.prototype, {
         });
         document.addEventListener('input', e => { if (e.target.id === 'snd-vol') { SND.vol = Number(e.target.value) / 100; sndSave(); } });
         document.addEventListener('change', e => {
-            if (e.target.id === 'snd-vol') sfx('pop');
+            if (e.target.id === 'snd-vol') { sndVolChanged(); sfx('pop'); }
             else if (e.target.id === 'snd-tab') { SND.tab = e.target.value; sndSave(); if (SND.tab !== 'none') setTimeout(() => { if (SND.on) sfx('tab' + SND.tab); }, 160); }
         });
     },
