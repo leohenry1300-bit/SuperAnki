@@ -38,9 +38,11 @@ function leoPlay(root, key, o = {}) {
     const c = LEO_CLIPS[key];
     if (!root || !c || !root.isConnected || leoMotionOff()) return Promise.resolve(false);
     const fig = root.querySelector('.leo-fig'); if (!fig) return Promise.resolve(false);
-    if (o.soft && root._leoBusy > Date.now()) return Promise.resolve(false);   // his entrance is playing: it is not interrupted by a line
+    if (o.soft && (root._leoBusy > Date.now() || root.classList.contains('lv-clip'))) return Promise.resolve(false);   // a move is under way: it finishes first (no jump from the middle of one clip to the start of another)
     const tok = root._leoTok = (root._leoTok || 0) + 1;
-    return leoLoad(key).then(url => leoImg(url, 'lf-clip lf-play' + (c.flip ? ' flip' : ''), key)).then(img => {
+    /* a clip that is slow to arrive (first time, weak network) is skipped rather than played late, out of step with his words */
+    const slow = new Promise((_, no) => setTimeout(() => no(new Error('slow')), o.intro ? 4500 : 2500));
+    return Promise.race([leoLoad(key), slow]).then(url => leoImg(url, 'lf-clip lf-play' + (c.flip ? ' flip' : ''), key)).then(img => {
         if (root._leoTok !== tok || !root.isConnected) return false;
         if (o.intro) root._leoBusy = Date.now() + c.d * 1000;
         if (root.dataset.state !== c.from) leoSetState(root, c.from);
@@ -114,14 +116,28 @@ let LEO_PRE = false;
 function leoPrefetch() {
     if (LEO_PRE || (navigator.connection && navigator.connection.saveData)) return;
     LEO_PRE = true;
-    const go = () => ['idle', 'talk', 'tablet', 'wave', 'roar'].reduce((p, k) => p.then(() => leoLoad(k)).catch(() => {}), Promise.resolve());
-    (window.requestIdleCallback || (f => setTimeout(f, 2500)))(go);
+    leoLoad('idle').catch(() => {}); leoWarm();
 }
 /* off screen (scrolled away, another tab) he stops: no idle loop, no CSS animation */
 const LEO_IO = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => {
     const r = e.target; r.classList.toggle('leo-off', !e.isIntersecting);
     if (!e.isIntersecting) { const i = r.querySelector('.lf-idle'); if (i) i.remove(); r.classList.remove('lv-idle'); } else leoIdle(r);
 }), { rootMargin: '80px' }) : null;
+/* instant feedback on a tap, even if the clip is still on its way: a little squash and stretch */
+function leoTap(root) {
+    const fig = root && root.querySelector('.leo-fig'); if (!fig || leoMotionOff() || root.classList.contains('lv-clip')) return;
+    fig.classList.remove('tap'); void fig.offsetWidth; fig.classList.add('tap'); setTimeout(() => fig.classList.remove('tap'), 420);
+}
+/* the clips he uses most are fetched quietly once the app is calm, so a tap never waits for the network (they stay on the device afterwards) */
+function leoWarm() {
+    if (LEO_WARM || (navigator.connection && (navigator.connection.saveData || /(^|-)2g|3g/.test(navigator.connection.effectiveType || '')))) return;
+    LEO_WARM = true;
+    const list = ['talk', 'tablet', 'wave', 'pointwave', 'sitwave', 'roar', 'think', 'foot', 'yawn', 'nap', 'toss', 'sleep'];
+    let i = 0;
+    const next = () => { if (i >= list.length) return; if (document.hidden || !navigator.onLine) { setTimeout(next, 5000); return; } leoLoad(list[i++]).catch(() => {}).then(() => setTimeout(next, 1800)); };
+    setTimeout(next, 6000);
+}
+let LEO_WARM = false;
 function leoInit() {
     let q = 0;
     new MutationObserver(() => { if (q) return; q = requestAnimationFrame(() => { q = 0; leoBoot(); }); }).observe(document.body, { childList: true, subtree: true });

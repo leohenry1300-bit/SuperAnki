@@ -1290,8 +1290,13 @@ class SuperAnki {
             if (!line && stats.lastStudyDate && st.missedDay !== today && daysBetweenKeys(stats.lastStudyDate, today) >= 2) { line = leoPick('missed', { gap: daysBetweenKeys(stats.lastStudyDate, today) }); cat = 'missed'; mark = { missedDay: today }; }
             if (!line) return;
             localStorage.setItem('lh_leo_auto', JSON.stringify({ ...st, ...mark }));
-            this.mascotSay(line, { cat });
-            if (party) { this.confetti(); leoTrail($('.hero .mascot')); }
+            /* he lets his entrance finish before speaking up */
+            const root = $('.hero .leo3d'), wait = root && root._leoBusy > Date.now() ? root._leoBusy - Date.now() + 250 : 0;
+            setTimeout(() => {
+                if (this.view !== 'dashboard' || !$('.hero-sub')) return;
+                this.mascotSay(line, { cat });
+                if (party) { this.confetti(); leoTrail($('.hero .mascot')); }
+            }, wait);
         } catch { /* ignore */ }
     }
     /* Léo talks: his words replace the sub-title of the home card for a few seconds (typed letter by letter), so he never covers anything */
@@ -1307,8 +1312,9 @@ class SuperAnki {
         } else { if (!sub.dataset.orig) sub.dataset.orig = sub.innerHTML; sub.classList.add('speaking'); }
         box.textContent = '';
         const root = $('.hero .leo3d'), clip = root ? (opts.clip || leoClipFor(root, opts.cat || root.dataset.mood, text)) : '';
-        sfx(opts.sound || LEO_VOICE[clip] || 'leo');
-        if (root && !this.calm()) leoPlay(root, clip, { soft: true });
+        const busy = !!root && !opts.force && (root.classList.contains('lv-clip') || root._leoBusy > Date.now());   // a move is under way: he finishes it, his words and voice still answer
+        sfx(opts.sound || (busy ? 'leo' : LEO_VOICE[clip]) || 'leo');
+        if (root && !this.calm() && !busy) leoPlay(root, clip, {});
         const stopTalk = () => {};
         let i = 0; const full = [...text];
         const end = () => { stopTalk(); this._bubbleT = setTimeout(() => {
@@ -3877,9 +3883,10 @@ class SuperAnki {
                 const m = el.dataset ? el.dataset.mood : 'ready', now = Date.now(), h = new Date().getHours(), streak = this.data.stats.streak || 0;
                 this._mTaps = (this._mTaps || []).filter(t => now - t < 2500); this._mTaps.push(now);
                 const root = el.querySelector && el.querySelector('.leo3d'), asleep = root && root.dataset.state === 'sleep';
-                if (asleep) this.mascotSay(leoPick('wake'), { cat: 'night' });
-                else if (this._mTaps.length >= 5) { this._mTaps = []; this.mascotSay(leoPick('roar'), { cat: 'roar' }); }
-                else if (this._mTaps.length >= 3) this.mascotSay(leoPick('tap'), { cat: 'tickle' });
+                if (root) leoTap(root);
+                if (asleep) this.mascotSay(leoPick('wake'), { cat: 'night', force: true });
+                else if (this._mTaps.length >= 5) { this._mTaps = []; this.mascotSay(leoPick('roar'), { cat: 'roar', force: true }); }
+                else if (this._mTaps.length >= 3) this.mascotSay(leoPick('tap'), { cat: 'tickle', force: true });
                 else this.mascotSay(leoPick(m === 'calm' && (h >= 23 || h < 5) ? 'night' : m, { streak }), { cat: this._mTaps.length === 2 ? 'tap' : m === 'calm' && (h >= 23 || h < 5) ? 'night' : m });
                 break;
             }
