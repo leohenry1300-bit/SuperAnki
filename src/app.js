@@ -121,7 +121,8 @@ function fmtAgo(t) {
     if (s < 86400) return `il y a ${Math.round(s / 3600)} h`;
     return `il y a ${plural(Math.round(s / 86400), 'jour')}`;
 }
-const longDate = t => new Date(t).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+const DTF_LONG = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });   // (a formatter is slow to build: made once)
+const longDate = t => DTF_LONG.format(new Date(t));
 function fmtDuration(sec) {
     sec = Math.round(sec);
     if (sec < 60) return `${sec} s`;
@@ -860,6 +861,7 @@ class SuperAnki {
         if (keys.length > 6000) keys.sort((a, b) => d.deleted[a] - d.deleted[b]).slice(0, keys.length - 5000).forEach(k => delete d.deleted[k]);
     }
     save(sync = true) {
+        this._ver = (this._ver || 0) + 1;   // (any change makes the screens kept from earlier out of date)
         this.data.updatedAt = Date.now();
         this.detectChanges(this.data.updatedAt);
         this.cfgCache.clear();
@@ -1178,10 +1180,14 @@ class SuperAnki {
         this.view = view;
         if (opts.deck !== undefined) { this.ui.deck = opts.deck; this.ui.limit = 60; this.touchDeck(opts.deck); }
         if (opts.filter !== undefined) this.ui.filter = opts.filter;
-        this.render();
+        const rv = (this._rv || {})[view];
+        /* a tab seen a moment ago, with nothing changed since, is simply shown again: switching tabs stays instant */
+        const reuse = !!rv && prevView !== view && rv.v === (this._ver || 0) && Date.now() - rv.t < 60000 && rv.d === dayKey() && opts.deck === undefined && opts.filter === undefined && ['dashboard', 'decks', 'stats', 'settings', 'toeic'].includes(view);
+        this.render(true, reuse);
         const mem = (this.scrollMem || {})[view];
         const restore = mem && prevView !== view && opts.deck === undefined && ['dashboard', 'decks', 'stats', 'settings', 'toeic'].includes(view) && ['dashboard', 'decks', 'stats', 'settings', 'toeic'].includes(prevView);   // coming back to a tab: same place as before
-        window.scrollTo({ top: restore ? mem : 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+        const wantY = restore ? mem : 0;
+        if (Math.abs(window.scrollY - wantY) > 1) window.scrollTo({ top: wantY, behavior: 'instant' in window ? 'instant' : 'auto' });   // (already there: no forced layout)
         const el = $(`#view-${view}`);
         if (el) {
             const order = ['dashboard', 'decks', 'toeic', 'stats', 'settings'], a = order.indexOf(prevView), b = order.indexOf(view);
@@ -1402,7 +1408,8 @@ class SuperAnki {
         document.body.appendChild(box); setTimeout(() => box.remove(), 3200);
     }
 
-    render() {
+    render(fromGo = false, reuse = false) {
+        if (!fromGo) this._ver = (this._ver || 0) + 1;   // a redraw asked by a change: the screens kept from earlier are out of date
         ['dashboard', 'decks', 'stats', 'settings', 'session', 'toeic', 'exam'].forEach(v => $(`#view-${v}`).classList.toggle('hidden', v !== this.view));
         $$('[data-nav]').forEach(b => b.classList.toggle('active', b.dataset.nav === this.view && !b.classList.contains('brand') && !b.classList.contains('streak-chip') && !b.classList.contains('sync-dot')));
         document.body.classList.toggle('in-session', this.view === 'session' || this.view === 'exam');
@@ -1411,6 +1418,8 @@ class SuperAnki {
         if (this.view !== 'session') document.body.classList.remove('zen');
         this.renderStreak();
         this.renderSyncIndicator();
+        if (reuse) return;
+        (this._rv = this._rv || {})[this.view] = { v: this._ver || 0, t: Date.now(), d: dayKey() };
         if (this.view === 'dashboard') this.renderDashboard();
         else if (this.view === 'decks') this.renderDecks();
         else if (this.view === 'stats') this.renderStats();
@@ -3544,7 +3553,7 @@ class SuperAnki {
         let rz;
         window.addEventListener('resize', () => {
             clearTimeout(rz);
-            rz = setTimeout(() => { if (this.view === 'stats') this.drawCharts(); this.closePopover(); }, 150);
+            rz = setTimeout(() => { this._ver = (this._ver || 0) + 1; if (this.view === 'stats') this.drawCharts(); this.closePopover(); }, 150);
         });
         matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => { if (this.data && this.data.settings.theme === 'auto') this.applySettings(); });
         const flush = () => { if (this.saveTimer) this.writeNow(); };

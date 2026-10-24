@@ -499,7 +499,7 @@ Object.assign(SuperAnki.prototype, {
             nav.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.jump === cur));
             const act = nav.querySelector('.chip.active'); if (act && nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: act.offsetLeft - 16, behavior: 'smooth' });
         };
-        this._setSpy = spy; window.addEventListener('scroll', spy, { passive: true }); spy();
+        this._setSpy = spy; window.addEventListener('scroll', spy, { passive: true }); requestAnimationFrame(spy);
     }
 });
 (() => { const base = SuperAnki.prototype.renderSettings; SuperAnki.prototype.renderSettings = function (...a) { const r = base.apply(this, a); try { this.settingsNav(); } catch { /* ignore */ } return r; }; })();

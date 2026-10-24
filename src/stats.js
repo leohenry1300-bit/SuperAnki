@@ -7,9 +7,11 @@
    ============================================================ */
 const YOUNG_COLOR = 'color-mix(in srgb, var(--mature) 45%, var(--surface))';
 const PRACTICE_COLOR = '#8b5cf6';
-const fmtNum = n => (Math.round(n * 10) / 10).toLocaleString('fr-FR');
+const NF_FR = new Intl.NumberFormat('fr-FR');
+const fmtNum = n => NF_FR.format(Math.round(n * 10) / 10);
 const pctStr = (a, b) => (b ? `${fmtNum(a / b * 100)} %` : 'N/A');
-const shortDate = t => new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }).replace('.', '');
+const DTF_SHORT = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' });
+const shortDate = t => DTF_SHORT.format(new Date(t)).replace('.', '');
 /* Axis max = 4 "round" steps, so tick labels stay whole numbers for counts */
 function niceMax(v, minMax = 0) {
     v = Math.max(v, minMax);
@@ -188,12 +190,10 @@ Object.assign(SuperAnki.prototype, {
         this.drawCharts();
     },
     drawCharts(onlyId) {
-        $$('[data-chart-box]').forEach(box => {
-            const id = box.dataset.chartBox, def = this.chartDefs && this.chartDefs[id];
-            if (!def || (onlyId && id !== onlyId)) return;
-            const W = Math.max(260, Math.floor(box.clientWidth));
-            box.innerHTML = def(W);
-        });
+        /* read every width first, then write: one layout instead of one per chart */
+        const todo = $$('[data-chart-box]').map(box => ({ box, id: box.dataset.chartBox })).filter(o => this.chartDefs && this.chartDefs[o.id] && (!onlyId || o.id === onlyId));
+        todo.forEach(o => { o.W = Math.max(260, Math.floor(o.box.clientWidth)); });
+        todo.forEach(o => { o.box.innerHTML = this.chartDefs[o.id](o.W); });
     },
 
     /* ---------- Aujourd'hui ---------- */
